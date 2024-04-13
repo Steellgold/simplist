@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  firstName String?
+  lastName  String?
+  email     String   @unique
+  posts     Post[]
+  keys      APIKey[]
+}
+
+model Workspace {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  name      String
+  posts     Post[]
+  keys      APIKey[]
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model Post {
+  id          String     @id @default(cuid())
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @default(now()) @updatedAt
+  title       String
+  slug        String
+  content     String
+  status      PostStatus
+  banner      String?
+  author      User       @relation(fields: [authorId], references: [id])
+  authorId    String
+  workspace   Workspace  @relation(fields: [workspaceId], references: [id])
+  workspaceId String
+}
+
+enum KeyStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model APIKey {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
+  disabledAt  DateTime?
+  key         String    @unique
+  status      KeyStatus
+  author      User      @relation(fields: [authorId], references: [id])
+  authorId    String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  workspaceId String
+}
