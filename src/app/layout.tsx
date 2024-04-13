@@ -3,6 +3,8 @@ import { Nunito } from "next/font/google";
 import "./globals.css";
 import type { Component } from "@/components/utils/component";
 import type { PropsWithChildren } from "react";
+import { cn } from "@/utils";
+import { Providers } from "@/providers/providers";
 
 const nunito = Nunito({ subsets: ["latin"] });
 
@@ -19,7 +21,11 @@ export const metadata: Metadata = {
 const Layout: Component<PropsWithChildren> = ({ children }) => {
   return (
     <html lang="en">
-      <body className={nunito.className}>{children}</body>
+      <body className={cn(nunito.className, "bg-white dark:bg-[#131313]")}>
+        <Providers>
+          {children}
+        </Providers>
+      </body>
     </html>
   );
 };
