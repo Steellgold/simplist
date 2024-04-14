@@ -9,21 +9,24 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
   firstName String?
   lastName  String?
-  email     String   @unique
+  email     String    @unique
   posts     Post[]
   keys      APIKey[]
+  projects  Project[]
 }
 
-model Workspace {
+model Project {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
   name      String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
   posts     Post[]
   keys      APIKey[]
 }
@@ -34,18 +37,18 @@ enum PostStatus {
 }
 
 model Post {
-  id          String     @id @default(cuid())
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @default(now()) @updatedAt
-  title       String
-  slug        String
-  content     String
-  status      PostStatus
-  banner      String?
-  author      User       @relation(fields: [authorId], references: [id])
-  authorId    String
-  workspace   Workspace  @relation(fields: [workspaceId], references: [id])
-  workspaceId String
+  id        String     @id @default(cuid())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @default(now()) @updatedAt
+  title     String
+  slug      String
+  content   String
+  status    PostStatus
+  banner    String?
+  author    User       @relation(fields: [authorId], references: [id])
+  authorId  String
+  project   Project    @relation(fields: [projectId], references: [id])
+  projectId String
 }
 
 enum KeyStatus {
@@ -54,14 +57,14 @@ enum KeyStatus {
 }
 
 model APIKey {
-  id          String    @id @default(cuid())
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @default(now()) @updatedAt
-  disabledAt  DateTime?
-  key         String    @unique
-  status      KeyStatus
-  author      User      @relation(fields: [authorId], references: [id])
-  authorId    String
-  workspace   Workspace @relation(fields: [workspaceId], references: [id])
-  workspaceId String
+  id         String    @id @default(cuid())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @default(now()) @updatedAt
+  disabledAt DateTime?
+  key        String    @unique
+  status     KeyStatus
+  author     User      @relation(fields: [authorId], references: [id])
+  authorId   String
+  project    Project   @relation(fields: [projectId], references: [id])
+  projectId  String
 }
