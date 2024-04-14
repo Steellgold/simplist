@@ -8,16 +8,17 @@ type PageLayoutProps = {
   description?: string;
   center?: boolean;
   actions?: ReactElement;
+  bordered?: boolean;
 } & PropsWithChildren;
 
-const getLayout = ({ title, description, children, center = true, actions }: PageLayoutProps): ReactElement => {
+const getLayout = ({ title, description, children, center = true, actions, bordered = true }: PageLayoutProps): ReactElement => {
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-      <div className={cn({
-        "flex items-center gap-1": !description,
-        "flex flex-col": description
-      }, "justify-between")}>
-        <div>
+      <div className={"flex-col md:flex-row md:justify-between flex md:items-center gap-3 md:gap-0"}>
+        <div className={cn({
+          "flex items-center gap-1": !description,
+          "flex flex-col": description
+        }, "justify-between")}>
           <h1 className="text-lg font-semibold md:text-2xl">{title}</h1>
           {description && <p className="text-muted-foreground text-base">{description}</p>}
         </div>
@@ -25,8 +26,9 @@ const getLayout = ({ title, description, children, center = true, actions }: Pag
         {actions && actions}
       </div>
       <div className={cn({
-        "h-full rounded-lg border border-dashed shadow-sm p-3": !center,
-        "flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm": center
+        "h-full rounded-lg shadow-sm p-3": !center,
+        "flex flex-1 items-center justify-center rounded-lg shadow-sm": center,
+        "border border-dashed": bordered
       })}>
         {children}
       </div>
@@ -34,7 +36,7 @@ const getLayout = ({ title, description, children, center = true, actions }: Pag
   );
 };
 
-export const PageLayout: AsyncComponent<PageLayoutProps> = async({ title, description, children, center = true, actions }) => {
+export const PageLayout: AsyncComponent<PageLayoutProps> = async({ title, description, children, center = true, actions, bordered = true }) => {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -48,8 +50,8 @@ export const PageLayout: AsyncComponent<PageLayoutProps> = async({ title, descri
       </div>
     );
 
-    return getLayout({ title, children: child, center, description, actions });
+    return getLayout({ title, children: child, center, description, actions, bordered });
   }
 
-  return getLayout({ title, children, center, description, actions });
+  return getLayout({ title, children, center, description, actions, bordered });
 };
