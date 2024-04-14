@@ -26,6 +26,7 @@ export const GET = async({ url }: NextRequest): Promise<NextResponse> => {
       if (!userExists) {
         await db.user.create({
           data: {
+            id: user.id,
             email: user.email!,
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             firstName: firstName || "",
