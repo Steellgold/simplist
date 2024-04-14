@@ -81,6 +81,7 @@
   },
   "eslintConfig": {
     "extends": [
+      "@bluzzi",
       "next/core-web-vitals"
     ],
     "ignorePatterns": [
