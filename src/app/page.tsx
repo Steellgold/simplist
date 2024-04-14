@@ -5,10 +5,11 @@ import { PageLayout } from "@/components/page.layout";
 import { db } from "@/utils/db/prisma";
 import { createClient } from "@/utils/supabase/server";
 import { NewProjectDialog } from "@/components/new-project.dialog";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { dayJS } from "@/dayjs/day-js";
 import type { Component } from "@/components/utils/component";
 import Link from "next/link";
+import { Plus } from "lucide-react";
 
 type NoProjectProps = {
   isFirst?: boolean;
@@ -42,7 +43,14 @@ const Home = async(): Promise<ReactElement> => {
   if (!projects) return <NoProject isFirst />;
 
   return (
-    <PageLayout title="Projects" center={false}>
+    <PageLayout title="Projects" center={false} actions={(
+      <NewProjectDialog isFirst={projects.length === 0}>
+        <Button>
+          <Plus className="h-4 w-4" />&nbsp;
+          Project
+        </Button>
+      </NewProjectDialog>
+    )}>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
         {projects.map((project) => (
           <Card key={project.id} className="w-full border-2 hover:cursor-pointer hover:border-primary/40 transition-colors">

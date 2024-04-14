@@ -7,17 +7,22 @@ type PageLayoutProps = {
   title: string;
   description?: string;
   center?: boolean;
+  actions?: ReactElement;
 } & PropsWithChildren;
 
-const getLayout = ({ title, description, children, center = true }: PageLayoutProps): ReactElement => {
+const getLayout = ({ title, description, children, center = true, actions }: PageLayoutProps): ReactElement => {
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
       <div className={cn({
         "flex items-center gap-1": !description,
         "flex flex-col": description
-      })}>
-        <h1 className="text-lg font-semibold md:text-2xl">{title}</h1>
-        {description && <p className="text-muted-foreground text-base">{description}</p>}
+      }, "justify-between")}>
+        <div>
+          <h1 className="text-lg font-semibold md:text-2xl">{title}</h1>
+          {description && <p className="text-muted-foreground text-base">{description}</p>}
+        </div>
+
+        {actions && actions}
       </div>
       <div className={cn({
         "h-full rounded-lg border border-dashed shadow-sm p-3": !center,
@@ -29,7 +34,7 @@ const getLayout = ({ title, description, children, center = true }: PageLayoutPr
   );
 };
 
-export const PageLayout: AsyncComponent<PageLayoutProps> = async({ title, description, children, center = true }) => {
+export const PageLayout: AsyncComponent<PageLayoutProps> = async({ title, description, children, center = true, actions }) => {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -43,8 +48,8 @@ export const PageLayout: AsyncComponent<PageLayoutProps> = async({ title, descri
       </div>
     );
 
-    return getLayout({ title, children: child, center, description });
+    return getLayout({ title, children: child, center, description, actions });
   }
 
-  return getLayout({ title, children, center, description });
+  return getLayout({ title, children, center, description, actions });
 };

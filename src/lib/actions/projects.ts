@@ -11,16 +11,15 @@ export const createProject = async(values: z.infer<typeof ProjectSchema>): Promi
   title: string;
   message: string;
 }> => {
-  console.log("aaa", values);
   const validatedFields = ProjectSchema.safeParse(values);
+
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
+
   if (!user) return { title: "Error", message: "An error occurred!" };
   if (!validatedFields.success) return { title: "Invalid Fields", message: "Invalid fields provided!" };
 
   const { name } = validatedFields.data;
-
-  if (name == "aaa") return { title: "Invalid Name", message: "Invalid name provided!" };
 
   const data = await db.project.create({
     data: {
