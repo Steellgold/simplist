@@ -1,6 +1,6 @@
 import type { PropsWithChildren, ReactElement } from "react";
 import type { AsyncComponent } from "./utils/component";
-import { createClient } from "@/utils/supabase/client";
+import { createClient } from "@/utils/supabase/server";
 
 type PageLayoutProps = {
   title: string;
@@ -22,6 +22,7 @@ const getLayout = ({ title, children }: PageLayoutProps): ReactElement => {
 export const PageLayout: AsyncComponent<PageLayoutProps> = async({ title, children }) => {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
+
   if (!user) {
     const child = (
       <div className="flex flex-col items-center gap-1 text-center">
