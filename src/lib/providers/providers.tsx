@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from "react";
 import { ThemeProvider } from "./theme";
 import type { Component } from "@/components/utils/component";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/ui/sonner";
 import { QueryProvider } from "./query-provider";
 
 export const Providers: Component<PropsWithChildren> = ({ children }) => {
