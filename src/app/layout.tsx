@@ -9,6 +9,8 @@ import { SidebarHeader } from "@/components/sidebar.header";
 import { SidebarLinks } from "@/components/links";
 import { Appbar } from "@/components/appbar";
 import { WelcomeDialog } from "@/components/welcome.dialog";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const nunito = Nunito({ subsets: ["latin"] });
 
@@ -58,6 +60,8 @@ const Layout: Component<PropsWithChildren> = ({ children }) => {
   return (
     <html lang="en">
       <body className={cn(nunito.className, "bg-white dark:bg-[#131313]")}>
+        <Analytics />
+        <SpeedInsights />
         <Providers>
           <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
             <div className="hidden border-r bg-muted/40 md:block">
