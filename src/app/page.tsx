@@ -5,8 +5,16 @@ import { PageLayout } from "@/components/page.layout";
 import { db } from "@/utils/db/prisma";
 import { createClient } from "@/utils/supabase/server";
 import { NewProjectDialog } from "@/components/new-project.dialog";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { dayJS } from "@/dayjs/day-js";
+import type { Component } from "@/components/utils/component";
+import Link from "next/link";
 
-const NoProject = (): ReactElement => {
+type NoProjectProps = {
+  isFirst?: boolean;
+};
+
+const NoProject: Component<NoProjectProps> = ({ isFirst = true }) => {
   return (
     <PageLayout title="Projects">
       <div className="flex flex-col items-center gap-1 text-center">
@@ -14,7 +22,9 @@ const NoProject = (): ReactElement => {
       You have no projects
         </h3>
         <p className="text-sm text-muted-foreground">You can start creating as soon as you add a project.</p>
-        <Button className="mt-4">Add Project</Button>
+        <NewProjectDialog isFirst={isFirst}>
+          <Button>Create your first project</Button>
+        </NewProjectDialog>
       </div>
     </PageLayout>
   );
@@ -29,16 +39,21 @@ const Home = async(): Promise<ReactElement> => {
     where: { userId: user.id }
   });
 
+  if (!projects) return <NoProject isFirst />;
+
   return (
-    <PageLayout title="Projects">
-      <div className="flex flex-col items-center gap-1 text-center">
-        <h3 className="text-2xl font-bold tracking-tight">
-          You have no projects
-        </h3>
-        <p className="text-sm text-muted-foreground">You can start creating as soon as you add a project.</p>
-        <NewProjectDialog isFirst={projects.length === 0}>
-          <Button className="mt-4">Add Project</Button>
-        </NewProjectDialog>
+    <PageLayout title="Projects" center={false}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+        {projects.map((project) => (
+          <Card key={project.id} className="w-full border-2 hover:cursor-pointer hover:border-primary/40 transition-colors">
+            <Link href={`/${project.id}`}>
+              <CardHeader>
+                <CardTitle>{project.name}</CardTitle>
+                <CardDescription>Created on {dayJS(project.createdAt).format("MMMM DD, YYYY")}</CardDescription>
+              </CardHeader>
+            </Link>
+          </Card>
+        ))}
       </div>
     </PageLayout>
   );
