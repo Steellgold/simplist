@@ -19,7 +19,39 @@ const defaultUrl = process.env.VERCEL_URL
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
   title: "Simplist - The simplest way to integrate a blog into your website",
-  description: "Simplist is a simple, fast. Post your content in the simplest way possible, and just get your content back with an API."
+  description: "Simplist is a simple, fast. Post your content in the simplest way possible, and just get your content back with an API.",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: defaultUrl,
+    siteName: "Simplist",
+    title: "Simplist - The simplest way to integrate a blog into your website",
+    description: "Simplist is a simple, fast. Post your content in the simplest way possible, and just get your content back with an API.",
+    images: [
+      {
+        url: new URL("/_static/opengraph-image.png", defaultUrl).href,
+        width: 1200,
+        height: 630,
+        alt: "Simplist - The simplest way to integrate a blog into your website"
+      }
+    ]
+  },
+  twitter: {
+    site: "@simplistmt",
+    card: "summary_large_image",
+    creator: "@simplistmt",
+    creatorId: "1779571985149820928",
+    description: "Simplist is a simple, fast. Post your content in the simplest way possible, and just get your content back with an API.",
+    images: [
+      {
+        url: new URL("/_static/opengraph-image.png", defaultUrl).href,
+        width: 1200,
+        height: 630,
+        alt: "Simplist - The simplest way to integrate a blog into your website"
+      }
+    ],
+    title: "Simplist - The simplest way to integrate a blog into your website"
+  }
 };
 
 const Layout: Component<PropsWithChildren> = ({ children }) => {
