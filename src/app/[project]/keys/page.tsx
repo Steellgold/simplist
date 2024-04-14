@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { PageLayout } from "@/components/page.layout";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { BanIcon, NotepadText } from "lucide-react";
 import { dayJS } from "@/dayjs/day-js";
 import type { AsyncComponent } from "@/components/utils/component";
@@ -9,6 +9,7 @@ import { db } from "@/utils/db/prisma";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { DisableKeyDialog, NewKeyDialog } from "@/components/new-api-key.dialog";
 
 type PageProps = {
   params: {
@@ -28,8 +29,6 @@ const Home: AsyncComponent<PageProps> = async({ params }) => {
     }
   });
 
-  console.log(keys);
-
   return (
     <PageLayout
       title="API"
@@ -37,7 +36,9 @@ const Home: AsyncComponent<PageProps> = async({ params }) => {
       center={false}
       actions={(
         <div className="flex gap-2">
-          <Button>Generate API Key</Button>
+          <NewKeyDialog projectId={project}>
+            <Button>Generate API Key</Button>
+          </NewKeyDialog>
           <Button variant="secondary">See docs</Button>
         </div>
       )}
@@ -106,9 +107,11 @@ const Home: AsyncComponent<PageProps> = async({ params }) => {
 
                   <TableCell>
                     {key.status === "ACTIVE" ? (
-                      <Button size={"icon"} variant={"secondary"}>
-                        <BanIcon className="w-4 h-4"/>
-                      </Button>
+                      <DisableKeyDialog keyId={key.id} projectId={project}>
+                        <Button size={"icon"} variant={"secondary"}>
+                          <BanIcon className="w-4 h-4"/>
+                        </Button>
+                      </DisableKeyDialog>
                     ) : (
                       <span className="text-sm text-muted-foreground">-</span>
                     )}
@@ -124,11 +127,6 @@ const Home: AsyncComponent<PageProps> = async({ params }) => {
             </TableBody>
           </Table>
         </CardContent>
-        <CardFooter>
-          <div className="text-xs text-muted-foreground">
-          Showing <strong>1-10</strong> of <strong>32</strong> products
-          </div>
-        </CardFooter>
       </Card>
     </PageLayout>
   );
