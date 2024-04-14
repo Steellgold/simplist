@@ -20,7 +20,7 @@ const getLayout = ({ title, description, children, center = true }: PageLayoutPr
         {description && <p className="text-muted-foreground text-base">{description}</p>}
       </div>
       <div className={cn({
-        "flex h-[100%] rounded-lg border border-dashed shadow-sm p-3": !center,
+        "h-full rounded-lg border border-dashed shadow-sm p-3": !center,
         "flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm": center
       })}>
         {children}
