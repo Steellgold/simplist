@@ -6,20 +6,20 @@ import { Button } from "./ui/button";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { DropdownMenuItem } from "./ui/dropdown-menu";
 import { LogOut } from "lucide-react";
+import { redirect } from "next/navigation";
 
 export const ButtonGitHub = (): ReactElement => {
   const supabase = createClient();
 
   const signInWithGitHub = async(): Promise<void> => {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: "github"
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "github",
+      options: {
+        redirectTo: process.env.NEXT_PUBLIC_URL
+      }
     });
 
-    console.log("data", data);
-
-    if (error) {
-      console.error("Error signing in with GitHub", error);
-    }
+    if (error) console.error("Error signing in with GitHub", error);
   };
 
   return (
@@ -36,10 +36,8 @@ export const ButtonLogout = (): ReactElement => {
 
   const signOut = async(): Promise<void> => {
     const { error } = await supabase.auth.signOut();
-
-    if (error) {
-      console.error("Error signing out", error);
-    }
+    redirect("/");
+    if (error) console.error("Error signing out", error);
   };
 
   return (
