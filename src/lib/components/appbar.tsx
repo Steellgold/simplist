@@ -12,9 +12,7 @@ import { SidebarLinks } from "./links";
 
 export const Appbar = async(): Promise<ReactElement> => {
   const supabase = createClient();
-
   const { data: { user } } = await supabase.auth.getUser();
-  console.log("user", user);
 
   return (
     <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
@@ -34,12 +32,29 @@ export const Appbar = async(): Promise<ReactElement> => {
       {user ? (
         <>
           <div className="w-full flex-1">
+            {/* <form action={async(e) => {
+              "use server";
+
+              // e is a FormData
+              console.log("searching...", e.get("search"));
+
+              const result = await db.post.findMany({
+                where: {
+                  title: {
+                    contains: "search"
+                  }
+                }
+              });
+
+              console.log("result", result);
+            }}> */}
             <form>
               <div className="relative">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
-                  placeholder="Search products..."
+                  name="search"
+                  placeholder="Search a post..."
                   className="w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3"
                 />
               </div>
