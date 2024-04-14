@@ -1,16 +1,11 @@
 "use server";
 
+import { ProjectSchema } from "@/schemas/project";
 import { db } from "@/utils/db/prisma";
 import { createClient } from "@/utils/supabase/server";
 import type { Project } from "@prisma/client";
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
-
-export const ProjectSchema = z.object({
-  name: z.string()
-    .min(3, { message: "Name must be at least 3 characters long" })
-    .max(255, { message: "Name must be at most 255 characters long" })
-});
+import type { z } from "zod";
 
 export const createProject = async(values: z.infer<typeof ProjectSchema>): Promise<Project | {
   title: string;
