@@ -8,6 +8,7 @@ import { Providers } from "@/providers/providers";
 import { SidebarHeader } from "@/components/sidebar.header";
 import { SidebarLinks } from "@/components/links";
 import { Appbar } from "@/components/appbar";
+import { WelcomeDialog } from "@/components/welcome.dialog";
 
 const nunito = Nunito({ subsets: ["latin"] });
 
@@ -39,6 +40,7 @@ const Layout: Component<PropsWithChildren> = ({ children }) => {
             </div>
             <div className="flex flex-col">
               <Appbar />
+              <WelcomeDialog />
               {children}
             </div>
           </div>
