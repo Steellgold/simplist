@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 "use client";
 
 import { env } from "@/env.mjs";
@@ -35,6 +36,8 @@ type getSidebarLinksProps= {
 
 export const SidebarLinks = ({ type }: getSidebarLinksProps): ReactElement => {
   const url = usePathname();
+  const baseURL = env.NEXT_PUBLIC_APP_URL;
+  const cuid = url.split("/")[1];
 
   if (url == "/") {
     return (
@@ -53,44 +56,31 @@ export const SidebarLinks = ({ type }: getSidebarLinksProps): ReactElement => {
     );
   }
 
-  const cuid = url.split("/")[1];
+  const getLinkStyle = (linkHref: string, type: "sidebar-mobile" | "sidebar-desktop"): string => {
+    const resolvedLink = validLink(linkHref, cuid);
+    const isBaseLink = resolvedLink === `/${cuid}`;
+    const isActive = url === resolvedLink || (!isBaseLink && url.startsWith(resolvedLink + "/"));
 
-  const activeStyleMobile = "mx-[-0.65rem] flex items-center gap-4 rounded-xl bg-muted px-3 py-2 text-foreground hover:text-foreground";
-  const activeStyleDesktop = "flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary";
-  const inactiveStyleMobile = "mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground";
-  const inactiveStyleDesktop = "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary";
-
-  if (type === "sidebar-desktop") {
-    return (
-      <>
-        {links.map((link, index) => (
-          <Link
-            href={env.NEXT_PUBLIC_APP_URL + "/" + validLink(link.href, cuid)}
-            className={cn(
-              url === validLink(link.href, cuid) ? activeStyleDesktop : inactiveStyleDesktop
-            )}
-            key={index}
-          >
-            {link.icon}
-            {link.label}
-          </Link>
-        ))}
-      </>
-    );
-  }
+    return cn({
+      "mx-[-0.65rem] flex items-center gap-4 rounded-xl bg-muted px-3 py-2 text-foreground hover:text-foreground": type === "sidebar-mobile" && isActive,
+      "flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary": type === "sidebar-desktop" && isActive,
+      "mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground": type === "sidebar-mobile" && !isActive,
+      "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary": type === "sidebar-desktop" && !isActive
+    });
+  };
 
   return (
     <>
-      <Link href="#" className="flex items-center gap-2 text-lg font-semibold mb-4">
-        <Image src="/_static/logos/simplist-light.png" alt="Simplist" width={120} height={17.81} />
-      </Link>
+      {type === "sidebar-mobile" && (
+        <Link href="/" className="flex items-center gap-2 text-lg font-semibold mb-4">
+          <Image src="/_static/logos/simplist-light.png" alt="Simplist" width={120} height={17.81} />
+        </Link>
+      )}
 
       {links.map((link, index) => (
         <Link
-          href={env.NEXT_PUBLIC_APP_URL + "/" + validLink(link.href, cuid)}
-          className={cn(
-            url === validLink(link.href, cuid) ? activeStyleMobile : inactiveStyleMobile
-          )}
+          href={baseURL + "/" + validLink(link.href, cuid)}
+          className={getLinkStyle(validLink(link.href, cuid), type)}
           key={index}
         >
           {link.icon}
