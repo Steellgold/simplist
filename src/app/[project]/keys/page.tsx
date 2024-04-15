@@ -17,7 +17,7 @@ type PageProps = {
   };
 }
 
-const Home: AsyncComponent<PageProps> = async({ params }) => {
+const Keys: AsyncComponent<PageProps> = async({ params }) => {
   const { project } = params;
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -134,4 +134,4 @@ const Home: AsyncComponent<PageProps> = async({ params }) => {
 };
 
 
-export default Home;
+export default Keys;
