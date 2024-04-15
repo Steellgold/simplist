@@ -2,6 +2,8 @@ import type { PropsWithChildren, ReactElement } from "react";
 import type { AsyncComponent } from "./utils/component";
 import { createClient } from "@/utils/supabase/server";
 import { cn } from "@/utils";
+import { db } from "@/utils/db/prisma";
+import { AccessDenied, NotFound, NotLogged } from "./errors";
 
 type PageLayoutProps = {
   title: string;
@@ -9,22 +11,26 @@ type PageLayoutProps = {
   center?: boolean;
   actions?: ReactElement;
   bordered?: boolean;
+  projectId?: string;
+  error?: boolean;
 } & PropsWithChildren;
 
-const getLayout = ({ title, description, children, center = true, actions, bordered = true }: PageLayoutProps): ReactElement => {
+const getLayout = ({ title, description, children, center = true, actions, bordered = true, error }: PageLayoutProps): ReactElement => {
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-      <div className={"flex-col md:flex-row md:justify-between flex md:items-center gap-3 md:gap-0"}>
-        <div className={cn({
-          "flex items-center gap-1": !description,
-          "flex flex-col": description
-        }, "justify-between")}>
-          <h1 className="text-lg font-semibold md:text-2xl">{title}</h1>
-          {description && <p className="text-muted-foreground text-base">{description}</p>}
-        </div>
+      {!error && (
+        <div className={"flex-col md:flex-row md:justify-between flex md:items-center gap-3 md:gap-0"}>
+          <div className={cn({
+            "flex items-center gap-1": !description,
+            "flex flex-col": description
+          }, "justify-between")}>
+            <h1 className="text-lg font-semibold md:text-2xl">{title}</h1>
+            {description && <p className="text-muted-foreground text-base">{description}</p>}
+          </div>
 
-        {actions && actions}
-      </div>
+          {actions && actions}
+        </div>
+      )}
       <div className={cn({
         "h-full rounded-lg shadow-sm p-3": !center,
         "flex flex-1 items-center justify-center rounded-lg shadow-sm": center,
@@ -36,21 +42,23 @@ const getLayout = ({ title, description, children, center = true, actions, borde
   );
 };
 
-export const PageLayout: AsyncComponent<PageLayoutProps> = async({ title, description, children, center = true, actions, bordered = true }) => {
+export const PageLayout: AsyncComponent<PageLayoutProps>
+= async({ title, description, children, center = true, actions, bordered = true, projectId }) => {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) {
-    const child = (
-      <div className="flex flex-col items-center gap-1 text-center">
-        <h3 className="text-2xl font-bold tracking-tight">
-          You are not logged in
-        </h3>
-        <p className="text-sm text-muted-foreground">You need to be logged in to view this page.</p>
-      </div>
-    );
+  if (projectId) {
+    const project = await db.project.findFirst({ where: { id: projectId } });
+    if (!project) return getLayout({ title: "Not found", children: <NotFound />, center: true, description, actions, bordered, error: true });
 
-    return getLayout({ title, children: child, center, description, actions, bordered });
+    if (project.userId !== user?.id) {
+      return getLayout({ title: "Access denied", children: <AccessDenied />, center: true, description, actions, bordered, error: true });
+    }
+  }
+
+
+  if (!user) {
+    return getLayout({ title, children: <NotLogged />, center: true, description, actions, bordered, error: true });
   }
 
   return getLayout({ title, children, center, description, actions, bordered });
