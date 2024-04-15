@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogFooter } from "./ui/dialog";
 import Image from "next/image";
 import { Button } from "./ui/button";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { dayJS } from "@/dayjs/day-js";
 
 const MAX_TOURS = 3;
 
@@ -53,11 +54,11 @@ export const WelcomeDialog = (): ReactElement => {
       <DialogContent className="max-w-xl p-0 overflow-hidden" black hiddenX>
         <div className="aspect-video relative flex items-center">
           <Image
-            src={tour.image}
+            src={tour.image + "?d=" + dayJS().format("YYYYMMDDHHmmss")}
             alt="Welcome to Simplist"
-            layout="fill"
-            objectFit="cover"
+            fill
             quality={100}
+            objectFit="cover"
           />
         </div>
 
@@ -68,7 +69,6 @@ export const WelcomeDialog = (): ReactElement => {
           </p>
 
           <DialogFooter className="mt-3">
-            {/* prendre le "pos" de la tour actuelle et si c'est la dernière, afficher le bouton "Let's go" */}
             {(tour.pos) === MAX_TOURS ? (
               <>
                 <Button onClick={() => setTour(Tours[tour.pos - 1])} size={"icon"}>
