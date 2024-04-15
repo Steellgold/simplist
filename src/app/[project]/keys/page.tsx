@@ -34,6 +34,7 @@ const Home: AsyncComponent<PageProps> = async({ params }) => {
       title="API"
       description="Manage your API keys and generate new ones."
       center={false}
+      projectId={project}
       actions={(
         <div className="flex gap-2">
           <NewKeyDialog projectId={project}>
