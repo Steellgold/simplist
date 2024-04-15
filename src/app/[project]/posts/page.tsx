@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { PageLayout } from "@/components/page.layout";
-import type { Component } from "@/components/utils/component";
+import type { AsyncComponent, Component } from "@/components/utils/component";
+import { db } from "@/utils/db/prisma";
+import { NotebookPen } from "lucide-react";
 
 type PageProps = {
   params: {
@@ -8,11 +10,31 @@ type PageProps = {
   };
 };
 
-const Posts: Component<PageProps> = ({ params }) => {
+const Posts: AsyncComponent<PageProps> = async({ params }) => {
   const { project } = params;
 
+  const posts = await db.post.findMany({ where: { projectId: project } });
+  if (posts.length === 0) return <NoPosts params={params} />;
+
   return (
-    <PageLayout title="Posts" projectId={project}>
+    <PageLayout
+      title="Posts"
+      description="Manage your posts and create new ones."
+      projectId={project}
+      actions={(
+        <Button>
+          <NotebookPen size={16} className="mr-2" />
+          Create Post
+        </Button>
+      )}
+    >
+    </PageLayout>
+  );
+};
+
+const NoPosts: Component<PageProps> = ({ params }) => {
+  return (
+    <PageLayout title="Posts" projectId={params.project}>
       <div className="flex flex-col items-center gap-1 text-center">
         <h3 className="text-2xl font-bold tracking-tight">
           You have no posts
@@ -23,6 +45,5 @@ const Posts: Component<PageProps> = ({ params }) => {
     </PageLayout>
   );
 };
-
 
 export default Posts;
