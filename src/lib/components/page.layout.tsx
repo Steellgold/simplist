@@ -17,7 +17,10 @@ type PageLayoutProps = {
 
 const getLayout = ({ title, description, children, center = true, actions, bordered = true, error }: PageLayoutProps): ReactElement => {
   return (
-    <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
+    <main className={cn("flex flex-1 flex-col", {
+      "gap-4 p-4 lg:gap-6 lg:p-6": !error,
+      "p-4": error
+    })}>
       {!error && (
         <div className={"flex-col md:flex-row md:justify-between flex md:items-center gap-3 md:gap-0"}>
           <div className={cn({
@@ -43,23 +46,24 @@ const getLayout = ({ title, description, children, center = true, actions, borde
 };
 
 export const PageLayout: AsyncComponent<PageLayoutProps>
-= async({ title, description, children, center = true, actions, bordered = true, projectId }) => {
+= async({ title, description, children, center = true, actions, bordered = true, projectId, error }) => {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (projectId) {
     const project = await db.project.findFirst({ where: { id: projectId } });
-    if (!project) return getLayout({ title: "Not found", children: <NotFound />, center: true, description, actions, bordered, error: true });
+    if (!project) {
+      return getLayout({ title: "Not found", children: <NotFound />, center: true, description, actions, bordered, error: true });
+    }
 
     if (project.userId !== user?.id) {
       return getLayout({ title: "Access denied", children: <AccessDenied />, center: true, description, actions, bordered, error: true });
     }
   }
 
-
   if (!user) {
-    return getLayout({ title, children: <NotLogged />, center: true, description, actions, bordered, error: true });
+    return getLayout({ title, children: <NotLogged />, center: true, description, actions, bordered, error: true || error });
   }
 
-  return getLayout({ title, children, center, description, actions, bordered });
+  return getLayout({ title, children, center, description, actions, bordered, error });
 };
