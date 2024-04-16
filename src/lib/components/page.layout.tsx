@@ -6,7 +6,7 @@ import { db } from "@/utils/db/prisma";
 import { AccessDenied, NotFound, NotLogged } from "./errors";
 
 type PageLayoutProps = {
-  title: string;
+  title?: string;
   description?: string;
   center?: boolean;
   actions?: ReactElement;
@@ -18,8 +18,8 @@ type PageLayoutProps = {
 const getLayout = ({ title, description, children, center = true, actions, bordered = true, error }: PageLayoutProps): ReactElement => {
   return (
     <main className={cn("flex flex-1 flex-col", {
-      "gap-4 p-4 lg:gap-6 lg:p-6": !error,
-      "p-4": error
+      "gap-4 p-4 lg:gap-6 lg:p-6": !error && bordered,
+      "p-4": (!error && !bordered) || error
     })}>
       {!error && (
         <div className={"flex-col md:flex-row md:justify-between flex md:items-center gap-3 md:gap-0"}>
@@ -35,8 +35,8 @@ const getLayout = ({ title, description, children, center = true, actions, borde
         </div>
       )}
       <div className={cn({
-        "h-full rounded-lg shadow-sm p-3": !center,
-        "flex flex-1 items-center justify-center rounded-lg shadow-sm": center,
+        "h-full rounded-lg shadow-sm": !center,
+        "flex flex-1 items-center justify-center rounded-lg shadow-sm p-3": center,
         "border border-dashed": bordered
       })}>
         {children}
