@@ -5,13 +5,17 @@ import Link from "next/link";
 import type { ReactElement } from "react";
 import { useProjectStore } from "@/store/project.store";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 
 export const SidebarHeader = (): ReactElement => {
-  const { project } = useProjectStore();
+  const { activeProject } = useProjectStore();
+  const url = usePathname();
 
-  if (!project) return (
+  if (!activeProject || url === "/") return (
     <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
-      <Image src="/_static/logos/simplist-light.png" alt="Logo" width={120} height={17.81} />
+      <Link href="/">
+        <Image src="/_static/logos/simplist-light.png" alt="Logo" width={120} height={17.81} />
+      </Link>
     </div>
   );
 
@@ -19,7 +23,7 @@ export const SidebarHeader = (): ReactElement => {
     <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
       <Link href="/" className="flex items-center gap-2 font-semibold">
         <Building2 className="h-6 w-6" />
-        <span className="">{project?.name}</span>
+        <span className="">{activeProject.name}</span>
       </Link>
     </div>
   );
