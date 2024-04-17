@@ -42,6 +42,7 @@ model Post {
   updatedAt DateTime   @default(now()) @updatedAt
   title     String
   slug      String
+  excerpt   String     @default("")
   content   String
   status    PostStatus
   banner    String?
