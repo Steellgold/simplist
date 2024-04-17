@@ -36,8 +36,8 @@ const getLayout = ({ title, description, children, center = true, actions, borde
       )}
       <div className={cn({
         "h-full rounded-lg shadow-sm": !center,
-        "flex flex-1 items-center justify-center rounded-lg shadow-sm p-3": center,
-        "border border-dashed": bordered
+        "flex flex-1 items-center justify-center rounded-lg shadow-sm": center,
+        "border border-dashed p-3": bordered
       })}>
         {children}
       </div>
