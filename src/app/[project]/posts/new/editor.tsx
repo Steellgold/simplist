@@ -22,7 +22,7 @@ export const Editor = (): ReactElement => {
             extensions={defaultExtensions}
             // @ts-ignore
             initialContent={initialContent}
-            className="relative w-full max-w-screen-lg border-dashed bg-background sm:rounded-lg sm:border sm:shadow-lg mt-3"
+            className="relative w-full max-w-screen-lg border-muted bg-background sm:rounded-lg sm:border sm:shadow-lg mt-3"
             editorProps={{
               attributes: {
                 class: cn(
