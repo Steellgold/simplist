@@ -6,18 +6,34 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
-import { PlusCircle, Trash2, Upload } from "lucide-react";
+import type { Component } from "@/components/utils/component";
+import { PlusCircle, Trash2, Undo2, Upload } from "lucide-react";
 import Image from "next/image";
-import type { ReactElement } from "react";
+import Link from "next/link";
+import { Editor } from "./editor";
 
-const Post = (): ReactElement => {
+type PageProps = {
+  params: {
+    project: string;
+  };
+};
+
+const Post: Component<PageProps> = ({ params }) => {
+  const { project } = params;
+
   return (
     <PageLayout
       bordered={false}
       center={false}
       actions={(
         <div className="flex gap-2">
-          <Button variant="secondary">Cancel</Button>
+          <Button variant="secondary" asChild>
+            <Link href={`/${project}/posts`} passHref>
+              <Undo2 className="h-4 w-4 mr-2" />
+              Back to Posts
+            </Link>
+          </Button>
+          <Button variant={"secondary"}>Save as Draft</Button>
           <Button>Save Post</Button>
         </div>
       )}>
@@ -46,6 +62,8 @@ const Post = (): ReactElement => {
                         defaultValue="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl nec ultricies ultricies, nunc nisl ultricies nunc, nec ultricies nunc nisl nec nunc."
                         className="min-h-24 resize-none"
                       />
+
+                      <Editor />
                     </div>
                   </div>
                 </CardContent>

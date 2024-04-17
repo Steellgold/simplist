@@ -3,6 +3,7 @@ import { PageLayout } from "@/components/page.layout";
 import type { AsyncComponent, Component } from "@/components/utils/component";
 import { db } from "@/utils/db/prisma";
 import { NotebookPen } from "lucide-react";
+import Link from "next/link";
 
 type PageProps = {
   params: {
@@ -22,9 +23,11 @@ const Posts: AsyncComponent<PageProps> = async({ params }) => {
       description="Manage your posts and create new ones."
       projectId={project}
       actions={(
-        <Button>
-          <NotebookPen size={16} className="mr-2" />
-          Create Post
+        <Button asChild>
+          <Link href={`/${project}/posts/new`}>
+            <NotebookPen size={16} className="mr-2" />
+            Create Post
+          </Link>
         </Button>
       )}
     >
