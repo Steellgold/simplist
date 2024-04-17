@@ -1,3 +1,4 @@
+// taken from Novel.sh github repo
 import {
   TiptapImage,
   TiptapLink,
@@ -102,6 +103,39 @@ const starterKit = StarterKit.configure({
   dropcursor: {
     color: "#DBEAFE",
     width: 4
+  },
+  heading: {
+    levels: [1, 2, 3, 4, 5, 6],
+    HTMLAttributes: {
+      class: cx(
+        "font-bold text-lg text-primary leading-8 mt-8 mb-4"
+      )
+    }
+  },
+  italic: {
+    HTMLAttributes: {
+      class: cx("italic")
+    }
+  },
+  bold: {
+    HTMLAttributes: {
+      class: cx("font-bold")
+    }
+  },
+  hardBreak: {
+    HTMLAttributes: {
+      class: cx("text-muted-foreground")
+    }
+  },
+  paragraph: {
+    HTMLAttributes: {
+      class: cx("leading-7")
+    }
+  },
+  strike: {
+    HTMLAttributes: {
+      class: cx("line-through")
+    }
   },
   gapcursor: false
 });
