@@ -3,7 +3,7 @@
 import { PostSchema } from "@/schemas/post";
 import { db } from "@/utils/db/prisma";
 import { createClient } from "@/utils/supabase/server";
-import type { Meta, Post } from "@prisma/client";
+import { type Meta, type Post } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { z } from "zod";
@@ -43,12 +43,13 @@ export const createPost = async(values: z.infer<typeof PostSchema>): Promise<Pos
 
   if (metadata) {
     // @ts-ignore: createdAt, updatedAt, and id are not present (normal, as we're creating a new record here)
-    const meta: Meta = {
-      ...metadata,
-      postId
-    };
-
-    await db.meta.create({ data: meta });
+    const metadataData = metadata.map((meta: Meta) => ({
+      ...meta,
+      postId,
+      type: meta.type == "STRING" ? "STRING" : meta.type == "BOOLEAN" ? "BOOLEAN" : "NUMBER"
+    }));
+    // @ts-ignore
+    await db.meta.createMany({ data: metadataData });
   }
 
   revalidatePath(`/${project.id}/posts`);
