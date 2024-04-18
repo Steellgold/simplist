@@ -424,24 +424,6 @@ const Post: Component<PageProps> = () => {
                   </CardFooter>
                 )}
               </Card>
-
-              {/*
-                KEEP THIS COMMENTED: For the "/edit" page
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Archive Post</CardTitle>
-                    <CardDescription>
-                      This action will archive the post and it will not be available on the API.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div></div>
-                    <Button size="sm" variant="secondary">
-                      Archive Post
-                    </Button>
-                  </CardContent>
-                </Card>
-              */}
             </div>
           </div>
         </div>
