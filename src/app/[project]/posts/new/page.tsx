@@ -21,6 +21,7 @@ import ReactConfetti from "react-confetti";
 import { littleEasterEggSupabase } from "./supabase";
 import usePreloadImage from "./preload";
 import Link from "next/link";
+import { createPost } from "@/actions/post";
 
 type PageProps = {
   params: {
@@ -34,14 +35,16 @@ const superSecretImageBannerURL = "https://github.com/supabase/supabase/blob/mas
 const defaultContent = `# Hello, world!
 > This is a post content example.`;
 
-const Post: Component<PageProps> = () => {
+const Post: Component<PageProps> = ({ params }) => {
+  const { project: projectId } = params;
+
   const [bannerUrl, setBannerUrl] = useState<string | null>(null);
   const [fileDownloader, setFileDownloader] = useState<boolean>(false);
   const supabase = createClient();
 
-  const [title, setTitle] = useState<string>();
-  const [excerpt, setExcerpt] = useState<string>();
-  const [content, setContent] = useState<string>();
+  const [title, setTitle] = useState<string>("");
+  const [excerpt, setExcerpt] = useState<string>("");
+  const [content, setContent] = useState<string>("");
   const [status, setStatus] = useState<PostStatus>("DRAFT");
   const [metadata, setMetadata] = useState<{
     key: string;
@@ -55,18 +58,19 @@ const Post: Component<PageProps> = () => {
   const [isPending, startTransition] = useTransition();
 
   const savePost = (): void => {
-    const post = PostSchema.safeParse({
-      title,
-      excerpt,
-      content: JSON.stringify(content),
-      status,
-      metadata,
-      banner: bannerUrl || null
-    });
+    if (isPending) return;
+    const post = PostSchema.safeParse({ title, excerpt, content, status, metadata, banner: bannerUrl || null });
 
     if (post.success) {
       startTransition(() => {
-        toast.success(<pre>{JSON.stringify(post.data, null, 2)}</pre>);
+        void createPost({ title, excerpt, content, status, metadata, banner: bannerUrl || null, projectId })
+          .then(() => {
+            toast.success("Post saved successfully.");
+          })
+          .catch((error) => {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+            toast.error(error.message);
+          });
       });
     } else {
       toast.error(post.error.errors[0].message);
@@ -403,15 +407,12 @@ const Post: Component<PageProps> = () => {
                       But I intend to do so, I'll rely on the `delete` method once the Hackaton is over, for the moment I'm concentrating on creating posts and the essentials.
 
                       - Gaëtan
-
-
                     */}
                   </CardFooter>
                 ) : (
                   <CardFooter className="border-t p-4 justify-between">
                     <Button size="sm" variant="ghost" className="gap-1" asChild>
                       <Link href={"https://supabase.com/blog/supabase-oss-hackathon"}>
-                        {/* remove border */}
                         <Zap className="h-3.5 w-3.5 rounded-md" fill="#40cf8d" stroke="#40cf8d" />
                         Supabase: OSS Hackathon
                       </Link>
