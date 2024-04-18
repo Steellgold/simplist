@@ -53,13 +53,20 @@ model Post {
   metadata  Meta[]
 }
 
+enum MetaType {
+  STRING
+  NUMBER
+  BOOLEAN
+}
+
 model Meta {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
   key       String
-  value     String
-  post      Post     @relation(fields: [postId], references: [id])
+  type      MetaType @default(STRING)
+  value     String?
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    String
 }
 
