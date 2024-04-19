@@ -29,7 +29,7 @@ const Post: AsyncComponent<PageProps> = async({ params }) => {
       actions={post ? (
         <>
           <Button asChild>
-            <Link href={`/${project}/posts/${postId}/edit`}>
+            <Link href={`/${project}/posts`}>
               <Undo2 size={16} className="mr-2" />
               Back to posts
             </Link>
