@@ -3,12 +3,12 @@ import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Button } from "./ui/button";
 import { CircleUser, Menu, Search } from "lucide-react";
 import { Input } from "./ui/input";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
-  DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { createClient } from "@/utils/supabase/server";
 import { ButtonGitHub, ButtonLogout } from "./button.github";
 import Image from "next/image";
 import { SidebarLinks } from "./links";
+import { FeedbackDialog } from "./feedback.dialog";
 
 export const Appbar = async(): Promise<ReactElement> => {
   const supabase = createClient();
@@ -60,6 +60,7 @@ export const Appbar = async(): Promise<ReactElement> => {
               </div>
             </form>
           </div>
+          <FeedbackDialog />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="secondary" size="icon" className="rounded-full">
@@ -78,11 +79,6 @@ export const Appbar = async(): Promise<ReactElement> => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem>Support</DropdownMenuItem>
-              <DropdownMenuSeparator />
               <ButtonLogout />
             </DropdownMenuContent>
           </DropdownMenu>
