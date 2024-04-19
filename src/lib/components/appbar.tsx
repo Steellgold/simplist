@@ -1,8 +1,7 @@
 import type { ReactElement } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Button } from "./ui/button";
-import { CircleUser, Menu, Search } from "lucide-react";
-import { Input } from "./ui/input";
+import { CircleUser, Menu } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { createClient } from "@/utils/supabase/server";
 import { ButtonGitHub, ButtonLogout } from "./button.github";
@@ -48,7 +47,7 @@ export const Appbar = async(): Promise<ReactElement> => {
 
               console.log("result", result);
             }}> */}
-            <form>
+            {/* <form>
               <div className="relative">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -58,7 +57,7 @@ export const Appbar = async(): Promise<ReactElement> => {
                   className="w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3"
                 />
               </div>
-            </form>
+            </form> */}
           </div>
           <FeedbackDialog />
           <DropdownMenu>
