@@ -47,7 +47,7 @@ export const ButtonLogout = (): ReactElement => {
 
   return (
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    <DropdownMenuItem onClick={signOut}>
+    <DropdownMenuItem onClick={signOut} className="hover:cursor-pointer">
       <LogOut className="h-4 w-4 mr-2" />
       Sign out
     </DropdownMenuItem>
