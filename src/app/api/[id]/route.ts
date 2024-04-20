@@ -80,7 +80,7 @@ export const GET = async({ headers, url }: NextRequest): Promise<NextResponse> =
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  await logCall({
+  void logCall({
     key: apiKey,
     projectId: keyData.projectId,
     slug,
