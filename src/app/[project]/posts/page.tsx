@@ -15,6 +15,7 @@ import type { PostData } from "../../api/[id]/route";
 import { Suspense } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
+import { MobileAlert } from "./alert.mobile";
 
 type PageProps = {
   params: {
@@ -57,17 +58,17 @@ const Posts: AsyncComponent<PageProps> = async({ params }) => {
       )}
     >
       <div className="mt-2">
+        <MobileAlert />
+
         <Card>
           <div className="mt-3"></div>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="hidden w-[100px] sm:table-cell">
-                    <span className="sr-only">Image</span>
-                  </TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead className="w-[100px] hidden md:table-cell">Banner</TableHead>
+                  <TableHead className="w-[200px]">Title</TableHead>
+                  <TableHead className="w-[50px]">Status</TableHead>
                   <TableHead className="hidden md:table-cell">
                     <TooltipProvider delayDuration={200}>
                       <Tooltip>
@@ -80,7 +81,7 @@ const Posts: AsyncComponent<PageProps> = async({ params }) => {
                       </Tooltip>
                     </TooltipProvider>
                   </TableHead>
-                  <TableHead className="hidden md:table-cell">Created at</TableHead>
+                  <TableHead>Created at</TableHead>
                   <TableHead>
                     <span className="sr-only">Actions</span>
                   </TableHead>
@@ -89,7 +90,7 @@ const Posts: AsyncComponent<PageProps> = async({ params }) => {
               <TableBody>
                 {posts.map(post => (
                   <TableRow key={post.id}>
-                    <TableCell className="hidden sm:table-cell">
+                    <TableCell className="hidden md:table-cell">
                       <Image
                         alt="Product image"
                         className="aspect-video rounded-md object-cover"
@@ -99,7 +100,7 @@ const Posts: AsyncComponent<PageProps> = async({ params }) => {
                       />
                     </TableCell>
                     <TableCell className="font-medium">
-                      {post.title.length > 50 ? post.title.slice(0, 50) + "..." : post.title}
+                      {post.title.length >= 20 ? post.title.slice(0, 20) + "..." : post.title}
                     </TableCell>
                     <TableCell>
                       <Badge
@@ -107,7 +108,7 @@ const Posts: AsyncComponent<PageProps> = async({ params }) => {
                         {post.status === "DRAFT" ? "Draft" : "Published"}
                       </Badge>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden md:table-cell">
                       {(async() => {
                         const analytics = await getAnalytics(post.slug);
                         return (
@@ -118,7 +119,7 @@ const Posts: AsyncComponent<PageProps> = async({ params }) => {
                         );
                       })()}
                     </TableCell>
-                    <TableCell className="hidden md:table-cell">
+                    <TableCell>
                       {dayJS(post.createdAt).format("MMM D, YYYY")}
                     </TableCell>
                     <TableCell>

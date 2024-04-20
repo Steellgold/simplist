@@ -12,6 +12,7 @@ const alertVariants = cva(
         destructive:
           "border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive",
         rose: "border-[#eb4dd0]/50 text-[#eb4dd0] dark:border-[#eb4dd0] [&>svg]:text-[#eb4dd0]",
+        info: "border-primary/50 text-primary dark:border-primary [&>svg]:text-primary",
       },
     },
     defaultVariants: {

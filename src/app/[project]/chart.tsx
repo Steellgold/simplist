@@ -6,7 +6,7 @@ import { ChartLoading } from "./chart.loading";
 import type { Component } from "@/components/utils/component";
 
 const dataFormatter = (value: number): string => {
-  return value.toString();
+  return `: ${value.toString()}`;
 };
 
 type ChartProps = {
@@ -17,7 +17,7 @@ export const Chart: Component<ChartProps> = ({ data }) => {
   const chartdata = data.map((d) => {
     return {
       date: d.date,
-      "R/D": d["R/D"]
+      "Requests": d["R/D"]
     };
   });
 
@@ -29,17 +29,15 @@ export const Chart: Component<ChartProps> = ({ data }) => {
         data={chartdata}
         index="date"
         noDataText="No data available."
-        categories={["R/D"]}
+        categories={["Requests"]}
         colors={["primary"]}
-        valueFormatter={dataFormatter}
         yAxisWidth={60}
         showGridLines={false}
-        showTooltip={false}
+        valueFormatter={dataFormatter}
         showXAxis={false}
         showYAxis={false}
         curveType="natural"
         showLegend={false}
-        onValueChange={(v) => console.log(v)}
       />
     </Suspense>
   );
