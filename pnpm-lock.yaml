@@ -122,6 +122,9 @@ dependencies:
   '@tremor/react':
     specifier: ^3.16.1
     version: 3.16.1(react-dom@18.2.0)(react@18.2.0)(tailwindcss@3.4.3)
+  '@upstash/ratelimit':
+    specifier: ^1.1.2
+    version: 1.1.2
   '@upstash/redis':
     specifier: ^1.29.0
     version: 1.29.0
@@ -2921,6 +2924,19 @@ packages:
 
   /@ungap/structured-clone@1.2.0:
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
+
+  /@upstash/core-analytics@0.0.8:
+    resolution: {integrity: sha512-MCJoF+Y8fkzq4NRLG7kEHjtGyMsZ2DICBdmEdwoK9umoSrfkzgBlYdZiHTIaewyt9PGaMZCHOasz0LAuMpxwxQ==}
+    engines: {node: '>=16.0.0'}
+    dependencies:
+      '@upstash/redis': 1.29.0
+    dev: false
+
+  /@upstash/ratelimit@1.1.2:
+    resolution: {integrity: sha512-u9aGWwJ9rojcoZoD3EyBJ0F/fLOtD4dlugCYcRTFXNPPDnMAQ8Y8CoXb02hucT24q62xb3ikyS4NdZyj4aqESQ==}
+    dependencies:
+      '@upstash/core-analytics': 0.0.8
+    dev: false
 
   /@upstash/redis@1.29.0:
     resolution: {integrity: sha512-kbO5fgMAeUzErnA/SOtaSbAa0dguYhhBT4MZHJ1O8gVl4iK754aC9+rIYY5hsp4nlxeCGfnIDkWpof991c9jjA==}

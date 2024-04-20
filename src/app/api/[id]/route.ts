@@ -1,8 +1,10 @@
-import { redis } from "@/utils/db/upstash";
+import { ratelimit, redis } from "@/utils/db/upstash";
 import type { Meta } from "@prisma/client";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { logCall } from "../utils";
+import { dayJS } from "@/dayjs/day-js";
+import { sendDiscordMessage } from "@/discord";
 
 type KeyData = {
   id: string;
@@ -24,12 +26,25 @@ type PostData = {
   status: string;
   title: string;
   updatedAt: string;
+  calls: {
+    [key: string]: {
+      count: number;
+      lastCall: string;
+    };
+  };
 }
 
-export const GET = async({ headers, url  }: NextRequest): Promise<NextResponse> => {
+export const GET = async({ headers, url }: NextRequest): Promise<NextResponse> => {
   const slug = new URL(url).pathname.split("/")[2];
 
   let ipAddress = headers.get("x-real-ip") as string;
+  await sendDiscordMessage({
+    message: `TEST ONLY: ${ipAddress}`,
+    title: "TEST ONLY"
+  });
+
+  const { success } = await ratelimit.limit(ipAddress);
+  if (!success) return NextResponse.json({ error: "Rate Limit Exceeded" }, { status: 429 });
 
   const forwardedFor = headers.get("x-forwarded-for") as string;
   if (!ipAddress && forwardedFor) ipAddress = forwardedFor?.split(",").at(0) ?? "Unknown";
@@ -74,5 +89,18 @@ export const GET = async({ headers, url  }: NextRequest): Promise<NextResponse> 
     method: "GET",
     status: 200
   });
+
+  if (!postData.calls) postData.calls = {};
+  if (postData.calls && postData.calls[dayJS().format("YYYY-MM-DD")]) {
+    postData.calls[dayJS().format("YYYY-MM-DD")].count += 1;
+    postData.calls[dayJS().format("YYYY-MM-DD")].lastCall = dayJS().toISOString();
+  } else {
+    postData.calls[dayJS().format("YYYY-MM-DD")] = {
+      count: 1,
+      lastCall: dayJS().toISOString()
+    };
+  }
+
+  await redis.set(`post:${slug}`, postData);
   return NextResponse.json(postData);
 };
