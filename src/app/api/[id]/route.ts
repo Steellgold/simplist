@@ -13,7 +13,7 @@ type KeyData = {
   status: "ACTIVE" | "INACTIVE";
 }
 
-type PostData = {
+export type PostData = {
   authorId: string;
   banner: string | null;
   content: string;
