@@ -2,13 +2,19 @@ import { Button } from "@/components/ui/button";
 import { PageLayout } from "@/components/page.layout";
 import type { AsyncComponent, Component } from "@/components/utils/component";
 import { db } from "@/utils/db/prisma";
-import { BarChart2, NotebookPen, Pen } from "lucide-react";
+import { NotebookPen, Pen } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { dayJS } from "@/dayjs/day-js";
+import { Chart } from "../chart";
+import { redis } from "@/utils/db/upstash";
+import type { PostData } from "../../api/[id]/route";
+import { Suspense } from "react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { InfoCircledIcon } from "@radix-ui/react-icons";
 
 type PageProps = {
   params: {
@@ -21,6 +27,18 @@ const Posts: AsyncComponent<PageProps> = async({ params }) => {
 
   const posts = await db.post.findMany({ where: { projectId: project } });
   if (posts.length === 0) return <NoPosts params={params} />;
+
+  const getAnalytics = async(slug: string): Promise<Array<{ date: string; "R/D": number } | undefined> | []> => {
+    const pData = await redis.get(`post:${slug}`) as PostData;
+    console.log(pData);
+    if (!pData.calls || Object.keys(pData.calls).length < 2) return [];
+
+    const limitedAnalytics = Object.entries(pData.calls)
+      .slice(-30)
+      .map(([date, { count }]) => ({ date, "R/D": count }));
+
+    return limitedAnalytics;
+  };
 
   return (
     <PageLayout
@@ -50,7 +68,18 @@ const Posts: AsyncComponent<PageProps> = async({ params }) => {
                   </TableHead>
                   <TableHead>Name</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead className="hidden md:table-cell">Total Views</TableHead>
+                  <TableHead className="hidden md:table-cell">
+                    <TooltipProvider delayDuration={200}>
+                      <Tooltip>
+                        <TooltipTrigger className="flex items-center">
+                          Analytics <InfoCircledIcon className="w-4 h-4 ml-1 text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          This chart shows the number of requests made to this post on the last 7 days.
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </TableHead>
                   <TableHead className="hidden md:table-cell">Created at</TableHead>
                   <TableHead>
                     <span className="sr-only">Actions</span>
@@ -79,21 +108,24 @@ const Posts: AsyncComponent<PageProps> = async({ params }) => {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                        1.2k views
+                      {(async() => {
+                        const analytics = await getAnalytics(post.slug);
+                        return (
+                          <Suspense fallback={<div>Loading...</div>}>
+                            {/* @ts-ignore */}
+                            <Chart data={analytics} />
+                          </Suspense>
+                        );
+                      })()}
                     </TableCell>
                     <TableCell className="hidden md:table-cell">
                       {dayJS(post.createdAt).format("MMM D, YYYY")}
                     </TableCell>
-                    <TableCell className="flex gap-2 mt-1">
-                      <Button variant="outline" size={"icon"} asChild>
+                    <TableCell>
+                      <Button variant="outline" size={"default"} asChild>
                         <Link href={`/${project}/posts/${post.id}/edit`}>
-                          <Pen size={16} />
-                        </Link>
-                      </Button>
-
-                      <Button variant="outline" size={"icon"} asChild>
-                        <Link href={`/${project}/posts/${post.id}/stats`}>
-                          <BarChart2 size={16} />
+                          <Pen size={14} />
+                          &nbsp;Edit
                         </Link>
                       </Button>
                     </TableCell>
