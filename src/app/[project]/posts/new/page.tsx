@@ -303,7 +303,10 @@ const Post: Component<PageProps> = ({ params }) => {
                   <div className="grid gap-6">
                     <div className="grid gap-3">
                       <Label htmlFor="status">Status</Label>
-                      <Select defaultValue="DRAFT" onValueChange={(value) => setStatus(value as PostStatus)}>
+                      <Select defaultValue="DRAFT" onValueChange={(value) => setStatus(value as PostStatus)} disabled={
+                        title === superSecretPhraseToUnlockConfetti
+                        || isPending
+                      }>
                         <SelectTrigger id="status" aria-label="Select status">
                           <SelectValue placeholder="Select status" />
                         </SelectTrigger>
@@ -316,8 +319,18 @@ const Post: Component<PageProps> = ({ params }) => {
                   </div>
                 </CardContent>
                 <CardFooter className="border-t p-4 justify-end">
-                  <Button size="sm" className="gap-1" onClick={savePost} disabled={isPending}>
-                  Save as {"Draft"}
+                  <Button size="sm" className="gap-1" onClick={savePost} disabled={
+                    title === ""
+                    || title === superSecretPhraseToUnlockConfetti
+                    // si le titre, contenu ou extrait est vide ou ne contient pas caractères alphanumériques
+                    || !title.match(/[\w\d]/)
+                    || excerpt === ""
+                    || !excerpt.match(/[\w\d]/)
+                    || content === ""
+                    || !content.match(/[\w\d]/)
+                    || isPending
+                  }>
+                  Save as {status === "DRAFT" ? "Draft" : "Published"}
                   </Button>
                 </CardFooter>
               </Card>
