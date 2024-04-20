@@ -1,37 +1,35 @@
 "use client";
 
-import { Suspense, type ReactElement } from "react";
+import { Suspense } from "react";
 import { AreaChart } from "@tremor/react";
 import { ChartLoading } from "./chart.loading";
-
-const chartdata = [
-  { date: "Jan 22", "": 2338 },
-  { date: "Feb 22", "": 2103 },
-  { date: "Mar 22", "": 2194 },
-  { date: "Apr 22", "": 2108 },
-  { date: "May 22", "": 1812 },
-  { date: "Jun 22", "": 1726 },
-  { date: "Jul 22", "": 1982 },
-  { date: "Aug 22", "": 2012 },
-  { date: "Sep 22", "": 2342 },
-  { date: "Oct 22", "": 2473 },
-  { date: "Nov 22", "": 3848 },
-  { date: "Dec 22", "": 3736 }
-];
+import type { Component } from "@/components/utils/component";
 
 const dataFormatter = (value: number): string => {
   return value.toString();
 };
 
-export const Chart = (): ReactElement => {
+type ChartProps = {
+  data: Array<{ date: string; "R/D": number }>;
+};
+
+export const Chart: Component<ChartProps> = ({ data }) => {
+  const chartdata = data.map((d) => {
+    return {
+      date: d.date,
+      "R/D": d["R/D"]
+    };
+  });
+
+
   return (
     <Suspense fallback={<ChartLoading />}>
       <AreaChart
-        className="h-32"
+        className="h-20"
         data={chartdata}
         index="date"
         noDataText="No data available."
-        categories={[""]}
+        categories={["R/D"]}
         colors={["primary"]}
         valueFormatter={dataFormatter}
         yAxisWidth={60}
@@ -39,7 +37,7 @@ export const Chart = (): ReactElement => {
         showTooltip={false}
         showXAxis={false}
         showYAxis={false}
-        curveType="step"
+        curveType="natural"
         showLegend={false}
         onValueChange={(v) => console.log(v)}
       />
