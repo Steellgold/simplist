@@ -2,13 +2,13 @@ import { PageLayout } from "@/components/page.layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Component } from "@/components/utils/component";
 import { BarChart2 } from "lucide-react";
-import { Chart } from "./chart";
 
 type PageProps = {
   params: {
     project: string;
   };
 };
+
 const Home: Component<PageProps> = ({ params }) => {
   const { project } = params;
 
@@ -21,7 +21,7 @@ const Home: Component<PageProps> = ({ params }) => {
             <BarChart2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <Chart />
+            {/* <Chart /> */}
           </CardContent>
         </Card>
       </div>
