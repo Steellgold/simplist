@@ -4,7 +4,6 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { logCall } from "../utils";
 import { dayJS } from "@/dayjs/day-js";
-import { sendDiscordMessage } from "@/discord";
 
 type KeyData = {
   id: string;
@@ -38,10 +37,6 @@ export const GET = async({ headers, url }: NextRequest): Promise<NextResponse> =
   const slug = new URL(url).pathname.split("/")[2];
 
   let ipAddress = headers.get("x-real-ip") as string;
-  await sendDiscordMessage({
-    message: `TEST ONLY: ${ipAddress}`,
-    title: "TEST ONLY"
-  });
 
   const { success } = await ratelimit.limit(ipAddress);
   if (!success) return NextResponse.json({ error: "Rate Limit Exceeded" }, { status: 429 });
