@@ -3,6 +3,7 @@
 import { dayJS } from "@/dayjs/day-js";
 import { APIKeySchema } from "@/schemas/project";
 import { db } from "@/utils/db/prisma";
+import { redis } from "@/utils/db/upstash";
 import { createClient } from "@/utils/supabase/server";
 import type { APIKey } from "@prisma/client";
 import { revalidatePath } from "next/cache";
@@ -30,7 +31,12 @@ export const generateKey = async(values: z.infer<typeof APIKeySchema>): Promise<
     }
   });
 
-  // TODO: Store key in Redis
+  await redis.set(`api_key:${data.key}`, {
+    id: data.id,
+    projectId: data.projectId,
+    authorId: data.authorId,
+    status: data.status
+  });
 
   revalidatePath(`/${values.projectId}/keys`);
 
