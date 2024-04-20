@@ -10,6 +10,8 @@ export const env = createEnv({
     NEXT_PUBLIC_SUPABASE_URL: z.string(),
     NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string(),
 
+    TINYBIRD_BEARER_TOKEN: z.string(),
+
     WEBHOOK_DISCORD_URL: z.string()
   },
   client: {
@@ -22,6 +24,8 @@ export const env = createEnv({
 
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+
+    TINYBIRD_BEARER_TOKEN: process.env.TINYBIRD_BEARER_TOKEN,
 
     WEBHOOK_DISCORD_URL: process.env.WEBHOOK_DISCORD_URL
   },
