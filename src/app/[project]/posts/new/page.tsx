@@ -14,14 +14,19 @@ import Image from "next/image";
 import { useState, useTransition } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
-import type { PostStatus } from "@prisma/client";
+import { type PostStatus } from "@prisma/client";
 import { PostSchema } from "@/schemas/post";
 import { useWindowSize } from "usehooks-ts";
 import ReactConfetti from "react-confetti";
 import { littleEasterEggSupabase } from "./supabase";
 import usePreloadImage from "./preload";
 import Link from "next/link";
-import { createPost } from "@/actions/post";
+import { createPost, stringToLang } from "@/actions/post";
+import type { Lang } from "./lang-selector";
+import { LangSelector } from "./lang-selector";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Alert } from "@/components/ui/alert";
+import { Separator } from "@/components/ui/separator";
 
 type PageProps = {
   params: {
@@ -52,6 +57,9 @@ const Post: Component<PageProps> = ({ params }) => {
     value: string | number | boolean;
   }[]>([]);
 
+  const [lang, setLang] = useState<Lang>({ value: "EN", label: "English" });
+  const [needVariants, setNeedVariants] = useState<boolean>(false);
+
   const _ = usePreloadImage(superSecretImageBannerURL);
   const { height, width } = useWindowSize();
 
@@ -59,11 +67,13 @@ const Post: Component<PageProps> = ({ params }) => {
 
   const savePost = (): void => {
     if (isPending) return;
-    const post = PostSchema.safeParse({ title, excerpt, content, status, metadata, banner: bannerUrl || null });
+    const post = PostSchema.safeParse({ title, excerpt, content, status, metadata, banner: bannerUrl || null, projectId, lang: lang.value });
+
+    console.log(lang);
 
     if (post.success) {
       startTransition(() => {
-        void createPost({ title, excerpt, content, status, metadata, banner: bannerUrl || null, projectId })
+        void createPost({ title, excerpt, content, status, metadata, banner: bannerUrl || null, projectId, lang: lang.value })
           .then(() => {
             toast.success("Post saved successfully.");
           })
@@ -147,6 +157,30 @@ const Post: Component<PageProps> = ({ params }) => {
                         />
                       )}
                     </div>
+
+                    <Alert className="items-top flex p-5 w-full flex flex-col">
+                      <div className="flex justify-between">
+                        <div className="grid gap-3">
+                          <Label htmlFor="lang">Language</Label>
+                          <Label htmlFor="lang" className="text-muted-foreground text-sm -mt-2">Select the language of the post.</Label>
+                        </div>
+                        <LangSelector setLang={() => setLang} />
+                      </div>
+
+                      <Separator className="my-4" />
+
+                      <Alert className="items-top flex space-x-2 p-5">
+                        <Checkbox id="needVariantsD" checked={needVariants} onClick={() => setNeedVariants(!needVariants)} />
+                        <div className="grid gap-1.5 leading-none">
+                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" htmlFor="needVariantsD">
+                            I want to create a variant in another language
+                          </label>
+                          <p className="text-sm text-muted-foreground">
+                            You will be redirected to the variant creation page after creating the post.
+                          </p>
+                        </div>
+                      </Alert>
+                    </Alert>
                   </div>
                 </CardContent>
               </Card>
@@ -248,31 +282,6 @@ const Post: Component<PageProps> = ({ params }) => {
                               <Trash2 className="h-3.5 w-3.5" />
                             </Button>
                           </TableCell>
-                          {/*
-
-                                                <TableCell>
-                          <Label htmlFor="type" className="sr-only">Type</Label>
-                          <Select defaultValue="boolean">
-                            <SelectTrigger id="type" aria-label="Select type">
-                              <SelectValue placeholder="Select type" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="string">String</SelectItem>
-                              <SelectItem value="number">Number</SelectItem>
-                              <SelectItem value="boolean">Boolean</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </TableCell>
-                        <TableCell>
-                          <Label htmlFor="value" className="sr-only">Value</Label>
-                          <Input id="value" type="text" defaultValue="true" />
-                        </TableCell>
-                        <TableCell>
-                          <Button size="icon" variant="outline" className="gap-1">
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </Button>
-                        </TableCell>
-                        */}
                         </TableRow>
                       ))}
 
@@ -290,8 +299,6 @@ const Post: Component<PageProps> = ({ params }) => {
                   </Button>
                 </CardFooter>
               </Card>
-
-              {/* TODO: Add "Variants" card to add same post with different languages, and access to editor */}
             </div>
             <div className="grid auto-rows-max items-start gap-4">
               <Card>
@@ -322,7 +329,6 @@ const Post: Component<PageProps> = ({ params }) => {
                   <Button size="sm" className="gap-1" onClick={savePost} disabled={
                     title === ""
                     || title === superSecretPhraseToUnlockConfetti
-                    // si le titre, contenu ou extrait est vide ou ne contient pas caractères alphanumériques
                     || !title.match(/[\w\d]/)
                     || excerpt === ""
                     || !excerpt.match(/[\w\d]/)
