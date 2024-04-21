@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { PageLayout } from "@/components/page.layout";
 import type { AsyncComponent, Component } from "@/components/utils/component";
 import { db } from "@/utils/db/prisma";
-import { NotebookPen, Pen } from "lucide-react";
+import { Languages, NotebookPen, Pen } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -135,6 +135,12 @@ const Posts: AsyncComponent<PageProps> = async({ params }) => {
                         </Button>
 
                         <ButtonCopySlug slug={post.slug} />
+
+                        <Button variant="outline" size={"icon"} asChild>
+                          <Link href={`/${project}/posts/${post.slug}/variants`}>
+                            <Languages size={14} />
+                          </Link>
+                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>
