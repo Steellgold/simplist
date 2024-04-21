@@ -9,6 +9,8 @@ import { type Meta, type Post } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { z } from "zod";
+import type { PostData } from "../../app/api/[id]/route";
+import { slugify } from "@/slugify";
 
 export const createPost = async(values: z.infer<typeof PostSchema>): Promise<Post | {
   title: string;
@@ -39,13 +41,7 @@ export const createPost = async(values: z.infer<typeof PostSchema>): Promise<Pos
       project: { connect: { id: projectId } },
       author: { connect: { id: user.id } },
       lang: lang.toUpperCase() as Lang,
-      slug: slug
-        .toLowerCase()
-        .replace(/ /g, "-")
-        .replace(/[^\w-]+/g, "")
-        .replace(/--+/g, "-")
-        .replace(/^-+/, "")
-        .replace(/-+$/, "")
+      slug: slugify(slug)
     }
   });
 
@@ -83,14 +79,17 @@ export const updatePost = async(id: string, values: z.infer<typeof PostSchema>):
   if (!user) return { title: "Error", message: "An error occurred!" };
   if (!validatedFields.success) return { title: "Invalid Fields", message: "Invalid fields provided!" };
 
-  const { content, excerpt, title, status, banner, metadata, lang } = validatedFields.data;
+  const { content, excerpt, title, status, banner, metadata, lang, rewriteSlug } = validatedFields.data;
 
   const post = await db.post.findFirst({ where: { id } });
   if (!post) return { title: "Invalid Data", message: "Invalid post ID provided. Refresh the page and try again." };
 
+  const potentialNewSlug = rewriteSlug ? slugify(title) : post.slug;
+
   const data = await db.post.update({
     where: { id },
     data: {
+      slug: potentialNewSlug,
       content,
       excerpt,
       status,
@@ -101,7 +100,7 @@ export const updatePost = async(id: string, values: z.infer<typeof PostSchema>):
   });
 
   const oldMetadata = await db.meta.findMany({ where: { postId: id } });
-  // on supprime ceux qui ne sont plus présents (dans metadata) par rapport à oldMetadata
+
   const metadataToDelete = oldMetadata.filter((meta) => !metadata?.some((m) => m.key == meta.key));
   const metadataToAdd = metadata?.filter((meta) => !oldMetadata.some((m) => m.key == meta.key));
 
@@ -120,11 +119,15 @@ export const updatePost = async(id: string, values: z.infer<typeof PostSchema>):
     await db.meta.createMany({ data: metadataData });
   }
 
+  const calls = await redis.get(`post:${post.slug}`) as PostData;
 
-  await redis.set(`post:${data.slug}`, {
+  await redis.set(`post:${post.slug}`, {
     ...data,
-    metadata: metadata || []
+    metadata: metadata || [],
+    calls: calls.calls
   });
+
+  if (rewriteSlug) await redis.rename(`post:${post.slug}`, `post:${potentialNewSlug}`);
 
   revalidatePath(`/${post.projectId}/posts`);
   throw redirect(`/${post.projectId}/posts`);
