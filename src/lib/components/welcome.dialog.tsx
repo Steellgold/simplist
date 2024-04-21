@@ -9,7 +9,7 @@ import { Button } from "./ui/button";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { dayJS } from "@/dayjs/day-js";
 
-const MAX_TOURS = 3;
+const MAX_TOURS = 4;
 
 type WelcomeTour = {
   title: string;
@@ -39,9 +39,16 @@ const Tours: WelcomeTour[] = [
   },
   {
     title: "And analyze it",
-    description: <>Based on the requests you make, Simplist allows you to see the statistics of your articles, such as the number of views.</>,
+    description: <>Based on the requests you make, Simplist allows you to see the statistics of your articles, such as the number of requests.</>,
     image: "/_static/welcome_analytics.png",
     pos: 3
+  },
+  {
+    title: "BETA",
+    // eslint-disable-next-line react/no-unescaped-entities
+    description: <>This is a beta version of Simplist made for the Supabase OSS Hackaton 2024. Some features may not work as expected or bugs can be found. Please report them to us with the "Feedback" button.</>,
+    image: "/_static/welcome_beta.png",
+    pos: 4
   }
 ];
 
