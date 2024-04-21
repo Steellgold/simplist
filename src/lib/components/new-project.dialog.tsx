@@ -12,6 +12,7 @@ import { Button } from "./ui/button";
 import { useForm } from "react-hook-form";
 import { ProjectSchema } from "@/schemas/project";
 import { createProject } from "@/actions/projects";
+import { toast } from "sonner";
 
 type NewProjectDialogProps = { isFirst: boolean } & PropsWithChildren;
 
@@ -29,9 +30,7 @@ export const NewProjectDialog: Component<NewProjectDialogProps> = ({ isFirst, ch
 
     startTransition(() => {
       void createProject(values)
-        .then((data) => {
-          console.log(data);
-        });
+        .then(() => toast.success("Project created successfully!"));
     });
   };
 

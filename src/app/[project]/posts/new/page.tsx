@@ -69,8 +69,6 @@ const Post: Component<PageProps> = ({ params }) => {
     if (isPending) return;
     const post = PostSchema.safeParse({ title, excerpt, content, status, metadata, banner: bannerUrl || null, projectId, lang: lang.value });
 
-    console.log(lang);
-
     if (post.success) {
       startTransition(() => {
         void createPost({ title, excerpt, content, status, metadata, banner: bannerUrl || null, projectId, lang: lang.value })

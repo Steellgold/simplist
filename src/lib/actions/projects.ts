@@ -30,8 +30,6 @@ export const createProject = async(values: z.infer<typeof ProjectSchema>): Promi
     }
   });
 
-  console.log(data);
-
   revalidatePath("/");
 
   if (data) return data;

@@ -49,8 +49,6 @@ export const createPost = async(values: z.infer<typeof PostSchema>): Promise<Pos
     }
   });
 
-  console.log(data);
-
   const postId = data.id;
 
   if (metadata) {

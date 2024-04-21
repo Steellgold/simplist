@@ -82,7 +82,6 @@ const LangList: Component<LangListProps> = ({ setOpen, setSelectedLang }) => {
             <CommandItem
               key={value}
               onSelect={() => {
-                console.log(value);
                 setSelectedLang({ value: value as LANG, label });
                 setOpen(false);
               }}>

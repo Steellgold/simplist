@@ -12,7 +12,7 @@ type DiscordMessageProps = {
 export const sendDiscordMessage = async({ title, message, email }: DiscordMessageProps): Promise<void> => {
   try {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    const data = await fetch(env.WEBHOOK_DISCORD_URL, {
+    await fetch(env.WEBHOOK_DISCORD_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -28,7 +28,6 @@ export const sendDiscordMessage = async({ title, message, email }: DiscordMessag
     });
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    console.log(data);
     // @ts-ignore
   } catch (err: {
     message: string;

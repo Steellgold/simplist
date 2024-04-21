@@ -46,7 +46,6 @@ export const NewKeyDialog: Component<NewKeyDialogProps> = ({ projectId, children
     startTransition(() => {
       void generateKey(values)
         .then((data) => {
-          console.log(data);
           if ("key" in data) setAPIKey(data.key);
         });
     });
@@ -68,7 +67,6 @@ export const NewKeyDialog: Component<NewKeyDialogProps> = ({ projectId, children
               <div className="mt-4 flex items-center space-x-2">
                 <Input type="text" value={apiKey} readOnly className="w-full" />
                 <Button variant="default" onClick={() => {
-                  console.log(apiKey);
                   copy(apiKey)
                     .then(() => toast("API Key copied to clipboard"))
                     .catch(() => toast("Failed to copy API Key to clipboard"));
