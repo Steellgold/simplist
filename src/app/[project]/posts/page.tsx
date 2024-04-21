@@ -35,6 +35,7 @@ const Posts: AsyncComponent<PageProps> = async({ params }) => {
 
   const getAnalytics = async(slug: string): Promise<Array<{ date: string; "R/D": number } | undefined> | []> => {
     const pData = await redis.get(`post:${slug}`) as PostData;
+    if (!pData) return [];
     if (!pData.calls || Object.keys(pData.calls).length < 2) return [];
 
     const limitedAnalytics = Object.entries(pData.calls)
