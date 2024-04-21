@@ -10,6 +10,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { DisableKeyDialog, NewKeyDialog } from "@/components/new-api-key.dialog";
+import { getKeyLU } from "../../api/utils";
+import { Suspense } from "react";
+import { hideKey } from "@/utils";
+import { InfoCircledIcon } from "@radix-ui/react-icons";
 
 type PageProps = {
   params: {
@@ -52,9 +56,10 @@ const Keys: AsyncComponent<PageProps> = async({ params }) => {
                 <TableHead>Name</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Note</TableHead>
-                <TableHead className="hidden md:table-cell">Created At</TableHead>
+                <TableHead>Created At</TableHead>
+                <TableHead>Last Used</TableHead>
                 {keys.some(key => key.status === "INACTIVE") && (
-                  <TableHead className="hidden md:table-cell">Disabled At</TableHead>
+                  <TableHead>Disabled At</TableHead>
                 )}
                 <TableHead>
                   <span className="sr-only">Actions</span>
@@ -65,9 +70,19 @@ const Keys: AsyncComponent<PageProps> = async({ params }) => {
               {keys.length > 0 ? keys.map((key, index) => (
                 <TableRow key={index}>
                   <TableCell>
-                    <div className="flex items-center gap-2">
-                      <span>{key.name}</span>
-                    </div>
+                    <TooltipProvider delayDuration={200}>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <span className="flex items-center gap-2">
+                            {key.name}
+                            <InfoCircledIcon className="w-4 h-4 text-muted-foreground" />
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          {hideKey(key.key)}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </TableCell>
 
                   <TableCell>
@@ -94,6 +109,17 @@ const Keys: AsyncComponent<PageProps> = async({ params }) => {
 
                   <TableCell>
                     <span className="text-sm text-muted-foreground">{dayJS(key.createdAt).format("DD MMM YYYY")}</span>
+                  </TableCell>
+
+                  <TableCell>
+                    {(async() => {
+                      const lastUse = await getKeyLU(key.key);
+                      return (
+                        <Suspense fallback={<div>Loading...</div>}>
+                          <span className="text-sm text-muted-foreground">{lastUse}</span>
+                        </Suspense>
+                      );
+                    })()}
                   </TableCell>
 
                   {key.status === "INACTIVE" ? (
