@@ -57,6 +57,9 @@ const Post: Component<PageProps> = ({ params }) => {
     value: string | number | boolean;
   }[]>([]);
 
+  const [imported, setImported] = useState<boolean>(false);
+  const [importedFileName, setImportedFileName] = useState<string | null>(null);
+
   const [lang, setLang] = useState<Lang>({ value: "EN", label: "English" });
   const [needVariants, setNeedVariants] = useState<boolean>(false);
 
@@ -179,6 +182,119 @@ const Post: Component<PageProps> = ({ params }) => {
                         </div>
                       </Alert>
                     </Alert>
+
+                    <div className="grid gap-3">
+                      <Alert className="items-top flex p-5">
+                        <div className="grid gap-3">
+                          <Label htmlFor="lang">Import from <kbd>MDX</kbd> file</Label>
+                          <Label htmlFor="lang" className="text-muted-foreground text-sm -mt-2">You can import the content of the post from an MDX file.</Label>
+
+                          <Label htmlFor="file-input" className="flex items-center gap-2">
+                            {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
+                            <input type="file" className="opacity-0 absolute z-[-1]" id="file-mdx-input" onChange={(e) => {
+                              const file = e.target.files?.[0];
+
+                              if (!file) {
+                                toast.error("No file selected.");
+                                // @ts-ignore
+                                document.getElementById("file-mdx-input").value = "";
+                                return;
+                              }
+
+                              if (file.size > 5242880) {
+                                toast.error("File is too large. Max size is 5MB.");
+                                // @ts-ignore
+                                document.getElementById("file-mdx-input").value = "";
+                                return;
+                              }
+
+
+                              if (!file.name.endsWith(".mdx")) {
+                                toast.error("Invalid file type. Only MDX files are allowed.");
+                                // @ts-ignore
+                                document.getElementById("file-mdx-input").value = "";
+                                return;
+                              }
+
+                              setImported(true);
+                              setImportedFileName(file.name);
+
+                              const reader = new FileReader();
+
+                              reader.readAsText(file, "UTF-8");
+
+                              reader.onload = () => {
+                                const docContent = reader.result as string;
+                                const lines = docContent.split(/\r?\n/);
+
+                                const fileData = {
+                                  title: "",
+                                  description: "",
+                                  content: ""
+                                };
+
+                                let isMetadata = false;
+                                for (const line of lines) {
+                                  if (line === "---") {
+                                    isMetadata = !isMetadata;
+                                    continue;
+                                  }
+
+                                  if (isMetadata) {
+                                    if (line.startsWith("title:")) {
+                                      fileData.title = line.replace("title:", "").trim();
+                                    } else if (line.startsWith("description:")) {
+                                      fileData.description = line.replace("description:", "").trim();
+                                    }
+                                  } else {
+                                    if (fileData.content === "") {
+                                      fileData.content = line;
+                                    } else {
+                                      if (line === "") {
+                                        fileData.content += "\n";
+                                      } else {
+                                        fileData.content += line + "\n";
+                                      }
+                                    }
+                                  }
+                                }
+
+                                const { title, description, content } = fileData;
+                                setTitle(title.replace(/['"]+/g, ""));
+                                setExcerpt(description.replace(/['"]+/g, ""));
+                                setContent(content.replace(/['"]+/g, "").replace(/\\n/g, "\n"));
+                              };
+
+                            }} accept=".mdx" />
+                            {/* @ts-ignore */}
+                            {imported ? (
+                              <Button size="sm" variant="ghost" className="gap-1" onClick={() => {
+                                setTitle("");
+                                setExcerpt("");
+                                setContent("");
+                                setImported(false);
+                                setImportedFileName(null);
+                                // @ts-ignore
+                                document.getElementById("file-mdx-input").value = "";
+                              }}>
+                                <Trash2 className="h-3.5 w-3.5" />
+                                Remove MDX file ({importedFileName})
+                              </Button>
+                            ) : (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="gap-1"
+                                // @ts-ignore
+                                onClick={() => document?.getElementById("file-mdx-input").click()}>
+                                <Upload className="h-3.5 w-3.5" />
+                                Load content from MDX file
+                              </Button>
+                            )}
+                          </Label>
+                        </div>
+                      </Alert>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
