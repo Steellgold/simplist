@@ -1,6 +1,6 @@
-/* eslint-disable max-len */
 "use client";
 
+/* eslint-disable max-len */
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,69 +9,85 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 import type { Component } from "@/components/utils/component";
-import { Loader2, PlusCircle, Trash2, Undo2, Upload, Zap } from "lucide-react";
+import { Loader2, PlusCircle, Trash2, Upload } from "lucide-react";
 import Image from "next/image";
 import { useState, useTransition } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
+import type { Lang as LANG } from "@prisma/client";
 import { type PostStatus } from "@prisma/client";
 import { PostSchema } from "@/schemas/post";
-import { useWindowSize } from "usehooks-ts";
-import ReactConfetti from "react-confetti";
-import { littleEasterEggSupabase } from "./supabase";
-import usePreloadImage from "./preload";
-import Link from "next/link";
-import { createPost } from "@/actions/post";
-import type { Lang } from "./lang-selector";
-import { LangSelector } from "./lang-selector";
-import { Checkbox } from "@/components/ui/checkbox";
+import { updatePost } from "@/actions/post";
 import { Alert } from "@/components/ui/alert";
-import { Separator } from "@/components/ui/separator";
+import usePreloadImage from "../../new/preload";
+import { LangSelector, type Lang } from "../../new/lang-selector";
+import { LANGUAGES } from "@/utils/lang";
 
-type PageProps = {
-  params: {
-    project: string;
-  };
+type EditPostProps = {
+  title: string;
+  excerpt: string;
+  content: string;
+  status: PostStatus;
+  metadata: {
+    key: string;
+    type: "string" | "number" | "boolean";
+    value: string | number | boolean;
+    old: boolean;
+  }[] | [];
+  banner: string | null;
+  lang: LANG;
+  projectId: string;
+  postId: string;
 };
 
-const superSecretPhraseToUnlockConfetti = "Build in a weekend";
-const superSecretImageBannerURL = "https://github.com/supabase/supabase/blob/master/apps/www/public/images/blog/oss-hackathon/thumbnail.png?raw=true";
-
-const defaultContent = `# Hello, world!
-> This is a post content example.`;
-
-const Post: Component<PageProps> = ({ params }) => {
-  const { project: projectId } = params;
-
-  const [bannerUrl, setBannerUrl] = useState<string | null>(null);
+export const UpdatePost: Component<EditPostProps> = ({
+  banner: postBanner,
+  content: postContent,
+  excerpt: postExcerpt,
+  lang: postLang,
+  metadata: postMetadatas,
+  status: postStatus,
+  title: postTitle,
+  projectId: postProjectID,
+  postId: postID
+}) => {
+  const [bannerUrl, setBannerUrl] = useState<string | null>(postBanner);
   const [fileDownloader, setFileDownloader] = useState<boolean>(false);
   const supabase = createClient();
 
-  const [title, setTitle] = useState<string>("");
-  const [excerpt, setExcerpt] = useState<string>("");
-  const [content, setContent] = useState<string>("");
-  const [status, setStatus] = useState<PostStatus>("DRAFT");
+  const [title, setTitle] = useState<string>(postTitle);
+  const [excerpt, setExcerpt] = useState<string>(postExcerpt);
+  const [content, setContent] = useState<string>(postContent);
+  const [status, setStatus] = useState<PostStatus>(postStatus);
   const [metadata, setMetadata] = useState<{
     key: string;
     type: "string" | "number" | "boolean";
     value: string | number | boolean;
-  }[]>([]);
+    old: boolean;
+  }[]>(postMetadatas);
 
-  const [lang, setLang] = useState<Lang>({ value: "EN", label: "English" });
-  const [needVariants, setNeedVariants] = useState<boolean>(false);
+  const [lang, setLang] = useState<Lang>({ value: postLang, label: LANGUAGES[postLang] });
 
-  const _ = usePreloadImage(superSecretImageBannerURL);
-  const { height, width } = useWindowSize();
+  const _ = usePreloadImage(bannerUrl || "/_static/no-image.png");
 
   const [isPending, startTransition] = useTransition();
 
   const savePost = (): void => {
     if (isPending) return;
-    const post = PostSchema.safeParse({ title, excerpt, content, status, metadata, banner: bannerUrl || null, projectId, lang: lang.value });
+    const post = PostSchema.safeParse({ title, excerpt, content, status, metadata, banner: bannerUrl || null, postProjectID, lang: lang.value });
 
     if (post.success) {
       startTransition(() => {
-        void createPost({ title, excerpt, content, status, metadata, banner: bannerUrl || null, projectId, lang: lang.value })
+        void updatePost(postID, {
+          title,
+          excerpt,
+          content,
+          status,
+          metadata,
+          banner: bannerUrl || null,
+          projectId: postProjectID,
+          lang: lang.value
+        })
           .then(() => {
             toast.success("Post saved successfully.");
           })
@@ -87,16 +103,6 @@ const Post: Component<PageProps> = ({ params }) => {
 
   return (
     <>
-      {title == superSecretPhraseToUnlockConfetti && (
-        <ReactConfetti
-          width={width - 20}
-          height={height}
-          recycle={false}
-          numberOfPieces={1000}
-          colors={["#40cf8d", "#289e69", "#283730", "#7ed4ae*", "#37996b"]}
-        />
-      )}
-
       <main className="grid items-start gap-4 mt-3">
         <div className="mx-auto max-w-full">
           <div className="grid gap-4 lg:grid-cols-3">
@@ -112,7 +118,7 @@ const Post: Component<PageProps> = ({ params }) => {
                       <Label htmlFor="name">Title</Label>
                       <Input
                         id="title"
-                        placeholder={superSecretPhraseToUnlockConfetti}
+                        placeholder={postTitle}
                         type="text"
                         className="w-full"
                         value={title}
@@ -127,33 +133,20 @@ const Post: Component<PageProps> = ({ params }) => {
                         id="excerpt"
                         value={excerpt}
                         className="min-h-24 resize-none"
-                        placeholder={
-                          title == superSecretPhraseToUnlockConfetti ? "Build an Open Source Project over 10 days. 5 prize categories."
-                            : "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec purus feugiat, vestibulum mi nec, ultricies nunc. Nulla facilisi. Nullam nec nunc nec libero ultricies ultricies."
-                        }
+                        placeholder={postExcerpt === "" ? "A brief description of the post." : postExcerpt}
                         onChange={(e) => setExcerpt(e.target.value)}
                       />
                     </div>
 
                     <div className="grid gap-3">
                       <Label htmlFor="content" className="grid gap-3">Content</Label>
-                      {title == superSecretPhraseToUnlockConfetti ? (
-                        <Textarea
-                          id="content"
-                          className="h-96"
-                          placeholder={defaultContent}
-                          readOnly
-                          value={littleEasterEggSupabase}
-                        />
-                      ) : (
-                        <Textarea
-                          id="content"
-                          className="h-32"
-                          placeholder={defaultContent}
-                          onChange={(e) => setContent(e.target.value)}
-                          value={content}
-                        />
-                      )}
+                      <Textarea
+                        id="content"
+                        className="h-32"
+                        placeholder={postContent === "" ? "Write your post here." : postContent}
+                        onChange={(e) => setContent(e.target.value)}
+                        value={content}
+                      />
                     </div>
 
                     <Alert className="items-top flex p-5 w-full flex flex-col">
@@ -162,22 +155,14 @@ const Post: Component<PageProps> = ({ params }) => {
                           <Label htmlFor="lang">Language</Label>
                           <Label htmlFor="lang" className="text-muted-foreground text-sm -mt-2">Select the language of the post.</Label>
                         </div>
-                        <LangSelector setLang={() => setLang} />
+                        <LangSelector setLang={(value) => {
+                          console.log("Lang changed", value);
+                          setLang(value);
+                        }} defaultLang={{
+                          value: postLang,
+                          label: LANGUAGES[postLang]
+                        }} />
                       </div>
-
-                      <Separator className="my-4" />
-
-                      <Alert className="items-top flex space-x-2 p-5">
-                        <Checkbox id="needVariantsD" checked={needVariants} onClick={() => setNeedVariants(!needVariants)} />
-                        <div className="grid gap-1.5 leading-none">
-                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" htmlFor="needVariantsD">
-                            I want to create a variant in another language
-                          </label>
-                          <p className="text-sm text-muted-foreground">
-                            You will be redirected to the variant creation page after creating the post.
-                          </p>
-                        </div>
-                      </Alert>
                     </Alert>
                   </div>
                 </CardContent>
@@ -198,7 +183,7 @@ const Post: Component<PageProps> = ({ params }) => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {metadata.map(({ key, type, value }, index) => (
+                      {metadata.map(({ key, type, value, old }, index) => (
                         <TableRow key={index}>
                           <TableCell>
                             <Label htmlFor={`key-${index}`} className="sr-only">Key</Label>
@@ -211,6 +196,7 @@ const Post: Component<PageProps> = ({ params }) => {
                                   : type === "number" ? "pigCount"
                                     : "isPigOrientedPost"
                               }
+                              disabled={old}
                               onChange={(e) => {
                                 const newMetadata = metadata.slice();
                                 newMetadata[index].key = e.target.value;
@@ -224,7 +210,7 @@ const Post: Component<PageProps> = ({ params }) => {
                               const newMetadata = metadata.slice();
                               newMetadata[index].type = (value as "string");
                               setMetadata(newMetadata);
-                            }}>
+                            }} disabled={old}>
                               <SelectTrigger id={`type-${index}`} aria-label="Select type">
                                 <SelectValue placeholder="Select type" />
                               </SelectTrigger>
@@ -245,7 +231,7 @@ const Post: Component<PageProps> = ({ params }) => {
                                 const newMetadata = metadata.slice();
                                 newMetadata[index].value = value === "true" ? true : false;
                                 setMetadata(newMetadata);
-                              }}>
+                              }} disabled={old}>
                                 <SelectTrigger id={`value-${index}`} aria-label="Select value">
                                   <SelectValue placeholder="Select value" />
                                 </SelectTrigger>
@@ -263,6 +249,7 @@ const Post: Component<PageProps> = ({ params }) => {
                                 type={type === "number" ? "number" : "text"}
                                 placeholder={type === "number" ? "0" : "Value"}
                                 value={(value as string)}
+                                disabled={old}
                                 onChange={(e) => {
                                   const newMetadata = metadata.slice();
                                   newMetadata[index].value = e.target.value;
@@ -272,12 +259,13 @@ const Post: Component<PageProps> = ({ params }) => {
                           )}
 
                           <TableCell>
-                            <Button size="icon" variant="outline" className="gap-1" onClick={() => {
+                            <Button size="default" variant="outline" className="gap-1" onClick={() => {
                               const newMetadata = metadata.slice();
                               newMetadata.splice(index, 1);
                               setMetadata(newMetadata);
                             }}>
                               <Trash2 className="h-3.5 w-3.5" />
+                              Delete
                             </Button>
                           </TableCell>
                         </TableRow>
@@ -291,9 +279,11 @@ const Post: Component<PageProps> = ({ params }) => {
                 </CardContent>
                 <CardFooter className="justify-center border-t p-4">
                   <Button size="sm" variant="ghost" className="gap-1"
-                    onClick={() => setMetadata([...metadata, { key: "", type: "string", value: "" }])}>
+                    onClick={() => setMetadata(
+                      [...metadata, { key: "", type: "string", value: "", old: false }]
+                    )}>
                     <PlusCircle className="h-3.5 w-3.5" />
-                  Add Metadata
+                    Add Metadata
                   </Button>
                 </CardFooter>
               </Card>
@@ -308,10 +298,7 @@ const Post: Component<PageProps> = ({ params }) => {
                   <div className="grid gap-6">
                     <div className="grid gap-3">
                       <Label htmlFor="status">Status</Label>
-                      <Select defaultValue="DRAFT" onValueChange={(value) => setStatus(value as PostStatus)} disabled={
-                        title === superSecretPhraseToUnlockConfetti
-                        || isPending
-                      }>
+                      <Select defaultValue={postStatus} onValueChange={(value) => setStatus(value as PostStatus)} disabled={isPending}>
                         <SelectTrigger id="status" aria-label="Select status">
                           <SelectValue placeholder="Select status" />
                         </SelectTrigger>
@@ -326,7 +313,6 @@ const Post: Component<PageProps> = ({ params }) => {
                 <CardFooter className="border-t p-4 justify-end">
                   <Button size="sm" className="gap-1" onClick={savePost} disabled={
                     title === ""
-                    || title === superSecretPhraseToUnlockConfetti
                     || !title.match(/[\w\d]/)
                     || excerpt === ""
                     || !excerpt.match(/[\w\d]/)
@@ -334,7 +320,7 @@ const Post: Component<PageProps> = ({ params }) => {
                     || !content.match(/[\w\d]/)
                     || isPending
                   }>
-                  Save as {status === "DRAFT" ? "Draft" : "Published"}
+                    {status == "PUBLISHED" ? "Publish" : "Save as Draft"}
                   </Button>
                 </CardFooter>
               </Card>
@@ -358,89 +344,64 @@ const Post: Component<PageProps> = ({ params }) => {
                         className="aspect-video w-full rounded-md object-cover"
                         height="300"
                         width="300"
-                        src={title !== superSecretPhraseToUnlockConfetti ? bannerUrl || "/_static/no-image.png" : superSecretImageBannerURL}
+                        src={bannerUrl || "/_static/no-image.png"}
                       />
                     )}
                   </div>
                 </CardContent>
 
-                {title !== superSecretPhraseToUnlockConfetti ? (
-                  <CardFooter className="border-t p-4 justify-between">
-                    <Button size="sm" variant="ghost" className="gap-1" onClick={() => setBannerUrl(null)} disabled={!bannerUrl}>
-                      <Trash2 className="h-3.5 w-3.5" />
+                <CardFooter className="border-t p-4 justify-between">
+                  <Button size="sm" variant="ghost" className="gap-1" onClick={() => setBannerUrl(null)} disabled={!bannerUrl}>
+                    <Trash2 className="h-3.5 w-3.5" />
                       Remove Image
-                    </Button>
+                  </Button>
 
-                    {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
-                    <input type="file" className="opacity-0 absolute z-[-1]" id="file-banner-input" onChange={async(e) => {
-                      const file = e.target.files?.[0];
-                      if (!file) {
-                        toast.error("No file selected.");
-                        return;
-                      }
+                  {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
+                  <input type="file" className="opacity-0 absolute z-[-1]" id="file-banner-input" onChange={async(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) {
+                      toast.error("No file selected.");
+                      return;
+                    }
 
-                      if (file.size > 5242880) {
-                        toast.error("File is too large. Max size is 5MB.");
-                        return;
-                      }
+                    if (file.size > 5242880) {
+                      toast.error("File is too large. Max size is 5MB.");
+                      return;
+                    }
 
-                      if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
-                        toast.error("Invalid file type. Only JPEG, PNG, and WEBP are allowed.");
-                        return;
-                      }
+                    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+                      toast.error("Invalid file type. Only JPEG, PNG, and WEBP are allowed.");
+                      return;
+                    }
 
-                      setFileDownloader(true);
+                    setFileDownloader(true);
 
-                      const bannerId = `post-${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
+                    const bannerId = `post-${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
 
-                      const { data, error } = await supabase.storage.from("banners").upload(bannerId, file, {
-                        cacheControl: "3600",
-                        contentType: file.type
-                      });
+                    const { data, error } = await supabase.storage.from("banners").upload(bannerId, file, {
+                      cacheControl: "3600",
+                      contentType: file.type
+                    });
 
-                      if (error) {
-                        toast.error("An error occurred while uploading the file.");
-                        setFileDownloader(false);
-                        return;
-                      }
+                    if (error) {
+                      toast.error("An error occurred while uploading the file.");
+                      setFileDownloader(false);
+                      return;
+                    }
 
-                      const { data: { publicUrl } } = supabase.storage.from("banners").getPublicUrl(data.path);
-                      if (publicUrl) {
-                        toast.success("File uploaded successfully.");
-                        setBannerUrl(publicUrl);
-                        setFileDownloader(false);
-                      }
-                    }} accept="image/jpeg, image/png, image/webp" />
-                    {/* @ts-ignore */}
-                    <Button size="sm" variant="ghost" className="gap-1" onClick={() => document?.getElementById("file-banner-input").click()}>
-                      <Upload className="h-3.5 w-3.5" />
+                    const { data: { publicUrl } } = supabase.storage.from("banners").getPublicUrl(data.path);
+                    if (publicUrl) {
+                      toast.success("File uploaded successfully.");
+                      setBannerUrl(publicUrl);
+                      setFileDownloader(false);
+                    }
+                  }} accept="image/jpeg, image/png, image/webp" />
+                  {/* @ts-ignore */}
+                  <Button size="sm" variant="ghost" className="gap-1" onClick={() => document?.getElementById("file-banner-input").click()}>
+                    <Upload className="h-3.5 w-3.5" />
                       Upload Image
-                    </Button>
-
-                    {/*
-                      If you're here, it's because you want to see whether or not images are deleted on the server.
-                      So far I haven't implemented the deletion of images on the server if the user deletes the image or doesn't create the post.
-
-                      But I intend to do so, I'll rely on the `delete` method once the Hackaton is over, for the moment I'm concentrating on creating posts and the essentials.
-
-                      - Gaëtan
-                    */}
-                  </CardFooter>
-                ) : (
-                  <CardFooter className="border-t p-4 justify-between">
-                    <Button size="sm" variant="ghost" className="gap-1" asChild>
-                      <Link href={"https://supabase.com/blog/supabase-oss-hackathon"}>
-                        <Zap className="h-3.5 w-3.5 rounded-md" fill="#40cf8d" stroke="#40cf8d" />
-                        Supabase: OSS Hackathon
-                      </Link>
-                    </Button>
-
-                    <Button size="sm" variant="ghost" className="gap-1" onClick={() => setTitle("")}>
-                      <Undo2 className="h-3.5 w-3.5" />
-                      Recover all
-                    </Button>
-                  </CardFooter>
-                )}
+                  </Button>
+                </CardFooter>
               </Card>
             </div>
           </div>
@@ -449,5 +410,3 @@ const Post: Component<PageProps> = ({ params }) => {
     </>
   );
 };
-
-export default Post;

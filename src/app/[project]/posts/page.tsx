@@ -26,7 +26,10 @@ type PageProps = {
 const Posts: AsyncComponent<PageProps> = async({ params }) => {
   const { project } = params;
 
-  const posts = await db.post.findMany({ where: { projectId: project } });
+  const posts = await db.post.findMany({
+    where: { projectId: project },
+    orderBy: { createdAt: "desc" }
+  });
   if (posts.length === 0) return <NoPosts params={params} />;
 
   const getAnalytics = async(slug: string): Promise<Array<{ date: string; "R/D": number } | undefined> | []> => {
@@ -123,7 +126,7 @@ const Posts: AsyncComponent<PageProps> = async({ params }) => {
                     </TableCell>
                     <TableCell>
                       <Button variant="outline" size={"default"} asChild>
-                        <Link href={`/${project}/posts/${post.id}/edit`}>
+                        <Link href={`/${project}/posts/${post.slug}/edit`}>
                           <Pen size={14} />
                           &nbsp;Edit
                         </Link>

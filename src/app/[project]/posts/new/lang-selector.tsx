@@ -18,14 +18,15 @@ export type Lang = {
 
 type Props = {
   setLang: (lang: Lang) => void;
+  defaultLang?: Lang;
 }
 
-export const LangSelector: Component<Props> = ({ setLang }) => {
+export const LangSelector: Component<Props> = ({ setLang, defaultLang }) => {
   const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const [selectedLang, setSLang] = useState<Lang | null>({
-    value: "EN",
-    label: LANGUAGES.EN
+    value: defaultLang?.value || "EN",
+    label: defaultLang?.label || "English"
   });
 
   const setSelectedLang = (lang: Lang | null): void => {
@@ -43,7 +44,7 @@ export const LangSelector: Component<Props> = ({ setLang }) => {
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[400px] p-0" align="start">
-          <LangList setOpen={setOpen} setSelectedLang={setSelectedLang} />
+          <LangList setOpen={setOpen} setSelectedLang={setSelectedLang} defaultLang={defaultLang} />
         </PopoverContent>
       </Popover>
     );
@@ -59,7 +60,7 @@ export const LangSelector: Component<Props> = ({ setLang }) => {
       </DrawerTrigger>
       <DrawerContent>
         <div className="mt-4 border-t">
-          <LangList setOpen={setOpen} setSelectedLang={setSelectedLang} />
+          <LangList setOpen={setOpen} setSelectedLang={setSelectedLang} defaultLang={defaultLang} />
         </div>
       </DrawerContent>
     </Drawer>
@@ -69,11 +70,12 @@ export const LangSelector: Component<Props> = ({ setLang }) => {
 type LangListProps = {
   setOpen: (open: boolean) => void;
   setSelectedLang: (lang: Lang | null) => void;
+  defaultLang?: Lang;
 }
 
-const LangList: Component<LangListProps> = ({ setOpen, setSelectedLang }) => {
+const LangList: Component<LangListProps> = ({ setOpen, setSelectedLang, defaultLang }) => {
   return (
-    <Command>
+    <Command defaultValue={defaultLang?.value}>
       <CommandInput placeholder="Search languages..." />
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>

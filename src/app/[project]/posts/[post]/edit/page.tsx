@@ -1,10 +1,6 @@
-import { Button } from "@/components/ui/button";
-import { PageLayout } from "@/components/page.layout";
 import type { AsyncComponent } from "@/components/utils/component";
 import { db } from "@/utils/db/prisma";
-import { Undo2 } from "lucide-react";
-import { NotFound } from "@/components/errors";
-import Link from "next/link";
+import { UpdatePost } from "./editor";
 
 type PageProps = {
   params: {
@@ -13,33 +9,33 @@ type PageProps = {
   };
 };
 
-const Post: AsyncComponent<PageProps> = async({ params }) => {
-  const { project, post: postId } = params;
+const EditPost: AsyncComponent<PageProps> = async({ params }) => {
+  const { project, post } = params;
 
-  const post = await db.post.findUnique({ where: { projectId: project, id: postId } });
-  if (!post) return <PageLayout title="" error>
-    <NotFound replacePageTo="post" />
-  </PageLayout>;
+  const posts = await db.post.findFirst({
+    where: { slug: post, projectId: project },
+    include: { metadata: true }
+  });
+  if (!posts) return <div>Post not found</div>;
 
   return (
-    <PageLayout
-      title={post ? post.title : "Post"}
-      description={post ? post.content.slice(0, 100) : "Review your post and make changes by clicking on the button below."}
+    <UpdatePost
+      banner={posts.banner}
+      content={posts.content}
+      lang={posts.lang}
       projectId={project}
-      actions={post ? (
-        <>
-          <Button asChild>
-            <Link href={`/${project}/posts`}>
-              <Undo2 size={16} className="mr-2" />
-              Back to posts
-            </Link>
-          </Button>
-        </>
-      ) : <></>}
-    >
-      {post ? (<p>{post.content}</p>) : <NotFound replacePageTo="post" />}
-    </PageLayout>
+      excerpt={posts.excerpt}
+      metadata={posts.metadata.map((meta) => ({
+        key: meta.key,
+        type: meta.type.toLowerCase() as "string" | "number" | "boolean",
+        value: meta.value as string | number | boolean,
+        old: true
+      }))}
+      postId={posts.id}
+      status={posts.status}
+      title={posts.title}
+    />
   );
 };
 
-export default Post;
+export default EditPost;
