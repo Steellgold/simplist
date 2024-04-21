@@ -50,7 +50,12 @@ export const deactivateKey = async(keyId: string, projectId: string): Promise<bo
     data: { status: "INACTIVE", disabledAt: dayJS().toDate() }
   });
 
-  // TODO: Disable key in Redis
+  await redis.set(`api_key:${data.key}`, {
+    id: data.id,
+    projectId: data.projectId,
+    authorId: data.authorId,
+    status: "INACTIVE"
+  });
 
   revalidatePath(`/${projectId}/keys`);
 
