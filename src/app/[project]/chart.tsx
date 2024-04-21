@@ -28,7 +28,7 @@ export const Chart: Component<ChartProps> = ({ data }) => {
         className="h-20"
         data={chartdata}
         index="date"
-        noDataText="No data available."
+        noDataText="No data available, minimum 2 data points required"
         categories={["Requests"]}
         colors={["primary"]}
         yAxisWidth={60}
