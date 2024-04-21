@@ -69,10 +69,10 @@ const Posts: AsyncComponent<PageProps> = async({ params }) => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[100px] hidden md:table-cell">Banner</TableHead>
-                  <TableHead className="w-[200px]">Title</TableHead>
+                  <TableHead className="w-[150px] hidden md:table-cell">Banner</TableHead>
+                  <TableHead>Title</TableHead>
                   <TableHead className="w-[50px]">Status</TableHead>
-                  <TableHead className="hidden md:table-cell">
+                  <TableHead className="hidden md:table-cell w-[400px]">
                     <TooltipProvider delayDuration={200}>
                       <Tooltip>
                         <TooltipTrigger className="flex items-center">
@@ -84,7 +84,7 @@ const Posts: AsyncComponent<PageProps> = async({ params }) => {
                       </Tooltip>
                     </TooltipProvider>
                   </TableHead>
-                  <TableHead>Created at</TableHead>
+                  <TableHead className="w-[130px]">Created at</TableHead>
                   <TableHead>
                     <span className="sr-only">Actions</span>
                   </TableHead>
@@ -103,7 +103,7 @@ const Posts: AsyncComponent<PageProps> = async({ params }) => {
                       />
                     </TableCell>
                     <TableCell className="font-medium">
-                      {post.title.length >= 20 ? post.title.slice(0, 20) + "..." : post.title}
+                      {post.title.length >= 30 ? post.title.slice(0, 30) + "..." : post.title}
                     </TableCell>
                     <TableCell>
                       <Badge
@@ -125,15 +125,16 @@ const Posts: AsyncComponent<PageProps> = async({ params }) => {
                     <TableCell>
                       {dayJS(post.createdAt).format("MMM D, YYYY")}
                     </TableCell>
-                    <TableCell className="space-x-2">
-                      <Button variant="outline" size={"default"} asChild>
-                        <Link href={`/${project}/posts/${post.slug}/edit`}>
-                          <Pen size={14} />
-                          &nbsp;Edit
-                        </Link>
-                      </Button>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Button variant="outline" size={"icon"} asChild>
+                          <Link href={`/${project}/posts/${post.slug}/edit`}>
+                            <Pen size={14} />
+                          </Link>
+                        </Button>
 
-                      <ButtonCopySlug slug={post.slug} />
+                        <ButtonCopySlug slug={post.slug} />
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}

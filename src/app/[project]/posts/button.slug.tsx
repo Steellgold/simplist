@@ -14,15 +14,11 @@ export const ButtonCopySlug: Component<ButtonCopySlugProps> = ({ slug }) => {
   const [copied, setCopied] = useCopyToClipboard();
 
   return (
-    <Button size={"default"} variant={"outline"} onClick={() => {
+    <Button size={"icon"} variant={"outline"} onClick={() => {
       void setCopied(slug);
       toast.success("Slug successfully copied to clipboard.");
     }}>
-      {copied
-        ? <CopyCheck size={16} className="mr-2" />
-        : <Copy size={16} className="mr-2" />
-      }
-      {copied ? "Copied" : "Copy Slug"}
+      {copied ? <CopyCheck size={16} /> : <Copy size={16} />}
     </Button>
   );
 };
