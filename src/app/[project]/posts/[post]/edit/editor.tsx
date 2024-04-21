@@ -22,8 +22,11 @@ import { Alert } from "@/components/ui/alert";
 import usePreloadImage from "../../new/preload";
 import { LangSelector, type Lang } from "../../new/lang-selector";
 import { LANGUAGES } from "@/utils/lang";
+import { Checkbox } from "@/components/ui/checkbox";
+import { slugify } from "@/slugify";
 
 type EditPostProps = {
+  slug: string;
   title: string;
   excerpt: string;
   content: string;
@@ -48,6 +51,7 @@ export const UpdatePost: Component<EditPostProps> = ({
   metadata: postMetadatas,
   status: postStatus,
   title: postTitle,
+  slug: postSlug,
   projectId: postProjectID,
   postId: postID
 }) => {
@@ -59,6 +63,8 @@ export const UpdatePost: Component<EditPostProps> = ({
   const [excerpt, setExcerpt] = useState<string>(postExcerpt);
   const [content, setContent] = useState<string>(postContent);
   const [status, setStatus] = useState<PostStatus>(postStatus);
+  const [rewriteSlug, setRewriteSlug] = useState<boolean>(false);
+
   const [metadata, setMetadata] = useState<{
     key: string;
     type: "string" | "number" | "boolean";
@@ -74,7 +80,7 @@ export const UpdatePost: Component<EditPostProps> = ({
 
   const savePost = (): void => {
     if (isPending) return;
-    const post = PostSchema.safeParse({ title, excerpt, content, status, metadata, banner: bannerUrl || null, postProjectID, lang: lang.value });
+    const post = PostSchema.safeParse({ title, excerpt, content, status, metadata, banner: bannerUrl || null, postProjectID, lang: lang.value, rewriteSlug });
 
     if (post.success) {
       startTransition(() => {
@@ -86,7 +92,8 @@ export const UpdatePost: Component<EditPostProps> = ({
           metadata,
           banner: bannerUrl || null,
           projectId: postProjectID,
-          lang: lang.value
+          lang: lang.value,
+          rewriteSlug
         })
           .then(() => {
             toast.success("Post saved successfully.");
@@ -103,7 +110,7 @@ export const UpdatePost: Component<EditPostProps> = ({
 
   return (
     <>
-      <main className="grid items-start gap-4 mt-3">
+      <main className="grid items-start gap-4 mt-3 px-2">
         <div className="mx-auto max-w-full">
           <div className="grid gap-4 lg:grid-cols-3">
             <div className="grid auto-rows-max items-start gap-4 lg:col-span-2">
@@ -124,6 +131,33 @@ export const UpdatePost: Component<EditPostProps> = ({
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                       />
+
+                      <Alert className="items-top flex p-5 w-full flex flex-col">
+                        <div className="flex justify-between">
+                          <div className="grid gap-3">
+                            <Label htmlFor="rewriteSlug">Re-write Slug</Label>
+                            <Label htmlFor="rewriteSlug" className="text-muted-foreground text-sm -mt-2">
+                              If enabled, the slug will be re-written based on the title.
+                            </Label>
+
+                            <Label htmlFor="rewriteSlug" className="text-muted-foreground text-sm -mt-2">
+                              Current slug: <code className="p-1">{postSlug}</code>
+                            </Label>
+
+                            {rewriteSlug && (
+                              <Label htmlFor="rewriteSlug" className="text-muted-foreground text-sm -mt-2">
+                                New slug: <code className="p-1">{slugify(title, false)}</code>
+                              </Label>
+                            )}
+                          </div>
+
+                          <Checkbox
+                            id="rewriteSlug"
+                            checked={rewriteSlug}
+                            onClick={() => setRewriteSlug(!rewriteSlug)}
+                          />
+                        </div>
+                      </Alert>
                     </div>
 
                     <div className="grid gap-3">
