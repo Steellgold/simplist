@@ -3,13 +3,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { logCall } from "../../utils";
 import { db } from "@/utils/db/prisma";
-
-type KeyData = {
-  id: string;
-  projectId: string;
-  authorId: string;
-  status: "ACTIVE" | "INACTIVE";
-}
+import type { KeyData } from "@/types";
 
 export const GET = async({ headers, url }: NextRequest): Promise<NextResponse> => {
   let ipAddress = headers.get("x-real-ip") as string;

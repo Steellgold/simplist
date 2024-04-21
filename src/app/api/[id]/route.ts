@@ -4,13 +4,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { logCall } from "../utils";
 import { dayJS } from "@/dayjs/day-js";
-
-type KeyData = {
-  id: string;
-  projectId: string;
-  authorId: string;
-  status: "ACTIVE" | "INACTIVE";
-}
+import type { KeyData } from "@/types";
 
 export type PostData = {
   authorId: string;
