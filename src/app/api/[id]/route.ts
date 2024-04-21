@@ -41,30 +41,30 @@ export const GET = async({ headers, url }: NextRequest): Promise<NextResponse> =
   const apiKey = headers.get("x-api-key");
   if (!apiKey) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   if (!slug) {
-    await logCall({ key: apiKey, projectId: "", slug: "", postId: "", ip: ipAddress, method: "GET", status: 404 });
+    logCall({ key: apiKey, projectId: "", slug: "", postId: "", ip: ipAddress, method: "GET", status: 404 });
     return NextResponse.json({ error: "Not Found" }, { status: 404 });
   }
 
   const keyData = await redis.get(`api_key:${apiKey}`) as KeyData;
   if (!keyData) {
-    await logCall({ key: apiKey, projectId: "", slug: "", postId: "", ip: ipAddress, method: "GET", status: 401 });
+    logCall({ key: apiKey, projectId: "", slug: "", postId: "", ip: ipAddress, method: "GET", status: 401 });
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   if (keyData.status === "INACTIVE") {
-    await logCall({ key: apiKey, projectId: "", slug: "", postId: "", ip: ipAddress, method: "GET", status: 401 });
+    logCall({ key: apiKey, projectId: "", slug: "", postId: "", ip: ipAddress, method: "GET", status: 401 });
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const postData = await redis.get(`post:${slug}`) as PostData;
   if (!postData) {
-    await logCall({
+    logCall({
       key: apiKey, projectId: keyData.projectId, slug, postId: "", ip: ipAddress, method: "GET", status: 404 });
     return NextResponse.json({ error: "Not Found" }, { status: 404 });
   }
 
   if (postData.projectId !== keyData.projectId) {
-    await logCall({
+    logCall({
       key: apiKey, projectId: keyData.projectId, slug, postId: "", ip: ipAddress, method: "GET", status: 401 });
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
