@@ -19,8 +19,6 @@ const EditPost: AsyncComponent<PageProps> = async({ params }) => {
   });
   if (!post) return <div>Post not found</div>;
 
-  console.log(post);
-
   return (
     <PageLayout center={false} bordered={false}>
       <UpdatePost
