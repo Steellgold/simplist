@@ -20,6 +20,7 @@ const EditPost: AsyncComponent<PageProps> = async({ params }) => {
 
   return (
     <UpdatePost
+      slug={posts.slug}
       banner={posts.banner}
       content={posts.content}
       lang={posts.lang}
