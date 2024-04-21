@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 import type { Component } from "@/components/utils/component";
-import { Loader2, PlusCircle, Trash2, Undo2, Upload, Zap } from "lucide-react";
+import { Languages, Loader2, Pen, PlusCircle, Trash2, Undo2, Upload, WandSparkles, Zap } from "lucide-react";
 import Image from "next/image";
 import { useState, useTransition } from "react";
 import { createClient } from "@/utils/supabase/client";
@@ -24,9 +24,10 @@ import Link from "next/link";
 import { createPost } from "@/actions/post";
 import type { Lang } from "./lang-selector";
 import { LangSelector } from "./lang-selector";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Alert } from "@/components/ui/alert";
-import { Separator } from "@/components/ui/separator";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogContent, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { cn } from "@/utils";
 
 type PageProps = {
   params: {
@@ -45,6 +46,7 @@ const Post: Component<PageProps> = ({ params }) => {
 
   const [bannerUrl, setBannerUrl] = useState<string | null>(null);
   const [fileDownloader, setFileDownloader] = useState<boolean>(false);
+
   const supabase = createClient();
 
   const [title, setTitle] = useState<string>("");
@@ -61,7 +63,22 @@ const Post: Component<PageProps> = ({ params }) => {
   const [importedFileName, setImportedFileName] = useState<string | null>(null);
 
   const [lang, setLang] = useState<Lang>({ value: "EN", label: "English" });
-  const [needVariants, setNeedVariants] = useState<boolean>(false);
+  const [variants, setVariants] = useState<{
+    title: string;
+    excerpt: string;
+    content: string;
+    lang: Lang;
+  }[]>([]);
+
+  const [currentVariantEditing, setCurrentVariantEditing] = useState<{
+    title: string;
+    excerpt: string;
+    content: string;
+    lang: Lang;
+  } | null>(null);
+
+  const [newVariantOpen, setNewVariantOpen] = useState<boolean>(false);
+  const [editVariantOpen, setEditVariantOpen] = useState<boolean>(false);
 
   const _ = usePreloadImage(superSecretImageBannerURL);
   const { height, width } = useWindowSize();
@@ -165,22 +182,248 @@ const Post: Component<PageProps> = ({ params }) => {
                           <Label htmlFor="lang">Language</Label>
                           <Label htmlFor="lang" className="text-muted-foreground text-sm -mt-2">Select the language of the post.</Label>
                         </div>
-                        <LangSelector setLang={() => setLang} />
+                        <LangSelector setLang={(data) => setLang(data)} />
                       </div>
 
-                      <Separator className="my-4" />
+                      {variants.length > 0 && <div className="my-3"></div>}
 
-                      <Alert className="items-top flex space-x-2 p-5">
-                        <Checkbox id="needVariantsD" checked={needVariants} onClick={() => setNeedVariants(!needVariants)} />
-                        <div className="grid gap-1.5 leading-none">
-                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" htmlFor="needVariantsD">
-                            I want to create a variant in another language
-                          </label>
-                          <p className="text-sm text-muted-foreground">
-                            You will be redirected to the variant creation page after creating the post.
-                          </p>
-                        </div>
-                      </Alert>
+                      {variants.length > 0 && variants.map((variant, index) => (
+                        <Alert className={cn("items-top flex p-5 w-full flex flex-col", {
+                          "mt-3": index !== 0
+                        })} key={index}>
+                          <div className="flex justify-between">
+                            <div className="grid gap-3">
+                              <Label htmlFor={`variant-${index}`}>{variant.title}</Label>
+                              <Label htmlFor={`variant-${index}`} className="text-muted-foreground text-sm -mt-2">This is a <strong>{variant.lang.label}</strong> variant of the post.</Label>
+                            </div>
+                            <div className="flex gap-2">
+                              <Button
+                                size="icon"
+                                variant="outline"
+                                className="gap-1"
+                                onClick={() => {
+                                  const newVariants = variants.slice();
+                                  newVariants.splice(index, 1);
+                                  setVariants(newVariants);
+                                }}>
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+
+                              <Dialog open={editVariantOpen} onOpenChange={(open) => setEditVariantOpen(open)}>
+                                <DialogTrigger asChild>
+                                  <Button size="icon" variant="outline" className="gap-1"
+                                    onClick={() => setCurrentVariantEditing(variant)}
+                                  >
+                                    <Pen className="h-3.5 w-3.5" />
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent>
+                                  <div className="grid gap-3">
+                                    <Label htmlFor="title">Title</Label>
+                                    <Input
+                                      id="title"
+                                      type="text"
+                                      placeholder="Construire en un week-end"
+                                      value={currentVariantEditing?.title || ""}
+                                      // @ts-ignore
+                                      onChange={(e) => setCurrentVariantEditing({
+                                        ...variant, title: e.target.value
+                                      })}
+                                    />
+                                  </div>
+
+                                  <div className="grid gap-3">
+                                    <Label htmlFor="lang">Language</Label>
+                                    {/* @ts-ignore */}
+                                    <LangSelector setLang={(data) => setCurrentVariantEditing({
+                                      ...variant, lang: data
+                                    })} />
+                                  </div>
+
+                                  <div className="grid gap-3">
+                                    <Label htmlFor="excerpt">Excerpt</Label>
+                                    <Textarea
+                                      id="excerpt"
+                                      className="min-h-24 resize-none"
+                                      placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec purus feugiat, vestibulum mi nec, ultricies nunc. Nulla facilisi. Nullam nec nunc nec libero ultricies ultricies."
+                                      value={currentVariantEditing?.excerpt || ""}
+                                      // @ts-ignore
+                                      onChange={(e) => setCurrentVariantEditing({
+                                        ...variant, excerpt: e.target.value
+                                      })}
+                                    />
+                                  </div>
+
+                                  <div className="grid gap-3">
+                                    <Label htmlFor="content">Content</Label>
+                                    <Textarea
+                                      id="content"
+                                      className="h-48 resize-none"
+                                      placeholder={defaultContent}
+                                      value={currentVariantEditing?.content || ""}
+                                      // @ts-ignore
+                                      onChange={(e) => setCurrentVariantEditing({
+                                        ...variant, content: e.target.value
+                                      })}
+                                    />
+                                  </div>
+
+                                  <div className="flex justify-between">
+                                    <Button size="sm" variant={"secondary"}
+                                      onClick={() => setNewVariantOpen(false)}>Cancel</Button>
+
+                                    <div className="flex gap-2">
+                                      <Button
+                                        variant={"default"}
+                                        size="sm"
+                                        className="gap-1"
+                                        onClick={() => {
+                                          const newVariants = variants.slice();
+                                          // @ts-ignore
+                                          newVariants[index] = currentVariantEditing;
+                                          setVariants(newVariants);
+                                          setCurrentVariantEditing(null);
+                                          setEditVariantOpen(false);
+                                        }}
+                                      >
+                                        Save as {variant.lang.label}
+                                      </Button>
+                                    </div>
+                                  </div>
+                                </DialogContent>
+                              </Dialog>
+                            </div>
+                          </div>
+                        </Alert>
+                      ))}
+
+                      <div className="my-3"></div>
+
+                      <div className="flex justify-end">
+                        <AlertDialog onOpenChange={(open) => {
+                          setNewVariantOpen(open);
+                          setCurrentVariantEditing({
+                            title: "",
+                            excerpt: "",
+                            content: "",
+                            lang: { value: "EN", label: "English" }
+                          });
+                        }} open={newVariantOpen}>
+                          <AlertDialogTrigger onClick={() => setNewVariantOpen(true)}>
+                            <Button size="sm" variant="ghost" className="gap-1" disabled={isPending}>
+                              <Languages className="h-3.5 w-3.5" />
+                              Add Variant
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <div className="grid gap-3">
+                              <Label htmlFor="title">Title</Label>
+                              <Input
+                                id="title"
+                                type="text"
+                                placeholder="Construire en un week-end"
+                                value={currentVariantEditing?.title || ""}
+                                // @ts-ignore
+                                onChange={(e) => setCurrentVariantEditing({
+                                  ...currentVariantEditing, title: e.target.value
+                                })}
+                              />
+                            </div>
+
+                            <div className="grid gap-3">
+                              <Label htmlFor="lang">Language</Label>
+                              {/* @ts-ignore */}
+                              <LangSelector setLang={(data) => setCurrentVariantEditing({
+                                ...currentVariantEditing, lang: data
+                              })} />
+                            </div>
+
+                            <div className="grid gap-3">
+                              <Label htmlFor="excerpt">Excerpt</Label>
+                              <Textarea
+                                id="excerpt"
+                                className="min-h-24 resize-none"
+                                placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec purus feugiat, vestibulum mi nec, ultricies nunc. Nulla facilisi. Nullam nec nunc nec libero ultricies ultricies."
+                                value={currentVariantEditing?.excerpt || ""}
+                                // @ts-ignore
+                                onChange={(e) => setCurrentVariantEditing({
+                                  ...currentVariantEditing, excerpt: e.target.value
+                                })}
+                              />
+                            </div>
+
+                            <div className="grid gap-3">
+                              <Label htmlFor="content">Content</Label>
+                              <Textarea
+                                id="content"
+                                className="h-48 resize-none"
+                                placeholder={defaultContent}
+                                value={currentVariantEditing?.content || ""}
+                                // @ts-ignore
+                                onChange={(e) => setCurrentVariantEditing({
+                                  ...currentVariantEditing, content: e.target.value
+                                })}
+                              />
+                            </div>
+
+                            <div className="flex justify-between">
+                              <Button size="sm" onClick={() => setNewVariantOpen(false)}>
+                                Cancel
+                              </Button>
+
+                              <div className="flex gap-2">
+                                <Button
+                                  variant={"secondary"}
+                                  size="sm"
+                                  className="gap-1"
+                                  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+                                  onClick={async() => {
+                                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                                    const { data, error } = await supabase.functions.invoke("openai", {
+                                      body: {
+                                        // langFrom, langTo, content
+                                        langFrom: lang.value,
+                                        langTo: currentVariantEditing?.lang.value,
+                                        content: currentVariantEditing?.content || ""
+                                      }
+                                    });
+
+                                    if (error) {
+                                      toast.error("An error occurred while translating the content.");
+                                      return;
+                                    }
+
+                                    console.log(data);
+                                  }}
+                                >
+                                  <WandSparkles className="h-3.5 w-3.5" />
+                                  Translate from {lang.label}
+                                </Button>
+
+                                <Button
+                                  size="sm"
+                                  className="gap-1"
+                                  disabled={
+                                    currentVariantEditing?.title === ""
+                                    || currentVariantEditing?.excerpt === ""
+                                    || currentVariantEditing?.content === ""
+                                    || isPending
+                                  }
+                                  onClick={() => {
+                                    if (currentVariantEditing) {
+                                      setVariants([...variants, currentVariantEditing]);
+                                      setCurrentVariantEditing(null);
+                                      setNewVariantOpen(false);
+                                    }
+                                  }}
+                                >
+                                  Save Variant
+                                </Button>
+                              </div>
+                            </div>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
                     </Alert>
 
                     <div className="grid gap-3">
