@@ -43,10 +43,6 @@ export const GET = async({ headers, url }: NextRequest): Promise<NextResponse> =
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  void logCall({
-    key: apiKey, projectId, slug: "", postId: "", ip: ipAddress, method: "GET", status: 200
-  });
-
   const data = await db.project.findUnique({
     where: { id: projectId },
     include: { posts: { orderBy: { createdAt: "desc" } } }
