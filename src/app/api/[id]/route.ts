@@ -97,5 +97,5 @@ export const GET = async({ headers, url }: NextRequest): Promise<NextResponse> =
   }
 
   await redis.set(`post:${slug}`, postData);
-  return NextResponse.json(postData);
+  return NextResponse.json({ ...postData, calls: undefined });
 };

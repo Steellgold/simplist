@@ -16,6 +16,7 @@ import { Suspense } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { MobileAlert } from "./alert.mobile";
+import { ButtonCopySlug } from "./button.slug";
 
 type PageProps = {
   params: {
@@ -124,13 +125,15 @@ const Posts: AsyncComponent<PageProps> = async({ params }) => {
                     <TableCell>
                       {dayJS(post.createdAt).format("MMM D, YYYY")}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="space-x-2">
                       <Button variant="outline" size={"default"} asChild>
                         <Link href={`/${project}/posts/${post.slug}/edit`}>
                           <Pen size={14} />
                           &nbsp;Edit
                         </Link>
                       </Button>
+
+                      <ButtonCopySlug slug={post.slug} />
                     </TableCell>
                   </TableRow>
                 ))}
