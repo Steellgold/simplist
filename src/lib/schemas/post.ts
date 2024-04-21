@@ -25,5 +25,6 @@ export const PostSchema = z.object({
   })).optional().nullable(),
   banner: z.string().optional().nullable(),
   status: z.enum(["DRAFT", "PUBLISHED"]),
-  projectId: z.string().optional().nullable()
+  projectId: z.string().optional().nullable(),
+  lang: z.string().default("EN")
 });
