@@ -4,6 +4,7 @@ import { PostSchema } from "@/schemas/post";
 import { db } from "@/utils/db/prisma";
 import { redis } from "@/utils/db/upstash";
 import { createClient } from "@/utils/supabase/server";
+import type { Lang } from "@prisma/client";
 import { type Meta, type Post } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -21,7 +22,7 @@ export const createPost = async(values: z.infer<typeof PostSchema>): Promise<Pos
   if (!user) return { title: "Error", message: "An error occurred!" };
   if (!validatedFields.success) return { title: "Invalid Fields", message: "Invalid fields provided!" };
 
-  const { content, excerpt, title, status, banner, metadata, projectId } = validatedFields.data;
+  const { content, excerpt, title, status, banner, metadata, projectId, lang } = validatedFields.data;
   const slug = title + "-" + Math.random().toString(36).substring(7);
 
   if (!projectId) return { title: "Invalid Data", message: "Invalid project ID provided. Refresh the page and try again." };
@@ -37,6 +38,7 @@ export const createPost = async(values: z.infer<typeof PostSchema>): Promise<Pos
       banner,
       project: { connect: { id: projectId } },
       author: { connect: { id: user.id } },
+      lang: lang.toUpperCase() as Lang,
       slug: slug
         .toLowerCase()
         .replace(/ /g, "-")
@@ -46,6 +48,8 @@ export const createPost = async(values: z.infer<typeof PostSchema>): Promise<Pos
         .replace(/-+$/, "")
     }
   });
+
+  console.log(data);
 
   const postId = data.id;
 
