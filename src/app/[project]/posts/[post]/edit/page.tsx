@@ -1,6 +1,7 @@
 import type { AsyncComponent } from "@/components/utils/component";
 import { db } from "@/utils/db/prisma";
 import { UpdatePost } from "./editor";
+import { PageLayout } from "@/components/page.layout";
 
 type PageProps = {
   params: {
@@ -10,32 +11,36 @@ type PageProps = {
 };
 
 const EditPost: AsyncComponent<PageProps> = async({ params }) => {
-  const { project, post } = params;
+  const { project, post: postSlug } = params;
 
-  const posts = await db.post.findFirst({
-    where: { slug: post, projectId: project },
+  const post = await db.post.findFirst({
+    where: { slug: postSlug, projectId: project },
     include: { metadata: true }
   });
-  if (!posts) return <div>Post not found</div>;
+  if (!post) return <div>Post not found</div>;
+
+  console.log(post);
 
   return (
-    <UpdatePost
-      slug={posts.slug}
-      banner={posts.banner}
-      content={posts.content}
-      lang={posts.lang}
-      projectId={project}
-      excerpt={posts.excerpt}
-      metadata={posts.metadata.map((meta) => ({
-        key: meta.key,
-        type: meta.type.toLowerCase() as "string" | "number" | "boolean",
-        value: meta.value as string | number | boolean,
-        old: true
-      }))}
-      postId={posts.id}
-      status={posts.status}
-      title={posts.title}
-    />
+    <PageLayout center={false} bordered={false}>
+      <UpdatePost
+        slug={post.slug}
+        banner={post.banner}
+        content={post.content}
+        lang={post.lang}
+        projectId={project}
+        excerpt={post.excerpt}
+        metadata={post.metadata.map((meta) => ({
+          key: meta.key,
+          type: meta.type.toLowerCase() as "string" | "number" | "boolean",
+          value: meta.value as string | number | boolean,
+          old: true
+        }))}
+        postId={post.id}
+        status={post.status}
+        title={post.title}
+      />
+    </PageLayout>
   );
 };
 
