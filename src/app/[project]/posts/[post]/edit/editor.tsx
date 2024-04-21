@@ -17,13 +17,14 @@ import { toast } from "sonner";
 import type { Lang as LANG } from "@prisma/client";
 import { type PostStatus } from "@prisma/client";
 import { PostSchema } from "@/schemas/post";
-import { updatePost } from "@/actions/post";
+import { updatePost, deletePost } from "@/actions/post";
 import { Alert } from "@/components/ui/alert";
 import usePreloadImage from "../../new/preload";
 import { LangSelector, type Lang } from "../../new/lang-selector";
 import { LANGUAGES } from "@/utils/lang";
 import { Checkbox } from "@/components/ui/checkbox";
 import { slugify } from "@/slugify";
+import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 type EditPostProps = {
   slug: string;
@@ -78,6 +79,9 @@ export const UpdatePost: Component<EditPostProps> = ({
 
   const [isPending, startTransition] = useTransition();
 
+  const [timer, setTimer] = useState<number | null>(null);
+  const [deletion, setDeletion] = useState<boolean>(false);
+
   const savePost = (): void => {
     if (isPending) return;
     const post = PostSchema.safeParse({ title, excerpt, content, status, metadata, banner: bannerUrl || null, postProjectID, lang: lang.value, rewriteSlug });
@@ -105,6 +109,50 @@ export const UpdatePost: Component<EditPostProps> = ({
       });
     } else {
       toast.error(post.error.errors[0].message);
+    }
+  };
+
+  const delPost = (): void => {
+    if (isPending) return;
+
+    startTransition(() => {
+      void deletePost(postID)
+        .then(() => {
+          toast.success("Post deleted successfully.");
+        })
+        .catch((error) => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+          toast.error(error.message);
+        });
+    });
+  };
+
+  const startDeletionTimer = (): void => {
+    if (timer) return;
+
+    setTimer(5);
+    const interval = setInterval(() => {
+      setTimer((prev) => {
+        if (prev === null) return null;
+
+        if (prev === 0) {
+          toast.error("You did not cancel the deletion in time, the post will be deleted.");
+          clearInterval(interval);
+          setTimer(null);
+          setDeletion(true);
+          delPost();
+          return null;
+        }
+
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  const stopDeletionTimer = (): void => {
+    if (timer) {
+      clearInterval(timer);
+      setTimer(null);
     }
   };
 
@@ -344,7 +392,41 @@ export const UpdatePost: Component<EditPostProps> = ({
                     </div>
                   </div>
                 </CardContent>
-                <CardFooter className="border-t p-4 justify-end">
+                <CardFooter className="border-t p-4 justify-between">
+                  <AlertDialog>
+                    <AlertDialogTrigger>
+                      <Button size="sm" variant="ghost" className="gap-1" disabled={isPending}>
+                        <Trash2 className="h-3.5 w-3.5" />
+                    Delete Post
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogTitle>Please confirm</AlertDialogTitle>
+                      <AlertDialogDescription>Are you sure you want to delete this post? This action cannot be undone.</AlertDialogDescription>
+
+                      <div className="flex gap-2 justify-end">
+                        {(timer !== null || deletion) ? (
+                          <Button
+                            variant="ghost"
+                            onClick={timer ? stopDeletionTimer : () => setTimer(null)}
+                            disabled={isPending || deletion}
+                          >
+                            {timer ? `Cancel before ${timer}s` : "Cancel"}
+                          </Button>
+                        ) : (
+                          <AlertDialogCancel disabled={isPending || deletion}>Cancel</AlertDialogCancel>
+                        )}
+                        <Button
+                          variant="destructive"
+                          onClick={startDeletionTimer}
+                          disabled={isPending || timer !== null || deletion}
+                        >
+                            Delete
+                        </Button>
+                      </div>
+                    </AlertDialogContent>
+                  </AlertDialog>
+
                   <Button size="sm" className="gap-1" onClick={savePost} disabled={
                     title === ""
                     || !title.match(/[\w\d]/)
