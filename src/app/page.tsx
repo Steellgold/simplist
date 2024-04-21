@@ -20,7 +20,7 @@ const NoProject: Component<NoProjectProps> = ({ isFirst = true }) => {
     <PageLayout title="Projects">
       <div className="flex flex-col items-center gap-1 text-center">
         <h3 className="text-2xl font-bold tracking-tight">
-      You have no projects
+          You have no projects
         </h3>
         <p className="text-sm text-muted-foreground">You can start creating as soon as you add a project.</p>
         <NewProjectDialog isFirst={isFirst}>
@@ -41,6 +41,7 @@ const Home = async(): Promise<ReactElement> => {
   });
 
   if (!projects) return <NoProject isFirst />;
+  if (projects.length === 0) return <NoProject isFirst />;
 
   return (
     <PageLayout title="Projects" center={false} actions={(
