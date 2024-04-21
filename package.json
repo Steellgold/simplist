@@ -101,6 +101,7 @@
     },
     "ignorePatterns": [
       "src/lib/components/ui/*",
+      "supabase/*",
       "node_modules/"
     ]
   }

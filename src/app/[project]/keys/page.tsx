@@ -14,6 +14,7 @@ import { getKeyLU } from "../../api/utils";
 import { Suspense } from "react";
 import { hideKey } from "@/utils";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 type PageProps = {
   params: {
@@ -44,7 +45,47 @@ const Keys: AsyncComponent<PageProps> = async({ params }) => {
           <NewKeyDialog projectId={project}>
             <Button>Generate API Key</Button>
           </NewKeyDialog>
-          <Button variant="secondary">See docs</Button>
+          <Dialog>
+            <DialogTrigger>
+              <Button variant="secondary">See docs</Button>
+            </DialogTrigger>
+            <DialogContent>
+              <div className="p-4">
+                <h2 className="text-2xl font-bold">API Documentation</h2>
+                <p className="text-lg text-muted-foreground">Here you can find the documentation for the API.</p>
+              </div>
+
+              <div className="p-4">
+                <h2 className="text-2xl font-bold">Get a post by his slug</h2>
+                <p className="text-lg text-muted-foreground">This endpoint allows you to get a post by his slug.</p>
+                <pre className="p-4 rounded-md text-sm">
+                  {"GET /api/:slug"}
+                </pre>
+
+                <p>
+                  This endpoint requires the following headers:
+                  <ul>
+                    <li><kbd>x-api-key</kbd>: Your API key</li>
+                  </ul>
+                </p>
+              </div>
+
+              <div className="p-4">
+                <h2 className="text-2xl font-bold">Get last post from a project</h2>
+                <p className="text-lg text-muted-foreground">This endpoint allows you to get the last post from a project.</p>
+                <pre className="p-4 rounded-md text-sm">
+                  {"GET /api/:projectId/last"}
+                </pre>
+
+                <p>
+                  This endpoint requires the following headers:
+                  <ul>
+                    <li><kbd>x-api-key</kbd>: Your API key</li>
+                  </ul>
+                </p>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       )}
     >

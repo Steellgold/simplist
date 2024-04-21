@@ -55,7 +55,7 @@ const Home = async(): Promise<ReactElement> => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
         {projects.map((project) => (
           <Card key={project.id} className="w-full border-2 hover:cursor-pointer hover:border-primary/40 transition-colors">
-            <Link href={`/${project.id}`}>
+            <Link href={`/${project.id}/posts`}>
               <CardHeader>
                 <CardTitle>{project.name}</CardTitle>
                 <CardDescription>Created on {dayJS(project.createdAt).format("MMMM DD, YYYY")}</CardDescription>

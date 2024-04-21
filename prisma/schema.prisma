@@ -257,9 +257,9 @@ model PostVariant {
 }
 
 enum MetaType {
-  STRING
-  NUMBER
-  BOOLEAN
+  string
+  number
+  boolean
 }
 
 model Meta {
@@ -267,7 +267,7 @@ model Meta {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
   key       String
-  type      MetaType @default(STRING)
+  type      MetaType @default(string)
   value     String?
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    String

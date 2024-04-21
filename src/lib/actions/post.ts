@@ -52,7 +52,7 @@ export const createPost = async(values: z.infer<typeof PostSchema>): Promise<Pos
     const metadataData = metadata.map((meta: Meta) => ({
       ...meta,
       postId,
-      type: meta.type == "STRING" ? "STRING" : meta.type == "BOOLEAN" ? "BOOLEAN" : "NUMBER"
+      type: meta.type == "string" ? "string" : meta.type == "boolean" ? "BOOLEAN" : "NUMBER"
     }));
     // @ts-ignore
     await db.meta.createMany({ data: metadataData });
@@ -113,7 +113,7 @@ export const updatePost = async(id: string, values: z.infer<typeof PostSchema>):
     const metadataData = metadataToAdd.map((meta: Meta) => ({
       ...meta,
       postId: id,
-      type: meta.type == "STRING" ? "STRING" : meta.type == "BOOLEAN" ? "BOOLEAN" : "NUMBER"
+      type: meta.type == "string" ? "string" : meta.type == "boolean" ? "boolean" : "number"
     }));
     // @ts-ignore
     await db.meta.createMany({ data: metadataData });

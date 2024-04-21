@@ -273,11 +273,7 @@ export const UpdatePost: Component<EditPostProps> = ({
                               id={`key-${index}`}
                               type="text"
                               value={key}
-                              placeholder={
-                                type === "string" ? "some-key"
-                                  : type === "number" ? "pigCount"
-                                    : "isPigOrientedPost"
-                              }
+                              placeholder={"some-key"}
                               disabled={old}
                               onChange={(e) => {
                                 const newMetadata = metadata.slice();
@@ -288,7 +284,7 @@ export const UpdatePost: Component<EditPostProps> = ({
 
                           <TableCell>
                             <Label htmlFor={`type-${index}`} className="sr-only">Type</Label>
-                            <Select defaultValue={type} onValueChange={(value) => {
+                            <Select defaultValue={type.toLowerCase()} onValueChange={(value) => {
                               const newMetadata = metadata.slice();
                               newMetadata[index].type = (value as "string");
                               setMetadata(newMetadata);
@@ -308,7 +304,7 @@ export const UpdatePost: Component<EditPostProps> = ({
                             <TableCell>
                               <Label htmlFor={`value-${index}`} className="sr-only">Value</Label>
                               <Select defaultValue={
-                                typeof value === "boolean" ? (value ? "true" : "false") : "true"
+                                value === "boolean" ? (value ? "true" : "false") : "true"
                               } onValueChange={(value) => {
                                 const newMetadata = metadata.slice();
                                 newMetadata[index].value = value === "true" ? true : false;
@@ -330,7 +326,8 @@ export const UpdatePost: Component<EditPostProps> = ({
                                 id={`value-${index}`}
                                 type={type === "number" ? "number" : "text"}
                                 placeholder={type === "number" ? "0" : "Value"}
-                                value={(value as string)}
+                                // @ts-ignore
+                                value={type === "string" ? value.toString() : value}
                                 disabled={old}
                                 onChange={(e) => {
                                   const newMetadata = metadata.slice();
