@@ -39,7 +39,11 @@ export const GET = async({ headers, url }: NextRequest): Promise<NextResponse> =
 
   const data = await db.project.findUnique({
     where: { id: projectId },
-    include: { posts: { orderBy: { createdAt: "desc" }, include: { metadata: true } } }
+    include: { posts: { orderBy: { createdAt: "desc" }, include: { metadata: {
+      select: {
+        id: false, key: true, value: true, createdAt: false, updatedAt: false, post: false, postId: false, type: true
+      }
+    } } } }
   });
 
   if (!data) {
