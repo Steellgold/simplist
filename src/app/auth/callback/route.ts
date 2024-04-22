@@ -15,8 +15,6 @@ export const GET = async({ url }: NextRequest): Promise<NextResponse> => {
 
     const user = (await supabase.auth.getUser()).data.user;
 
-    console.log("User:", user?.user_metadata);
-
     let firstName = "";
     let lastName = "";
 
