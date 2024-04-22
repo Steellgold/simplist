@@ -39,7 +39,7 @@ export const GET = async({ headers, url }: NextRequest): Promise<NextResponse> =
 
   const data = await db.project.findUnique({
     where: { id: projectId },
-    include: { posts: { orderBy: { createdAt: "desc" } } }
+    include: { posts: { orderBy: { createdAt: "desc" }, include: { metadata: true } } }
   });
 
   if (!data) {
@@ -56,7 +56,6 @@ export const GET = async({ headers, url }: NextRequest): Promise<NextResponse> =
     return NextResponse.json({ error: "No Posts Found" }, { status: 404 });
   }
 
-  // get the last post
   const post = data.posts[0];
   void logCall({
     key: apiKey, projectId, slug: post.slug, postId: post.id, ip: ipAddress, method: "GET", status: 200
