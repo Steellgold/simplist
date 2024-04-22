@@ -15,8 +15,24 @@ export const GET = async({ url }: NextRequest): Promise<NextResponse> => {
 
     const user = (await supabase.auth.getUser()).data.user;
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    const [firstName, lastName] = user?.user_metadata.name.split(" ") || ["", ""];
+    console.log("User:", user?.user_metadata);
+
+    let firstName = "";
+    let lastName = "";
+
+    if (user?.user_metadata.name) {
+      // eslint-disable-next-line max-len
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      const [first, last] = user?.user_metadata.name.split(" ") || ["", ""];
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      firstName = first;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      lastName = last;
+    } else {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      firstName = user?.user_metadata?.user_name || "";
+      lastName = "";
+    }
 
     if (user) {
       const userExists = await db.user.findUnique({
