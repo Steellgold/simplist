@@ -3,3 +3,5 @@
 A project for the Supabase OSS Hackaton 2024
 
 Simplist is a simple, fast posting API. Post your content in the simplest way possible, and just get your content back with an API
+
+[Demo vidéo](https://youtu.be/DssHBnrg4jk?si=0eatVLv1ZMfu2uGH)
