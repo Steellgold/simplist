@@ -59,7 +59,6 @@ export const metadata: Metadata = {
 const Layout: Component<PropsWithChildren> = ({ children }) => {
   return (
     <html lang="en">
-{/*        */}
       <script defer src="https://supalytics.co/track.js" data-website-id="b6585d0c-18d2-4762-af94-019ecf4cb4d4"></script>
       
       <body className={cn(nunito.className, "bg-white dark:bg-[#131313]")}>
