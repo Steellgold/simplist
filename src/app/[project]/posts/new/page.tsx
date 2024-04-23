@@ -52,7 +52,7 @@ const Post: Component<PageProps> = ({ params }) => {
   const [status, setStatus] = useState<PostStatus>("DRAFT");
   const [metadata, setMetadata] = useState<{
     key: string;
-    type: "string" | "number" | "boolean";
+    type: "string" | "number" | "boolean" | "date" | "time" | "datetime";
     value: string | number | boolean;
   }[]>([]);
 
@@ -337,6 +337,9 @@ const Post: Component<PageProps> = ({ params }) => {
                                 <SelectItem value="string">String</SelectItem>
                                 <SelectItem value="number">Number</SelectItem>
                                 <SelectItem value="boolean">Boolean</SelectItem>
+                                <SelectItem value="date">Date</SelectItem>
+                                <SelectItem value="time">Time</SelectItem>
+                                <SelectItem value="datetime">Date and Time</SelectItem>
                               </SelectContent>
                             </Select>
                           </TableCell>
@@ -359,6 +362,45 @@ const Post: Component<PageProps> = ({ params }) => {
                                   <SelectItem value="false">False</SelectItem>
                                 </SelectContent>
                               </Select>
+                            </TableCell>
+                          ) : type === "date" ? (
+                            <TableCell>
+                              <Label htmlFor={`value-${index}`} className="sr-only">Value</Label>
+                              <Input
+                                id={`value-${index}`}
+                                type="date"
+                                value={(value as string)}
+                                onChange={(e) => {
+                                  const newMetadata = metadata.slice();
+                                  newMetadata[index].value = e.target.value;
+                                  setMetadata(newMetadata);
+                                }} />
+                            </TableCell>
+                          ) : type === "time" ? (
+                            <TableCell>
+                              <Label htmlFor={`value-${index}`} className="sr-only">Value</Label>
+                              <Input
+                                id={`value-${index}`}
+                                type="time"
+                                value={(value as string)}
+                                onChange={(e) => {
+                                  const newMetadata = metadata.slice();
+                                  newMetadata[index].value = e.target.value;
+                                  setMetadata(newMetadata);
+                                }} />
+                            </TableCell>
+                          ) : type === "datetime" ? (
+                            <TableCell>
+                              <Label htmlFor={`value-${index}`} className="sr-only">Value</Label>
+                              <Input
+                                id={`value-${index}`}
+                                type="datetime-local"
+                                value={(value as string)}
+                                onChange={(e) => {
+                                  const newMetadata = metadata.slice();
+                                  newMetadata[index].value = e.target.value;
+                                  setMetadata(newMetadata);
+                                }} />
                             </TableCell>
                           ) : (
                             <TableCell>

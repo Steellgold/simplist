@@ -260,6 +260,9 @@ enum MetaType {
   string
   number
   boolean
+  date
+  time
+  datetime
 }
 
 model Meta {
