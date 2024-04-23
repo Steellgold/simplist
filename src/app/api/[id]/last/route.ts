@@ -1,7 +1,6 @@
 import { ratelimit, redis } from "@/utils/db/upstash";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { logCall } from "../../utils";
 import { db } from "@/utils/db/prisma";
 import type { KeyData } from "@/types";
 
@@ -24,16 +23,10 @@ export const GET = async({ headers, url }: NextRequest): Promise<NextResponse> =
   if (!keyData) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   if (keyData.status === "INACTIVE") {
-    void logCall({
-      key: apiKey, projectId, slug: "", postId: "", ip: ipAddress, method: "GET", status: 401
-    });
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   if (keyData.projectId !== projectId) {
-    void logCall({
-      key: apiKey, projectId, slug: "", postId: "", ip: ipAddress, method: "GET", status: 401
-    });
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -47,23 +40,13 @@ export const GET = async({ headers, url }: NextRequest): Promise<NextResponse> =
   });
 
   if (!data) {
-    void logCall({
-      key: apiKey, projectId, slug: "", postId: "", ip: ipAddress, method: "GET", status: 404
-    });
     return NextResponse.json({ error: "Project Not Found" }, { status: 404 });
   }
 
   if (!data.posts.length) {
-    void logCall({
-      key: apiKey, projectId, slug: "", postId: "", ip: ipAddress, method: "GET", status: 404
-    });
     return NextResponse.json({ error: "No Posts Found" }, { status: 404 });
   }
 
   const post = data.posts[0];
-  void logCall({
-    key: apiKey, projectId, slug: post.slug, postId: post.id, ip: ipAddress, method: "GET", status: 200
-  });
-
   return NextResponse.json(post);
 };

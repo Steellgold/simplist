@@ -2,7 +2,6 @@ import { ratelimit, redis } from "@/utils/db/upstash";
 import type { Meta } from "@prisma/client";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { logCall } from "../utils";
 import { dayJS } from "@/dayjs/day-js";
 import type { KeyData } from "@/types";
 
@@ -41,43 +40,26 @@ export const GET = async({ headers, url }: NextRequest): Promise<NextResponse> =
   const apiKey = headers.get("x-api-key");
   if (!apiKey) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   if (!slug) {
-    logCall({ key: apiKey, projectId: "", slug: "", postId: "", ip: ipAddress, method: "GET", status: 404 });
     return NextResponse.json({ error: "Not Found" }, { status: 404 });
   }
 
   const keyData = await redis.get(`api_key:${apiKey}`) as KeyData;
   if (!keyData) {
-    logCall({ key: apiKey, projectId: "", slug: "", postId: "", ip: ipAddress, method: "GET", status: 401 });
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   if (keyData.status === "INACTIVE") {
-    logCall({ key: apiKey, projectId: "", slug: "", postId: "", ip: ipAddress, method: "GET", status: 401 });
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const postData = await redis.get(`post:${slug}`) as PostData;
   if (!postData) {
-    logCall({
-      key: apiKey, projectId: keyData.projectId, slug, postId: "", ip: ipAddress, method: "GET", status: 404 });
     return NextResponse.json({ error: "Not Found" }, { status: 404 });
   }
 
   if (postData.projectId !== keyData.projectId) {
-    logCall({
-      key: apiKey, projectId: keyData.projectId, slug, postId: "", ip: ipAddress, method: "GET", status: 401 });
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-
-  void logCall({
-    key: apiKey,
-    projectId: keyData.projectId,
-    slug,
-    postId: postData.id,
-    ip: ipAddress,
-    method: "GET",
-    status: 200
-  });
 
   if (!postData.calls) postData.calls = {};
   if (postData.calls && postData.calls[dayJS().format("YYYY-MM-DD")]) {
