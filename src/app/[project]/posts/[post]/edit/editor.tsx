@@ -194,7 +194,7 @@ export const UpdatePost: Component<EditPostProps> = ({
 
                             {rewriteSlug && (
                               <Label htmlFor="rewriteSlug" className="text-muted-foreground text-sm -mt-2">
-                                New slug: <code className="p-1">{slugify(title, false)}</code>
+                                New slug: <code className="p-1">{slugify(title)}</code>
                               </Label>
                             )}
                           </div>
