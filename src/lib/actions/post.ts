@@ -9,8 +9,8 @@ import { type Meta, type Post } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { z } from "zod";
-import type { PostData } from "../../app/api/[id]/route";
 import { slugify } from "@/slugify";
+import type { PostData } from "@/types";
 
 export const createPost = async(values: z.infer<typeof PostSchema>): Promise<Post | {
   title: string;
@@ -25,7 +25,6 @@ export const createPost = async(values: z.infer<typeof PostSchema>): Promise<Pos
   if (!validatedFields.success) return { title: "Invalid Fields", message: "Invalid fields provided!" };
 
   const { content, excerpt, title, status, banner, metadata, projectId, lang } = validatedFields.data;
-  const slug = title + "-" + Math.random().toString(36).substring(7);
 
   if (!projectId) return { title: "Invalid Data", message: "Invalid project ID provided. Refresh the page and try again." };
   const project = await db.project.findFirst({ where: { id: projectId } });
@@ -41,7 +40,7 @@ export const createPost = async(values: z.infer<typeof PostSchema>): Promise<Pos
       project: { connect: { id: projectId } },
       author: { connect: { id: user.id } },
       lang: lang.toUpperCase() as Lang,
-      slug: slugify(slug)
+      slug: slugify(title)
     }
   });
 
@@ -58,7 +57,7 @@ export const createPost = async(values: z.infer<typeof PostSchema>): Promise<Pos
     await db.meta.createMany({ data: metadataData });
   }
 
-  await redis.set(`post:${data.slug}`, {
+  await redis.set(`project:${projectId}:post:${slugify(title)}`, {
     ...data,
     metadata: metadata || []
   });
@@ -117,15 +116,22 @@ export const updatePost = async(id: string, values: z.infer<typeof PostSchema>):
     await db.meta.createMany({ data: metadataData });
   }
 
-  const calls = await redis.get(`post:${post.slug}`) as PostData;
+  let calls: PostData = await redis.get(`project:${post.projectId}:post:${post.slug}`) as PostData;
+  if (!calls) calls = await redis.get(`post:${post.slug}`) as PostData;
 
-  await redis.set(`post:${post.slug}`, {
+  console.log(calls);
+
+  await redis.set(`project:${post.projectId}:post:${slugify(title)}`, {
     ...data,
     metadata: metadata || [],
-    calls: calls.calls
+    calls: (calls && calls.calls) || {}
   });
 
-  if (rewriteSlug) await redis.rename(`post:${post.slug}`, `post:${slugify(title)}`);
+  if (rewriteSlug) {
+    const dataFound = await redis.get(`project:${post.projectId}:post:${post.slug}`);
+    if (dataFound) await redis.rename(`project:${post.projectId}:post:${post.slug}`, `project:${post.projectId}:post:${slugify(title)}`);
+    else await redis.rename(`post:${post.slug}`, `post:${slugify(title)}`);
+  }
 
   revalidatePath(`/${post.projectId}/posts`);
   throw redirect(`/${post.projectId}/posts`);
@@ -136,7 +142,10 @@ export const deletePost = async(id: string): Promise<void> => {
   if (!post) return;
 
   await db.post.delete({ where: { id } });
-  await redis.del(`post:${post.slug}`);
+
+  const redisPost = await redis.get(`project:${post.projectId}:post:${post.slug}`);
+  if (redisPost) await redis.del(`project:${post.projectId}:post:${post.slug}`);
+  else await redis.del(`post:${post.slug}`);
 
   revalidatePath(`/${post.projectId}/posts`);
   throw redirect(`/${post.projectId}/posts`);
