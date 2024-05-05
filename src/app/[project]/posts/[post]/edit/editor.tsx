@@ -202,6 +202,7 @@ export const UpdatePost: Component<EditPostProps> = ({
                           <Checkbox
                             id="rewriteSlug"
                             checked={rewriteSlug}
+                            disabled={isPending || postSlug === slugify(title)}
                             onClick={() => setRewriteSlug(!rewriteSlug)}
                           />
                         </div>
