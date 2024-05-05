@@ -84,12 +84,10 @@ export const updatePost = async(id: string, values: z.infer<typeof PostSchema>):
   const post = await db.post.findFirst({ where: { id } });
   if (!post) return { title: "Invalid Data", message: "Invalid post ID provided. Refresh the page and try again." };
 
-  const potentialNewSlug = rewriteSlug ? slugify(title) : post.slug;
-
   const data = await db.post.update({
     where: { id },
     data: {
-      slug: potentialNewSlug,
+      slug: slugify(title),
       content,
       excerpt,
       status,
@@ -127,7 +125,7 @@ export const updatePost = async(id: string, values: z.infer<typeof PostSchema>):
     calls: calls.calls
   });
 
-  if (rewriteSlug) await redis.rename(`post:${post.slug}`, `post:${potentialNewSlug}`);
+  if (rewriteSlug) await redis.rename(`post:${post.slug}`, `post:${slugify(title)}`);
 
   revalidatePath(`/${post.projectId}/posts`);
   throw redirect(`/${post.projectId}/posts`);
