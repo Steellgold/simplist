@@ -11,12 +11,12 @@ import { Badge } from "@/components/ui/badge";
 import { dayJS } from "@/dayjs/day-js";
 import { Chart } from "../chart";
 import { redis } from "@/utils/db/upstash";
-import type { PostData } from "../../api/[id]/route";
 import { Suspense } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { MobileAlert } from "./alert.mobile";
 import { ButtonCopySlug } from "./button.slug";
+import type { PostData } from "@/types";
 
 type PageProps = {
   params: {
