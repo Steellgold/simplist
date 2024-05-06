@@ -9,8 +9,6 @@ import { SidebarHeader } from "@/components/sidebar.header";
 import { SidebarLinks } from "@/components/links";
 import { Appbar } from "@/components/appbar";
 import { WelcomeDialog } from "@/components/welcome.dialog";
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const nunito = Nunito({ subsets: ["latin"] });
 
@@ -28,31 +26,7 @@ export const metadata: Metadata = {
     url: defaultUrl,
     siteName: "Simplist",
     title: "Simplist - The simplest way to integrate a blog into your website",
-    description: "Simplist is a simple, fast. Post your content in the simplest way possible, and just get your content back with an API.",
-    images: [
-      {
-        url: new URL("/_static/opengraph-image.png", defaultUrl).href,
-        width: 1200,
-        height: 630,
-        alt: "Simplist - The simplest way to integrate a blog into your website"
-      }
-    ]
-  },
-  twitter: {
-    site: "@simplistmt",
-    card: "summary_large_image",
-    creator: "@simplistmt",
-    creatorId: "1779571985149820928",
-    description: "Simplist is a simple, fast. Post your content in the simplest way possible, and just get your content back with an API.",
-    images: [
-      {
-        url: new URL("/_static/opengraph-image.png", defaultUrl).href,
-        width: 1200,
-        height: 630,
-        alt: "Simplist - The simplest way to integrate a blog into your website"
-      }
-    ],
-    title: "Simplist - The simplest way to integrate a blog into your website"
+    description: "Simplist is a simple, fast. Post your content in the simplest way possible, and just get your content back with an API."
   }
 };
 
@@ -62,8 +36,6 @@ const Layout: Component<PropsWithChildren> = ({ children }) => {
       <script defer src="https://supalytics.co/track.js" data-website-id="b6585d0c-18d2-4762-af94-019ecf4cb4d4"></script>
 
       <body className={cn(nunito.className, "bg-white dark:bg-[#131313]")}>
-        <Analytics />
-        <SpeedInsights />
         <Providers>
           <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
             <div className="hidden border-r bg-muted/40 md:block">
