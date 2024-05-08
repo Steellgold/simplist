@@ -62,7 +62,7 @@ export const GET = async({ headers, nextUrl }: NextRequest, { params }: Request)
   }
 
   let local: IPAPIResponse | undefined = undefined;
-  const ipAddr = headers.get("X-User-IP");
+  const ipAddr = headers.get("x-user-ip");
 
   if (ipAddr) {
     if (ipAddr.match(/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/)) {
@@ -79,7 +79,7 @@ export const GET = async({ headers, nextUrl }: NextRequest, { params }: Request)
       Authorization: `Bearer ${env.TINYBIRD_BEARER_TOKEN}`
     },
     body: JSON.stringify({
-      projectId: "events_example",
+      projectId: activeProject.id,
       postId,
       createdAt: new Date().toISOString(),
       ip: local?.ip || ipAddr,
