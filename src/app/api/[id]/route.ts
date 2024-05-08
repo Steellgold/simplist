@@ -13,7 +13,7 @@ type Request = {
   };
 };
 
-export const GET = async({ headers, url, nextUrl }: NextRequest, { params }: Request): Promise<NextResponse> => {
+export const GET = async({ headers, nextUrl }: NextRequest, { params }: Request): Promise<NextResponse> => {
   const postId = params.id;
   if (!postId) return NextResponse.json({ message: "Not Found" }, { status: 404 });
 
