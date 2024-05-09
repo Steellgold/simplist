@@ -6,6 +6,7 @@ import type { Variant } from "@prisma/client";
 import { Lang, type APIKey, type Post, type Project } from "@prisma/client";
 import type { IPAPIResponse } from "../ipapi.type";
 import { env } from "@/env.mjs";
+import { dayJS } from "@/dayjs/day-js";
 
 type Request = {
   params: {
@@ -82,6 +83,7 @@ export const GET = async({ headers, nextUrl }: NextRequest, { params }: Request)
       projectId: activeProject.id,
       postId,
       createdAt: new Date().toISOString(),
+      createdAtSimplified: dayJS().format("YYYY-MM-DD"),
       ip: local?.ip || ipAddr,
       city: local?.city || "Unknown",
       region: local?.region || "Unknown",
