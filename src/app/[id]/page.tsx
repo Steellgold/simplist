@@ -2,6 +2,9 @@
 
 import { useEffect, type ReactElement } from "react";
 import { useProjectStore } from "@/store/project.store";
+import { CardHeader } from "@/components/ui/card";
+import { CustomCard } from "@/components/ui/custom-card";
+import { ProjectMetrics } from "./lib/metrics-daily";
 
 type PageParams = {
   params: {
@@ -10,7 +13,7 @@ type PageParams = {
 };
 
 const ProjectHome = ({ params }: PageParams): ReactElement => {
-  const { setActive, projects, active } = useProjectStore();
+  const { setActive } = useProjectStore();
 
   const { id } = params;
 
@@ -21,13 +24,31 @@ const ProjectHome = ({ params }: PageParams): ReactElement => {
 
   return (
     <div className="p-3">
-      <p>
-        Here are your project.
-      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+        <CustomCard noHover>
+          <CardHeader className="flex">
+            <div className="flex space-x-2">
+              <div>
+                <p>Most requested post</p>
+                <p className="text-sm text-muted-foreground">Post title</p>
+              </div>
+            </div>
+          </CardHeader>
+        </CustomCard>
 
-      <pre>{JSON.stringify(active, null, 2)}</pre>
-      <div className="my-20"></div>
-      <pre>{JSON.stringify(projects, null, 2)}</pre>
+        <CustomCard noHover>
+          <CardHeader className="flex">
+            <div className="flex space-x-2">
+              <div>
+                <p>Most requested post</p>
+                <p className="text-sm text-muted-foreground">Post title</p>
+              </div>
+            </div>
+          </CardHeader>
+        </CustomCard>
+
+        <ProjectMetrics />
+      </div>
     </div>
   );
 };
