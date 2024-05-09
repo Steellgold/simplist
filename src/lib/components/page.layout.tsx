@@ -1,69 +1,69 @@
+"use client";
+
 import type { PropsWithChildren, ReactElement } from "react";
-import type { AsyncComponent } from "./utils/component";
-import { createClient } from "@/utils/supabase/server";
-import { cn } from "@/utils";
-import { db } from "@/utils/db/prisma";
-import { AccessDenied, NotFound, NotLogged } from "./errors";
+import { useEffect, useState } from "react";
+import type { Component } from "./utils/component";
+import { z } from "zod";
+import { Loader2 } from "lucide-react";
 
 type PageLayoutProps = {
-  title?: string;
-  description?: string;
-  center?: boolean;
-  actions?: ReactElement;
-  bordered?: boolean;
   projectId?: string;
-  error?: boolean;
 } & PropsWithChildren;
 
-const getLayout = ({ title, description, children, center = true, actions, bordered = true, error }: PageLayoutProps): ReactElement => {
-  return (
-    <main className={cn("flex flex-1 flex-col", {
-      "gap-4 p-4 lg:gap-6 lg:p-6": !error && bordered,
-      "p-4": (!error && !bordered) || error
-    })}>
-      {!error && (
-        <div className={"flex-col md:flex-row md:justify-between flex md:items-center gap-3 md:gap-0"}>
-          <div className={cn({
-            "flex items-center gap-1": !description,
-            "flex flex-col": description
-          }, "justify-between")}>
-            <h1 className="text-lg font-semibold md:text-2xl">{title}</h1>
-            {description && <p className="text-muted-foreground text-base">{description}</p>}
-          </div>
+export const PageLayout: Component<PageLayoutProps> = ({ projectId, children }): ReactElement => {
+  const [isLogged, setIsLogged] = useState(true);
+  const [isAllowed, setIsAllowed] = useState(true);
+  const [loading, setLoading] = useState(true);
 
-          {actions && actions}
-        </div>
-      )}
-      <div className={cn({
-        "h-full rounded-lg shadow-sm": !center,
-        "flex flex-1 items-center justify-center rounded-lg shadow-sm": center,
-        "border border-dashed p-3": bordered
-      })}>
-        {children}
+  useEffect(() => {
+    setLoading(true);
+
+    const fetchIsLogged = async(): Promise<void> => {
+      const response = await fetch("/auth/is-logged");
+      const schema = z.object({ isLogged: z.boolean() }).safeParse(await response.json());
+
+      if (!schema.success) {
+        console.error(schema.error);
+        setIsLogged(false);
+        return;
+      }
+
+      setIsLogged(schema.data.isLogged);
+      if (!projectId) setLoading(false);
+    };
+
+    const fetchIsAllowed = async(): Promise<void> => {
+      const response = await fetch(`/auth/is-allowed?projectId=${projectId}`);
+      const schema = z.object({ isAllowed: z.boolean() }).safeParse(await response.json());
+
+      if (!schema.success) {
+        console.error(schema.error);
+        setIsAllowed(false);
+        return;
+      }
+
+      setIsAllowed(schema.data.isAllowed);
+      setLoading(false);
+    };
+
+    void fetchIsLogged();
+    if (projectId) void fetchIsAllowed();
+  }, [projectId]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader2 size={48} className="text-primary-500 animate-spin" />
       </div>
-    </main>
+    );
+  }
+
+  if (!isLogged) return <div>Not logged in</div>;
+  if (!isAllowed) return <div>This page or project does not exist</div>;
+
+  return (
+    <div className="p-3">
+      {children}
+    </div>
   );
-};
-
-export const PageLayout: AsyncComponent<PageLayoutProps>
-= async({ title, description, children, center = true, actions, bordered = true, projectId, error }) => {
-  const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (projectId) {
-    const project = await db.project.findFirst({ where: { id: projectId } });
-    if (!project) {
-      return getLayout({ title: "Not found", children: <NotFound />, center: true, description, actions, bordered, error: true });
-    }
-
-    if (project.userId !== user?.id) {
-      return getLayout({ title: "Access denied", children: <AccessDenied />, center: true, description, actions, bordered, error: true });
-    }
-  }
-
-  if (!user) {
-    return getLayout({ title, children: <NotLogged />, center: true, description, actions, bordered, error: true || error });
-  }
-
-  return getLayout({ title, children, center, description, actions, bordered, error });
 };
