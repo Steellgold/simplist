@@ -5,6 +5,7 @@ import { useProjectStore } from "@/store/project.store";
 import { CardHeader } from "@/components/ui/card";
 import { CustomCard } from "@/components/ui/custom-card";
 import { ProjectMetrics } from "./lib/metrics-daily";
+import { PageLayout } from "@/components/page.layout";
 
 type PageParams = {
   params: {
@@ -23,7 +24,7 @@ const ProjectHome = ({ params }: PageParams): ReactElement => {
   }, [id, setActive]);
 
   return (
-    <div className="p-3">
+    <PageLayout projectId={id}>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
         <CustomCard noHover>
           <CardHeader className="flex">
@@ -49,7 +50,7 @@ const ProjectHome = ({ params }: PageParams): ReactElement => {
 
         <ProjectMetrics />
       </div>
-    </div>
+    </PageLayout>
   );
 };
 

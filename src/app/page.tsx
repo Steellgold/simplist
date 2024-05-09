@@ -24,6 +24,7 @@ type Project = {
 };
 
 const Home = (): ReactElement => {
+  const [isLogged, setIsLogged] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [projects, setProjects] = useState<Project[]>([]);
   const { setProjects: setStoreProjects } = useProjectStore();
@@ -32,6 +33,27 @@ const Home = (): ReactElement => {
     setIsLoading(true);
 
     const fetchProjects = async(): Promise<void> => {
+      const authResponse = await fetch("/auth/is-logged");
+      const authSchema = z.object({
+        isLogged: z.boolean()
+      }).safeParse(await authResponse.json());
+
+      if (!authSchema.success) {
+        console.error(authSchema.error);
+        toast.error("Failed to check if you are logged in");
+        setIsLoading(false);
+        setIsLogged(false);
+        return;
+      }
+
+      if (!authSchema.data.isLogged) {
+        setIsLoading(false);
+        setIsLogged(false);
+        return;
+      }
+
+      setIsLogged(true);
+
       const response = await fetch("/api/user/projects");
 
       const schema = z.object({
@@ -58,6 +80,8 @@ const Home = (): ReactElement => {
 
     void fetchProjects();
   }, [setProjects, setStoreProjects]);
+
+  if (!isLogged) return <>You are not logged in</>;
 
   if (isLoading) {
     return (
