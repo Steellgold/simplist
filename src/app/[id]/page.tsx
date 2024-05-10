@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, type ReactElement } from "react";
-import { useProjectStore } from "@/store/project.store";
+import type { ReactElement } from "react";
 import { CardHeader } from "@/components/ui/card";
 import { CustomCard } from "@/components/ui/custom-card";
 import { ProjectMetrics } from "./lib/metrics-daily";
@@ -14,14 +13,7 @@ type PageParams = {
 };
 
 const ProjectHome = ({ params }: PageParams): ReactElement => {
-  const { setActive } = useProjectStore();
-
   const { id } = params;
-
-  useEffect(() => {
-    setActive(id);
-    console.log(id);
-  }, [id, setActive]);
 
   return (
     <PageLayout projectId={id}>
