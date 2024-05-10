@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import type { Component } from "./utils/component";
 import { z } from "zod";
 import { Loader2 } from "lucide-react";
+import { useProjectStore } from "@/store/project.store";
 
 type PageLayoutProps = {
   projectId?: string;
@@ -14,9 +15,13 @@ export const PageLayout: Component<PageLayoutProps> = ({ projectId, children }):
   const [isLogged, setIsLogged] = useState(true);
   const [isAllowed, setIsAllowed] = useState(true);
   const [loading, setLoading] = useState(true);
+  const { active, setActive } = useProjectStore();
 
   useEffect(() => {
     setLoading(true);
+    if (projectId) {
+      if (active?.id !== projectId) setActive(projectId);
+    }
 
     const fetchIsLogged = async(): Promise<void> => {
       const response = await fetch("/auth/is-logged");
