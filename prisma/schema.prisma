@@ -83,7 +83,7 @@ model Post {
   content   String
   status    PostStatus
   banner    String?
-  author    User       @relation(fields: [authorId], references: [id])
+  author    User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId  String
   project   Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
   projectId String
@@ -115,7 +115,7 @@ model Comment {
 
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    String
-  project   Project? @relation(fields: [projectId], references: [id])
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
   projectId String?
 
   name    String
@@ -159,7 +159,7 @@ model APIKey {
   note       String?
   key        String    @unique
   status     KeyStatus
-  author     User      @relation(fields: [authorId], references: [id])
+  author     User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId   String
   project    Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
   projectId  String
