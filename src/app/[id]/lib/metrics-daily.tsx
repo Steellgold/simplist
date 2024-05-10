@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 "use client";
 
 import { CardHeader } from "@/components/ui/card";
