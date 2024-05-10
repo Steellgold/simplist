@@ -73,6 +73,8 @@ export const GET = async({ headers, nextUrl }: NextRequest, { params }: Request)
     }
   }
 
+  // const randomDate = dayJS().hour(Math.floor(Math.random() * 24)).minute(Math.floor(Math.random() * 60)).second(Math.floor(Math.random() * 60));
+
   await fetch("https://api.tinybird.co/v0/events?name=posts_metrics", {
     method: "POST",
     headers: {
@@ -82,8 +84,9 @@ export const GET = async({ headers, nextUrl }: NextRequest, { params }: Request)
     body: JSON.stringify({
       projectId: activeProject.id,
       postId,
-      createdAt: new Date().toISOString(),
-      createdAtSimplified: dayJS().format("YYYY-MM-DD"),
+      dateTime: dayJS().format("YYYY-MM-DD HH:MM:ss"),
+      date: dayJS().format("YYYY-MM-DD"),
+      isoDate: dayJS().toISOString(),
       ip: local?.ip || ipAddr,
       city: local?.city || "Unknown",
       region: local?.region || "Unknown",
