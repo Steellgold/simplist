@@ -9,7 +9,7 @@ type DataStore = {
 export const usePostsViewStore = create(
   persist<DataStore>(
     (set) => ({
-      view: "list",
+      view: "grid",
       toggle: () => set((state) => ({ view: state.view === "grid" ? "list" : "grid" }))
     }),
     { name: "posts-view-store" },
