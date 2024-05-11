@@ -4,6 +4,7 @@ import { citiesProcessor } from "@/utils/analytics";
 import { CustomCard } from "@/components/ui/custom-card";
 import { CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
+import Link from "next/link";
 
 export const CitiesAnalyticsCard = ({ data }: { data: Cities["data"] }): ReactElement => {
 
@@ -28,7 +29,9 @@ export const CitiesAnalyticsCard = ({ data }: { data: Cities["data"] }): ReactEl
                 height={20}
                 alt={city.city}
               />
-              <p>{city.city}</p>
+              <Link href={`https://www.google.com/search?q=${city.city}`} passHref className="hover:underline" target="_blank">
+                {city.city}
+              </Link>
             </div>
             <p>{city.count}</p>
           </div>

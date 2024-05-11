@@ -4,6 +4,7 @@ import { regionsProcessor } from "@/utils/analytics";
 import { CustomCard } from "@/components/ui/custom-card";
 import { CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
+import Link from "next/link";
 
 export const RegionsAnalyticsCard = ({ data }: { data: Regions["data"] }): ReactElement => {
 
@@ -29,7 +30,9 @@ export const RegionsAnalyticsCard = ({ data }: { data: Regions["data"] }): React
                 height={20}
                 alt={region.region}
               />
-              <p>{region.region}</p>
+              <Link href={`https://www.google.com/search?q=${region.region}`} passHref className="hover:underline" target="_blank">
+                {region.region}
+              </Link>
             </div>
             <p>{region.count}</p>
           </div>
