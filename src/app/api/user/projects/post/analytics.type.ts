@@ -38,11 +38,9 @@ export const CountriesSchema = z.object({
     year: z.number(),
     month: z.number(),
     week_start: z.string(),
-    country_name: z.string(),
     isoDate: z.string(),
     country_code: z.string(),
-    country: z.string(),
-    country_code_iso3: z.string()
+    country: z.string()
   })),
   rows: z.number(),
   statistics: z.object({
