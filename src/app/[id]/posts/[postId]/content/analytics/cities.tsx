@@ -19,7 +19,6 @@ export const CitiesAnalyticsCard = ({ data }: { data: Cities["data"] }): ReactEl
           <div
             className="bg-[#1a1a1a] p-2 rounded-md flex justify-between mb-2 relative z-0"
             key={city.city}>
-            {/* Mettre une barre de "progression" en fonction du nombre de visites par rapport aux autres villes  */}
             <div style={{ width: `${city.count}%` }} className="h-full bg-[#272727] rounded-md absolute z-1 top-0 left-0"></div>
             <div className="flex items-center gap-1.5 select-none z-10">
               <Image
