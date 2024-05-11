@@ -5,6 +5,7 @@ const nextConfig = {
       { protocol: "https", hostname: "avatars.githubusercontent.com", port: "" },
       { protocol: "https", hostname: "dgzmokcshopxlsimyjqx.supabase.co", port: "" },
       { protocol: "https", hostname: "github.com", port: "" },
+      { protocol: "https", hostname: "flag.vercel.app", port: "" },
     ]
   }
 };
