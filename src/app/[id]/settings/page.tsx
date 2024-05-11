@@ -16,7 +16,7 @@ const ProjectSettings = ({ params }: PageParams): ReactElement => {
 
   return (
     <PageLayout projectId={id}>
-      <div className="sm:p-4 p-0 gap-4 flex flex-col">
+      <div className="gap-4 flex flex-col">
         <ProjectNameSettingsCard />
         <ProjectDeleteSettingsCard />
       </div>
