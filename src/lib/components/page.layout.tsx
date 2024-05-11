@@ -57,7 +57,7 @@ export const PageLayout: Component<PageLayoutProps> = ({ projectId, children }):
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex justify-center items-center h-[calc(100vh-4rem)]">
         <Loader2 size={48} className="text-primary-500 animate-spin" />
       </div>
     );
@@ -68,7 +68,9 @@ export const PageLayout: Component<PageLayoutProps> = ({ projectId, children }):
 
   return (
     <div className="p-3">
-      {children}
+      <div className="sm:p-4 p-0">
+        {children}
+      </div>
     </div>
   );
 };
