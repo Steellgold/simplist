@@ -9,15 +9,18 @@ import { useProjectStore } from "@/store/project.store";
 
 type PageLayoutProps = {
   projectId?: string;
+  noFetch?: boolean;
 } & PropsWithChildren;
 
-export const PageLayout: Component<PageLayoutProps> = ({ projectId, children }): ReactElement => {
+export const PageLayout: Component<PageLayoutProps> = ({ projectId, children, noFetch = false }): ReactElement => {
   const [isLogged, setIsLogged] = useState(true);
   const [isAllowed, setIsAllowed] = useState(true);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!noFetch);
   const { active, setActive } = useProjectStore();
 
   useEffect(() => {
+    if (noFetch) return setLoading(false);
+
     setLoading(true);
     if (projectId) {
       if (active?.id !== projectId) setActive(projectId);
@@ -63,8 +66,10 @@ export const PageLayout: Component<PageLayoutProps> = ({ projectId, children }):
     );
   }
 
-  if (!isLogged) return <div>Not logged in</div>;
-  if (!isAllowed) return <div>This page or project does not exist</div>;
+  if (noFetch == false) {
+    if (!isLogged) return <div>Not logged in</div>;
+    if (!isAllowed) return <div>This page or project does not exist</div>;
+  }
 
   return (
     <div className="p-3">
