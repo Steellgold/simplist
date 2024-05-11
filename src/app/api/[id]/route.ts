@@ -67,13 +67,15 @@ export const GET = async({ headers, nextUrl }: NextRequest, { params }: Request)
 
   if (ipAddr) {
     if (ipAddr.match(/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/)) {
-      local = await fetch(`https://ipapi.co/${ipAddr}/json/`).then((res) => res.json() as Promise<IPAPIResponse>);
+      local = await fetch(
+        `http://ip-api.com/json/${ipAddr}?fields=continentCode,country,countryCode,region,regionName,city,query`
+      ).then((res) => res.json() as Promise<IPAPIResponse>);
     } else {
       return NextResponse.json({ message: "Invalid IP Address" }, { status: 400 });
     }
   }
 
-  // const randomDate = dayJS().hour(Math.floor(Math.random() * 24)).minute(Math.floor(Math.random() * 60)).second(Math.floor(Math.random() * 60));
+  console.log("IP API Response", local);
 
   await fetch("https://api.tinybird.co/v0/events?name=posts_metrics", {
     method: "POST",
@@ -87,15 +89,17 @@ export const GET = async({ headers, nextUrl }: NextRequest, { params }: Request)
       dateTime: dayJS().format("YYYY-MM-DD HH:MM:ss"),
       date: dayJS().format("YYYY-MM-DD"),
       isoDate: dayJS().toISOString(),
-      ip: local?.ip || ipAddr,
+      ip: ipAddr,
+
       city: local?.city || "Unknown",
+
       region: local?.region || "Unknown",
-      region_code: local?.region_code || "Unknown",
+      region_name: local?.regionName || "Unknown",
+
       country: local?.country || "Unknown",
-      country_name: local?.country_name || "Unknown",
-      country_code: local?.country_code || "Unknown",
-      country_code_iso3: local?.country_code_iso3 || "Unknown",
-      in_eu: local?.in_eu || false
+      country_code: local?.countryCode || "Unknown",
+
+      in_eu: local?.continentCode == "EU" ? 1 : 0
     })
   });
 
