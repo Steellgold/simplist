@@ -128,6 +128,9 @@ dependencies:
   '@tremor/react':
     specifier: ^3.16.1
     version: 3.16.1(react-dom@18.2.0)(react@18.2.0)(tailwindcss@3.4.3)
+  '@types/ua-parser-js':
+    specifier: ^0.7.39
+    version: 0.7.39
   '@upstash/ratelimit':
     specifier: ^1.1.2
     version: 1.1.2
@@ -206,6 +209,9 @@ dependencies:
   tailwindcss-animate:
     specifier: ^1.0.7
     version: 1.0.7(tailwindcss@3.4.3)
+  ua-parser-js:
+    specifier: ^1.0.37
+    version: 1.0.37
   usehooks-ts:
     specifier: ^3.1.0
     version: 3.1.0(react@18.2.0)
@@ -3593,6 +3599,10 @@ packages:
 
   /@types/semver@7.5.8:
     resolution: {integrity: sha512-I8EUhyrgfLrcTkzV3TSsGyl1tSuPrEDzr0yd5m90UgNxQkyDXULk3b6MlQqTCpZpNtWe1K0hzclnZkTcLBe2UQ==}
+    dev: false
+
+  /@types/ua-parser-js@0.7.39:
+    resolution: {integrity: sha512-P/oDfpofrdtF5xw433SPALpdSchtJmY7nsJItf8h3KXqOslkbySh8zq4dSWXH2oTjRvJ5PczVEoCZPow6GicLg==}
     dev: false
 
   /@types/unist@2.0.10:
@@ -8206,6 +8216,10 @@ packages:
     resolution: {integrity: sha512-vcI4UpRgg81oIRUFwR0WSIHKt11nJ7SAVlYNIu+QpqeyXP+gpQJy/Z4+F0aGxSE4MqwjyXvW/TzgkLAx2AGHwQ==}
     engines: {node: '>=14.17'}
     hasBin: true
+
+  /ua-parser-js@1.0.37:
+    resolution: {integrity: sha512-bhTyI94tZofjo+Dn8SN6Zv8nBDvyXTymAdM3LDI/0IboIUwTu1rEhW7v2TfiVsoYWgkQ4kOVqnI8APUFbIQIFQ==}
+    dev: false
 
   /uc.micro@2.1.0:
     resolution: {integrity: sha512-ARDJmphmdvUk6Glw7y9DQ2bFkKBHwQHLi2lsaH6PPmz/Ka9sFOBsBluozhDltWmnv9u/cF6Rt87znRTPV+yp/A==}
