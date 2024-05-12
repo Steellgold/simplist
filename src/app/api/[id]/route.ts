@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable camelcase */
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
@@ -7,6 +8,8 @@ import { Lang, type APIKey, type Post, type Project } from "@prisma/client";
 import type { IPAPIResponse } from "../ipapi.type";
 import { env } from "@/env.mjs";
 import { dayJS } from "@/dayjs/day-js";
+import type { UAReturn } from "@/utils/user-agent";
+import { userAgentDecoder } from "@/utils/user-agent";
 
 type Request = {
   params: {
@@ -76,6 +79,22 @@ export const GET = async({ headers, nextUrl }: NextRequest, { params }: Request)
     "198.145.77.26" // Uruguay
   ];
 
+  const uas = [
+    "Mozilla/5.0 (Windows; U; Windows NT 5.1; de-CH) AppleWebKit/523.15 (KHTML, like Gecko, Safari/419.3) Arora/0.2",
+    "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; GTB5; Avant Browser; .NET CLR 1.1.4322; .NET CLR 2.0.50727)",
+    "Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en-US) AppleWebKit/85 (KHTML, like Gecko) OmniWeb/v558.48",
+    "Mozilla/5.0 (Windows; U; Win95; de-DE; rv:0.9.2) Gecko/20010726 Netscape6/6.1",
+    "Mozilla/5.0 (Linux; Android 13; SM-S901B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Mobile Safari/537.36",
+    "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Mobile Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; Xbox; Xbox Series X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.82 Safari/537.36 Edge/20.02",
+    "Mozilla/5.0 (Nintendo WiiU) AppleWebKit/536.30 (KHTML, like Gecko) NX/3.0.4.2.12 NintendoBrowser/4.3.1.11264.US",
+    "Mozilla/5.0 (Nintendo 3DS; U; ; en) Version/1.7412.EU",
+    "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+    "Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)",
+    "Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)"
+  ];
+
+
   if (ipAddr) {
     if (env.NEXT_PUBLIC_ENVIRONMENT == "dev" && ipAddr == "dev") {
       ipAddr = ips[Math.floor(Math.random() * ips.length)];
@@ -88,7 +107,15 @@ export const GET = async({ headers, nextUrl }: NextRequest, { params }: Request)
     } else {
       return NextResponse.json({ message: "Invalid IP Address" }, { status: 400 });
     }
+  }
 
+  let ua = headers.get("x-user-agent");
+  if (!ua) ua = "Unknown";
+
+  let uaResult: UAReturn = userAgentDecoder(ua);
+  if (env.NEXT_PUBLIC_ENVIRONMENT == "dev" && ua == "dev") {
+    ua = uas[Math.floor(Math.random() * uas.length)];
+    uaResult = userAgentDecoder(ua);
   }
 
   const date = env.NEXT_PUBLIC_ENVIRONMENT == "prod" ? dayJS() : dayJS()
@@ -119,6 +146,10 @@ export const GET = async({ headers, nextUrl }: NextRequest, { params }: Request)
 
       country: local?.country || "Unknown",
       country_code: local?.countryCode || "Unknown",
+
+      browser: uaResult.browser,
+      os: uaResult.os,
+      device: uaResult.device == "Unknown" ? "desktop" : uaResult.device,
 
       in_eu: local?.continentCode == "EU" ? 1 : 0
     })
