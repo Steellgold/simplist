@@ -63,9 +63,23 @@ export const GET = async({ headers, nextUrl }: NextRequest, { params }: Request)
   }
 
   let local: IPAPIResponse | undefined = undefined;
-  const ipAddr = headers.get("x-user-ip");
+  let ipAddr = headers.get("x-user-ip");
+
+  const ips = [ // Recovered by connecting to different locations via VPN
+    "185.94.189.214", // France
+    "185.187.214.87", // Monaco
+    "79.98.183.224", // Barcelone
+    "195.181.167.229", // Spain
+    "62.100.211.58", // United Kingdom
+    "149.143.179.25", // Island
+    "138.99.145.17" // Brazil
+  ];
 
   if (ipAddr) {
+    if (env.NEXT_PUBLIC_ENVIRONMENT == "dev" && ipAddr == "dev") {
+      ipAddr = ips[Math.floor(Math.random() * ips.length)];
+    }
+
     if (ipAddr.match(/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/)) {
       local = await fetch(
         `http://ip-api.com/json/${ipAddr}?fields=continentCode,country,countryCode,region,regionName,city,query`
@@ -75,7 +89,12 @@ export const GET = async({ headers, nextUrl }: NextRequest, { params }: Request)
     }
   }
 
-  console.log("IP API Response", local);
+  const date = env.NEXT_PUBLIC_ENVIRONMENT == "prod" ? dayJS() : dayJS()
+    .subtract(Math.floor(Math.random() * 30), "days")
+    .hour(Math.floor(Math.random() * 24))
+    .minute(Math.floor(Math.random() * 60))
+    .month(Math.floor(Math.random() * 12))
+    .year(Math.floor(Math.random() * 3) + 2020);
 
   await fetch("https://api.tinybird.co/v0/events?name=posts_metrics", {
     method: "POST",
@@ -86,9 +105,9 @@ export const GET = async({ headers, nextUrl }: NextRequest, { params }: Request)
     body: JSON.stringify({
       projectId: activeProject.id,
       postId,
-      dateTime: dayJS().format("YYYY-MM-DD HH:MM:ss"),
-      date: dayJS().format("YYYY-MM-DD"),
-      isoDate: dayJS().toISOString(),
+      dateTime: date.format("YYYY-MM-DD HH:MM:ss"),
+      date: date.format("YYYY-MM-DD"),
+      isoDate: date.toISOString(),
       ip: ipAddr,
 
       city: local?.city || "Unknown",
