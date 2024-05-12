@@ -5,7 +5,7 @@ import { createClient } from "@/utils/supabase/server";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import type { Analytics } from "./analytics.type";
-import { CitiesSchema, CountriesSchema, RegionsSchema } from "./analytics.type";
+import { BrowserSchema, CitiesSchema, CountriesSchema, DeviceSchema, OsSchema, RegionsSchema } from "./analytics.type";
 
 
 export const GET = async({ nextUrl }: NextRequest): Promise<NextResponse> => {
@@ -57,18 +57,30 @@ export const GET = async({ nextUrl }: NextRequest): Promise<NextResponse> => {
   const analytics: Analytics = {
     cities: [],
     countries: [],
-    regions: []
+    regions: [],
+    devices: [],
+    browsers: [],
+    OSs: []
   };
 
   const citiesUrl = new URL("https://api.tinybird.co/v0/pipes/cities.json");
   const countriesUrl = new URL("https://api.tinybird.co/v0/pipes/countries.json");
   const regionsUrl = new URL("https://api.tinybird.co/v0/pipes/regions.json");
+  const deviceUrl = new URL("https://api.tinybird.co/v0/pipes/ua_device.json");
+  const browserUrl = new URL("https://api.tinybird.co/v0/pipes/ua_browser.json");
+  const osUrl = new URL("https://api.tinybird.co/v0/pipes/ua_os.json");
   citiesUrl.searchParams.append("projectId", projectId);
   countriesUrl.searchParams.append("projectId", projectId);
   regionsUrl.searchParams.append("projectId", projectId);
   citiesUrl.searchParams.append("postId", postId);
   countriesUrl.searchParams.append("postId", postId);
   regionsUrl.searchParams.append("postId", postId);
+  deviceUrl.searchParams.append("projectId", projectId);
+  deviceUrl.searchParams.append("postId", postId);
+  browserUrl.searchParams.append("projectId", projectId);
+  browserUrl.searchParams.append("postId", postId);
+  osUrl.searchParams.append("projectId", projectId);
+  osUrl.searchParams.append("postId", postId);
 
   const headers = { Authorization: `Bearer ${env.TINYBIRD_BEARER_TOKEN}` };
 
@@ -89,6 +101,24 @@ export const GET = async({ nextUrl }: NextRequest): Promise<NextResponse> => {
   if (!regionsSchema.success) {
     analytics.regions = [];
   } else analytics.regions = regionsSchema.data.data;
+
+  const deviceRes = await fetch(deviceUrl.toString(), { headers });
+  const deviceSchema = DeviceSchema.safeParse(await deviceRes.json());
+  if (!deviceSchema.success) {
+    analytics.devices = [];
+  } else analytics.devices = deviceSchema.data.data;
+
+  const browserRes = await fetch(browserUrl.toString(), { headers });
+  const browserSchema = BrowserSchema.safeParse(await browserRes.json());
+  if (!browserSchema.success) {
+    analytics.browsers = [];
+  } else analytics.browsers = browserSchema.data.data;
+
+  const osRes = await fetch(osUrl.toString(), { headers });
+  const osSchema = OsSchema.safeParse(await osRes.json());
+  if (!osSchema.success) {
+    analytics.OSs = [];
+  } else analytics.OSs = osSchema.data.data;
 
   return NextResponse.json({ post, analytics }, { status: 200 });
 };
