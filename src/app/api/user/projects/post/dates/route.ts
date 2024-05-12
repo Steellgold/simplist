@@ -1,10 +1,10 @@
 /* eslint-disable camelcase */
 import { env } from "@/env.mjs";
-import { requestsProcessor } from "@/utils/analytics";
 import { createClient } from "@/utils/supabase/server";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { RequestsSchema } from "../analytics.type";
+import { tinybirdRequest } from "../../../../tinybird.utils";
 
 
 export const GET = async({ nextUrl }: NextRequest): Promise<NextResponse> => {
@@ -22,23 +22,8 @@ export const GET = async({ nextUrl }: NextRequest): Promise<NextResponse> => {
   if (!fromDate) return NextResponse.json({ error: "From date is required", projects: null }, { status: 400 });
   if (!toDate) return NextResponse.json({ error: "To date is required", projects: null }, { status: 400 });
 
-  const url = new URL("https://api.tinybird.co/v0/pipes/post_calls.json");
-  url.searchParams.append("projectId", projectId);
-  url.searchParams.append("postId", postId);
-  url.searchParams.append("fromDate", fromDate);
-  url.searchParams.append("toDate", toDate);
-
-  const res = await fetch(url.toString(), {
-    headers: {
-      Authorization: `Bearer ${env.TINYBIRD_BEARER_TOKEN}`
-    }
-  });
-
-  const data = RequestsSchema.safeParse(await res.json());
+  const data = RequestsSchema.safeParse(await tinybirdRequest("post_calls", { projectId, postId, fromDate, toDate }, env.TINYBIRD_BEARER_TOKEN));
   if (!data.success) return NextResponse.json({ error: data.error.errors }, { status: 500 });
 
-  console.log(requestsProcessor(data.data.data, "year"));
-  console.log("=====================================");
-  console.log(requestsProcessor(data.data.data, "month"));
   return NextResponse.json({ error: null, data: data.data.data }, { status: 200 });
 };
