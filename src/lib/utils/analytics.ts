@@ -186,7 +186,7 @@ export const osProcessor = (os: z.infer<typeof OsSchema>["data"]): ReturnOSs[] =
 export const requestsProcessor = (
   requests: z.infer<typeof RequestsSchema>["data"],
   regroupBy: "hour" | "day" | "month" | "year"
-): Record<string, number> => {
+): { [key: string]: number } => {
   const results: Record<string, number> = {};
 
   requests.forEach(request => {
