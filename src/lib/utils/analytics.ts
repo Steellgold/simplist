@@ -1,6 +1,8 @@
 /* eslint-disable camelcase */
 import type { z } from "zod";
-import type { CitiesSchema, CountriesSchema, RegionsSchema, RequestsSchema } from "../../app/api/user/projects/post/analytics.type";
+import type {
+  BrowserSchema, CitiesSchema, CountriesSchema, DeviceSchema, OsSchema, RegionsSchema, RequestsSchema
+} from "../../app/api/user/projects/post/analytics.type";
 import { dayJS } from "@/dayjs/day-js";
 
 type ReturnCountries = {
@@ -94,6 +96,90 @@ export const regionsProcessor = (regions: z.infer<typeof RegionsSchema>["data"])
     country_code,
     count,
     percentage: `${((count / regions.length) * 100).toFixed(2)}`
+  })).sort((a, b) => b.count - a.count);
+};
+
+type ReturnDevices = {
+  device: string;
+  count: number;
+  percentage: string;
+}
+
+export const devicesProcessor = (devices: z.infer<typeof DeviceSchema>["data"]): ReturnDevices[] => {
+  const countDevices: Record<string, { device: string; count: number }> = {};
+
+  devices.forEach(device => {
+    const key = device.device;
+    if (device.device === "Unknown") return;
+
+    if (!countDevices[key]) {
+      countDevices[key] = { device: device.device, count: 0 };
+    }
+    countDevices[key].count++;
+  });
+
+  const totalCount = Object.values(countDevices).reduce((sum, current) => sum + current.count, 0);
+
+  return Object.values(countDevices).map(({ device, count }) => ({
+    device,
+    count,
+    percentage: `${totalCount > 0 ? ((count / totalCount) * 100).toFixed(2) : 0}`
+  })).sort((a, b) => b.count - a.count);
+};
+
+type ReturnBrowsers = {
+  browser: string;
+  count: number;
+  percentage: string;
+}
+
+export const browsersProcessor = (browsers: z.infer<typeof BrowserSchema>["data"]): ReturnBrowsers[] => {
+  const countBrowsers: Record<string, { browser: string; count: number }> = {};
+
+  browsers.forEach(browser => {
+    const key = browser.browser;
+    if (browser.browser === "Unknown") return;
+
+    if (!countBrowsers[key]) {
+      countBrowsers[key] = { browser: browser.browser, count: 0 };
+    }
+    countBrowsers[key].count++;
+  });
+
+  const totalCount = Object.values(countBrowsers).reduce((sum, current) => sum + current.count, 0);
+
+  return Object.values(countBrowsers).map(({ browser, count }) => ({
+    browser,
+    count,
+    percentage: `${totalCount > 0 ? ((count / totalCount) * 100).toFixed(2) : 0}`
+  })).sort((a, b) => b.count - a.count);
+};
+
+type ReturnOSs = {
+  os: string;
+  count: number;
+  percentage: string;
+}
+
+export const osProcessor = (os: z.infer<typeof OsSchema>["data"]): ReturnOSs[] => {
+  const countOSs: Record<string, { os: string; count: number }> = {};
+
+  os.forEach(os => {
+    const key = os.os;
+    if (os.os === "Unknown") return;
+
+    if (!countOSs[key]) {
+      countOSs[key] = { os: os.os, count: 0 };
+    }
+    countOSs[key].count++;
+  });
+
+  const totalCount = Object.values(countOSs).reduce((sum, current) => sum + current.count, 0);
+
+  return Object.values(countOSs).map(({ os, count }) => ({
+    os,
+    count,
+    percentage: `${totalCount > 0 ? ((count / totalCount) * 100).toFixed(2) : 0}`
   })).sort((a, b) => b.count - a.count);
 };
 
