@@ -3,7 +3,7 @@
 
 import { env } from "@/env.mjs";
 import { cn } from "@/utils";
-import { Building2, Folders, KeySquare, MessagesSquare, Settings2Icon, StickyNote } from "lucide-react";
+import { Folders, KeySquare, MessagesSquare, Settings2Icon, StickyNote } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -19,7 +19,6 @@ type Link = {
 }
 
 const links: Link[] = [
-  { href: "/[cuid]", label: "Dashboard", icon: <Building2 className="h-4 w-4" /> },
   { href: "/[cuid]/posts", label: "Posts", icon: <StickyNote className="h-4 w-4" /> },
   { href: "/[cuid]/keys", label: "API Keys", icon: <KeySquare className="h-4 w-4" /> },
   { href: "/[cuid]/comments", label: "Comments", icon: <MessagesSquare className="h-4 w-4" />, isNew: true },

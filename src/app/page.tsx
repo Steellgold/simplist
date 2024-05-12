@@ -129,7 +129,7 @@ const Home = (): ReactElement => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
         {projects.map((project) => (
-          <Link key={project.id} href={`/${project.id}`}>
+          <Link key={project.id} href={`/${project.id}/posts`}>
             <CustomCard className="w-full h-36 border-2 hover:cursor-pointer transition-colors group">
               <CardHeader className="flex flex-row justify-between">
                 <div className="flex flex-col justify-center">

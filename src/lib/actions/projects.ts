@@ -29,6 +29,6 @@ export const createProject = async(values: z.infer<typeof ProjectSchema>): Promi
   });
 
   revalidatePath("/");
-  if (data) redirect(`/${data.id}`);
+  if (data) redirect(`/${data.id}/posts`);
   else return null;
 };
