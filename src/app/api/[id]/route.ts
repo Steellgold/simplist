@@ -72,7 +72,8 @@ export const GET = async({ headers, nextUrl }: NextRequest, { params }: Request)
     "195.181.167.229", // Spain
     "62.100.211.58", // United Kingdom
     "149.143.179.25", // Island
-    "138.99.145.17" // Brazil
+    "138.99.145.17", // Brazil
+    "198.145.77.26" // Uruguay
   ];
 
   if (ipAddr) {
@@ -87,6 +88,8 @@ export const GET = async({ headers, nextUrl }: NextRequest, { params }: Request)
     } else {
       return NextResponse.json({ message: "Invalid IP Address" }, { status: 400 });
     }
+
+    console.log(local);
   }
 
   const date = env.NEXT_PUBLIC_ENVIRONMENT == "prod" ? dayJS() : dayJS()
