@@ -105,6 +105,9 @@ const ProjectPost = ({ params: { id, postId } }: PageParams): ReactElement => {
 
         <TabsContent value="analytics">
           <Analytics
+            devices={analytics.devices}
+            OSs={analytics.OSs}
+            browsers={analytics.browsers}
             cities={analytics.cities}
             countries={analytics.countries}
             regions={analytics.regions}
