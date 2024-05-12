@@ -55,7 +55,10 @@ const ProjectPost = ({ params: { id, postId } }: PageParams): ReactElement => {
   const [analytics, setAnalytics] = useState<AnalyticsType>({
     cities: [],
     countries: [],
-    regions: []
+    regions: [],
+    devices: [],
+    browsers: [],
+    OSs: []
   });
 
   useEffect(() => {
