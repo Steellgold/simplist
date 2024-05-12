@@ -60,8 +60,26 @@ export const RegionsSchema = z.object({
     month: z.number(),
     week_start: z.string(),
     region: z.string(),
+    region_name: z.string(),
     country_code: z.string(),
     isoDate: z.string()
+  })),
+  rows: z.number(),
+  statistics: z.object({
+    elapsed: z.number(),
+    rows_read: z.number(),
+    bytes_read: z.number()
+  })
+});
+
+export const RequestsSchema = z.object({
+  meta: z.array(z.object({
+    name: z.string(),
+    type: z.string()
+  })),
+  data: z.array(z.object({
+    isoDate: z.string(),
+    views: z.number()
   })),
   rows: z.number(),
   statistics: z.object({
@@ -74,3 +92,4 @@ export const RegionsSchema = z.object({
 export type Cities = z.infer<typeof CitiesSchema>;
 export type Countries = z.infer<typeof CountriesSchema>;
 export type Regions = z.infer<typeof RegionsSchema>;
+export type Requests = z.infer<typeof RequestsSchema>;
