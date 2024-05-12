@@ -1,13 +1,26 @@
-import type { ReactElement } from "react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { z } from "zod";
-import { getRandomData } from "@/utils";
+import type { Component } from "@/components/utils/component";
 
-export const RequestsAnalyticsCard = (): ReactElement => {
+type RequestsAnalyticsCardProps = {
+  data: Array<{ date: string; requests: number }>;
+};
+
+export const RequestsAnalyticsCard: Component<RequestsAnalyticsCardProps> = ({ data }) => {
   return (
     <ResponsiveContainer width="100%" height={200}>
-      <AreaChart data={getRandomData()} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+      <AreaChart data={data} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
         <Area type="bump" dataKey="requests" stroke="#404040" fill="url(#gradient)" />
+
+        <XAxis
+          dataKey="date"
+          stroke="#404040"
+          tickLine={false}
+          axisLine={false}
+          tickFormatter={(value: string) => {
+            return value.split("-").reverse().slice(0, 2).join("/");
+          }}
+        />
 
         <YAxis
           dataKey="requests"
@@ -18,16 +31,6 @@ export const RequestsAnalyticsCard = (): ReactElement => {
             if (parseInt(value) < 1000) return value;
             if (parseInt(value) < 1000000) return `${(parseInt(value) / 1000).toFixed(0)}k`;
             return `${(parseInt(value) / 1000000).toFixed(0)}M`;
-          }}
-        />
-
-        <XAxis
-          dataKey="date"
-          stroke="#404040"
-          tickLine={false}
-          axisLine={false}
-          tickFormatter={(value: string) => {
-            return value.split("-").reverse().slice(0, 2).join("/");
           }}
         />
 
