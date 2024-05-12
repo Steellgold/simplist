@@ -67,7 +67,6 @@ const ProjectPost = ({ params: { id, postId } }: PageParams): ReactElement => {
       setPost(data.post);
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
       setAnalytics(data.analytics);
-      console.log(data);
       setLoading(false);
     };
 
