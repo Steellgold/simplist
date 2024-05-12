@@ -20,8 +20,8 @@ export const CustomCard: Component<PropsWithChildren & {
         "bg-[#161616] border-[#1a1a1a]" : !active,
         "hover:bg-[#1a1a1a] hover:border-[#2b2b2b]" : !active && !noHover,
 
-        "border-destructive/55": isDanger,
-        "bg-destructive/40": isDanger
+        "border-destructive/40": isDanger,
+        "bg-destructive/25": isDanger
       }
     )}>
       {children}
