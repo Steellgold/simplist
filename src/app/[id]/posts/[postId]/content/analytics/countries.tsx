@@ -20,7 +20,7 @@ export const CountriesAnalyticsCard = ({ data }: { data: Countries["data"] }): R
             className="bg-[#1a1a1a] p-2 rounded-md flex justify-between mb-2 relative z-0"
             key={country.country}>
             {/* Mettre une barre de "progression" en fonction du nombre de visites par rapport aux autres villes  */}
-            <div style={{ width: `${country.count}%` }} className="h-full bg-[#272727] rounded-md absolute z-1 top-0 left-0"></div>
+            <div style={{ width: `${country.percentage}%` }} className="h-full bg-[#272727] rounded-md absolute z-1 top-0 left-0"></div>
             <div className="flex items-center gap-1.5 select-none z-10">
               <Image
                 src={`https://flag.vercel.app/m/${country.country_code}.svg`}
@@ -33,7 +33,7 @@ export const CountriesAnalyticsCard = ({ data }: { data: Countries["data"] }): R
                 {country.country}
               </Link>
             </div>
-            <p>{country.count}</p>
+            <p className="z-10">{country.count}</p>
           </div>
         ))}
       </div>

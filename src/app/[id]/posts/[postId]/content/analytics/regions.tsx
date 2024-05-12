@@ -20,8 +20,9 @@ export const RegionsAnalyticsCard = ({ data }: { data: Regions["data"] }): React
           <div
             className="bg-[#1a1a1a] p-2 rounded-md flex justify-between mb-2 relative z-0"
             key={region.region}>
-            {/* Mettre une barre de "progression" en fonction du nombre de visites par rapport aux autres villes  */}
-            <div style={{ width: `${region.count}%` }} className="h-full bg-[#272727] rounded-md absolute z-1 top-0 left-0"></div>
+
+            <div style={{ width: `${region.percentage}%` }} className="h-full bg-[#272727] rounded-md absolute z-1 top-0 left-0"></div>
+
             <div className="flex items-center gap-1.5 select-none z-10">
               <Image
                 src={`https://flag.vercel.app/m/${region.country_code}.svg`}
@@ -30,11 +31,11 @@ export const RegionsAnalyticsCard = ({ data }: { data: Regions["data"] }): React
                 height={20}
                 alt={region.region}
               />
-              <Link href={`https://www.google.com/search?q=${region.region}`} passHref className="hover:underline" target="_blank">
-                {region.region}
+              <Link href={`https://www.google.com/search?q=${region.region_name}`} passHref className="hover:underline" target="_blank">
+                {region.region_name}
               </Link>
             </div>
-            <p>{region.count}</p>
+            <p className="z-10">{region.count}</p>
           </div>
         ))}
       </div>
