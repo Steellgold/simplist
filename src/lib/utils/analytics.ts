@@ -35,7 +35,7 @@ export const countriesProcessor = (countries: z.infer<typeof CountriesSchema>["d
     country_code,
     count,
     percentage: `${((count / countries.length) * 100).toFixed(2)}`
-  }));
+  })).sort((a, b) => b.count - a.count);
 };
 
 type ReturnCities = {
@@ -64,7 +64,7 @@ export const citiesProcessor = (cities: z.infer<typeof CitiesSchema>["data"]): R
     country_code,
     count,
     percentage: `${totalCount > 0 ? ((count / totalCount) * 100).toFixed(2) : 0}`
-  }));
+  })).sort((a, b) => b.count - a.count);
 };
 
 type ReturnRegions = {
@@ -94,7 +94,7 @@ export const regionsProcessor = (regions: z.infer<typeof RegionsSchema>["data"])
     country_code,
     count,
     percentage: `${((count / regions.length) * 100).toFixed(2)}`
-  }));
+  })).sort((a, b) => b.count - a.count);
 };
 
 export const requestsProcessor = (
