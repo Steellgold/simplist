@@ -14,7 +14,7 @@ export const CountriesAnalyticsCard = ({ data }: { data: Countries["data"] }): R
         <CardDescription>Top countries</CardDescription>
       </CardHeader>
 
-      <div className="px-4">
+      <div className="px-5 mb-6">
         {countriesProcessor(data).map(country => (
           <div
             className="bg-[#1a1a1a] p-2 rounded-md flex justify-between mb-2 relative z-0"

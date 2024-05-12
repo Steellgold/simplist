@@ -15,7 +15,7 @@ export const CitiesAnalyticsCard = ({ data }: { data: Cities["data"] }): ReactEl
         <CardDescription>Top cities</CardDescription>
       </CardHeader>
 
-      <div className="px-4">
+      <div className="px-5 mb-6">
         {citiesProcessor(data).map(city => (
           <div
             className="bg-[#1a1a1a] p-2 rounded-md flex justify-between mb-2 relative z-0"
