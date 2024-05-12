@@ -205,15 +205,12 @@ export const requestsProcessor = (
         key = `${date.format("h A")} - ${endHour}`;
         break;
       case "day":
-        // Clé sous la forme 'Jan 01'
         key = date.format("MMM DD");
         break;
       case "month":
-        // Clé sous la forme 'Jan 2024'
         key = date.format("MMM YYYY");
         break;
       case "year":
-        // Clé simple comme '2024'
         key = date.format("YYYY");
         break;
       default:
@@ -229,3 +226,5 @@ export const requestsProcessor = (
 
   return results;
 };
+
+export type SelectTime = "today" | "yesterday" | "week" | "month" | "3months" | "6months" | "year" | "all";
