@@ -107,11 +107,15 @@ export const requestsProcessor = (
     let key: string;
     const date = dayJS(request.isoDate);
 
+    let startMinute: string;
+    let endMinute: string;
+    let endHour: string;
+
     switch (regroupBy) {
       case "hour":
-        const startMinute = date.minute() < 30 ? "00" : "30";
-        const endMinute = startMinute === "00" ? "30" : "00";
-        const endHour = endMinute === "00" ? date.add(1, "hour").format("h A") : date.format("h A");
+        startMinute = date.minute() < 30 ? "00" : "30";
+        endMinute = startMinute === "00" ? "30" : "00";
+        endHour = endMinute === "00" ? date.add(1, "hour").format("h A") : date.format("h A");
         key = `${date.format("h A")} - ${endHour}`;
         break;
       case "day":

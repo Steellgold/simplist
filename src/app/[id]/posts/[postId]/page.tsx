@@ -59,10 +59,13 @@ const ProjectPost = ({ params: { id, postId } }: PageParams): ReactElement => {
   });
 
   useEffect(() => {
-    const fetchData = async() => {
+    const fetchData = async(): Promise<void> => {
       const res = await fetch(`/api/user/projects/post?projectId=${id}&postId=${postId}`);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const data = await res.json();
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
       setPost(data.post);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
       setAnalytics(data.analytics);
       console.log(data);
       setLoading(false);
