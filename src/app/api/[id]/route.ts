@@ -89,7 +89,6 @@ export const GET = async({ headers, nextUrl }: NextRequest, { params }: Request)
       return NextResponse.json({ message: "Invalid IP Address" }, { status: 400 });
     }
 
-    console.log(local);
   }
 
   const date = env.NEXT_PUBLIC_ENVIRONMENT == "prod" ? dayJS() : dayJS()
