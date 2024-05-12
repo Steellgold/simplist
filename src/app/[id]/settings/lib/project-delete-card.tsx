@@ -22,7 +22,7 @@ export const ProjectDeleteSettingsCard = (): ReactElement => {
   if (!active) return <>An error occurred</>;
 
   return (
-    <CustomCard noHover isDanger>
+    <CustomCard noHover isDanger className="border-[3px]">
       <CardHeader>
         <CardTitle>Danger Zone</CardTitle>
         <CardDescription>
