@@ -1,4 +1,5 @@
-import { useEffect, type ReactElement } from "react";
+import type { PropsWithChildren } from "react";
+import type { ReactElement } from "react";
 import type { Browser, Cities, Countries, Device, Os, Regions } from "../../../../api/user/projects/post/analytics.type";
 import { CitiesAnalyticsCard } from "./analytics/cities";
 import { CountriesAnalyticsCard } from "./analytics/countries";
@@ -8,8 +9,10 @@ import { CardContent, CardDescription, CardHeader, CardTitle } from "@/component
 import { DevicesAnalyticsCard } from "./analytics/devices";
 import { OSsAnalyticsCard } from "./analytics/OSs";
 import { BrowsersAnalyticsCard } from "./analytics/browsers";
+import { RequestsAnalyticsCard } from "./analytics/requests";
+import type { SelectTime } from "@/utils/analytics";
 
-type Analytics = {
+type Analytics = PropsWithChildren & {
   cities: Cities["data"];
   countries: Countries["data"];
   regions: Regions["data"];
@@ -17,38 +20,42 @@ type Analytics = {
   OSs: Os["data"];
   browsers: Browser["data"];
 
-  projectId: string;
-  postId: string;
+  selectedTime: SelectTime;
+  graphData: { date: string; requests: number }[];
 };
 
 export const Analytics = ({
   cities, countries, regions,
   devices, OSs, browsers,
-  postId, projectId
+  selectedTime, graphData,
+  children
 }: Analytics): ReactElement => {
-  useEffect(() => {
-    const fetchGraph = async(): Promise<void> => {
-      // const res = await fetch(`/api/user/projects/post/dates?projectId=${projectId}&postId=${postId}&fromDate=2021-01-01&toDate=2024-05-15`);
-      // const data = await res.json();
-      // console.log(data);
-    };
-
-    void fetchGraph();
-  }, [projectId, postId]);
-
   return (
     <div className="w-full grid grid-cols-1 gap-4">
       <CustomCard noHover>
-        <CardHeader>
-          <CardTitle>Requests</CardTitle>
-          <CardDescription>Requests over time</CardDescription>
+        <CardHeader className="flex justify-between flex-row items-center">
+          <div className="flex flex-col">
+            <CardTitle>
+              Requests {
+                selectedTime === "today" ? "from last 24 hours"
+                  : selectedTime === "yesterday" ? "from yesterday"
+                    : selectedTime === "week" ? "from last week"
+                      : selectedTime === "month" ? "from last month"
+                        : selectedTime === "3months" ? "from last 3 months"
+                          : selectedTime === "6months" ? "from last 6 months"
+                            : selectedTime === "year" ? "from last year"
+                              : selectedTime === "all" ? "from all time" : ""
+              }
+            </CardTitle>
+            <CardDescription>
+              Requests over time {graphData.length > 0 && `(${graphData.reduce((acc, curr) => acc + curr.requests, 0)})`}</CardDescription>
+          </div>
+
+          {children}
         </CardHeader>
 
         <CardContent>
-          {/* <RequestsAnalyticsCard /> */}
-          <p>
-            Graph not implemented yet
-          </p>
+          <RequestsAnalyticsCard data={graphData} />
         </CardContent>
       </CustomCard>
 
