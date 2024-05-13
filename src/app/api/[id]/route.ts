@@ -10,6 +10,7 @@ import { env } from "@/env.mjs";
 import { dayJS } from "@/dayjs/day-js";
 import type { UAReturn } from "@/utils/user-agent";
 import { userAgentDecoder } from "@/utils/user-agent";
+import { random } from "@/utils";
 
 type Request = {
   params: {
@@ -133,7 +134,7 @@ export const GET = async({ headers, nextUrl }: NextRequest, { params }: Request)
       Authorization: `Bearer ${env.TINYBIRD_BEARER_TOKEN}`
     },
     body: JSON.stringify({
-      id: `${activeProject.id}-${postId}-${date.toISOString()}-${Math.random().toString(36).substring(7)}-${Math.random().toString(36).substring(7)}`,
+      id: random(),
       projectId: activeProject.id,
       postId,
       dateTime: date.format("YYYY-MM-DD HH:MM:ss"),

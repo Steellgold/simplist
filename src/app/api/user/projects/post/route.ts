@@ -70,36 +70,49 @@ export const GET = async({ nextUrl }: NextRequest): Promise<NextResponse> => {
     OSs: []
   };
 
-  const citiesSchema = CitiesSchema.safeParse(await tinybirdRequest("cities", { projectId, postId, fromDate, toDate }, env.TINYBIRD_BEARER_TOKEN));
+  const datasource = postId;
+
+  const citiesSchema = CitiesSchema.safeParse(
+    await tinybirdRequest("cities", { projectId, postId, fromDate, toDate, datasource }, env.TINYBIRD_BEARER_TOKEN)
+  );
+
   if (!citiesSchema.success) analytics.cities = [];
   else analytics.cities = citiesSchema.data.data;
 
   const countriesSchema = CountriesSchema.safeParse(
-    await tinybirdRequest("countries", { projectId, postId, fromDate, toDate }, env.TINYBIRD_BEARER_TOKEN)
+    await tinybirdRequest("countries", { projectId, postId, fromDate, toDate, datasource }, env.TINYBIRD_BEARER_TOKEN)
   );
   if (!countriesSchema.success) analytics.countries = [];
   else analytics.countries = countriesSchema.data.data;
 
-  const regionsSchema = RegionsSchema.safeParse(await tinybirdRequest("regions", { projectId, postId, fromDate, toDate }, env.TINYBIRD_BEARER_TOKEN));
+  const regionsSchema = RegionsSchema.safeParse(
+    await tinybirdRequest("regions", { projectId, postId, fromDate, toDate, datasource }, env.TINYBIRD_BEARER_TOKEN)
+  );
   if (!regionsSchema.success) analytics.regions = [];
   else analytics.regions = regionsSchema.data.data;
 
-  const deviceSchema = DeviceSchema.safeParse(await tinybirdRequest("ua_device", { projectId, postId, fromDate, toDate }, env.TINYBIRD_BEARER_TOKEN));
+  const deviceSchema = DeviceSchema.safeParse(
+    await tinybirdRequest("ua_device", { projectId, postId, fromDate, toDate, datasource }, env.TINYBIRD_BEARER_TOKEN)
+  );
   if (!deviceSchema.success) analytics.devices = [];
   else analytics.devices = deviceSchema.data.data;
 
   const browserSchema = BrowserSchema.safeParse(
-    await tinybirdRequest("ua_browser", { projectId, postId, fromDate, toDate }, env.TINYBIRD_BEARER_TOKEN)
+    await tinybirdRequest("ua_browser", { projectId, postId, fromDate, toDate, datasource }, env.TINYBIRD_BEARER_TOKEN)
   );
   if (!browserSchema.success) analytics.browsers = [];
   else analytics.browsers = browserSchema.data.data;
 
-  const osSchema = OsSchema.safeParse(await tinybirdRequest("ua_os", { projectId, postId, fromDate, toDate }, env.TINYBIRD_BEARER_TOKEN));
+  const osSchema = OsSchema.safeParse(
+    await tinybirdRequest("ua_os", { projectId, postId, fromDate, toDate, datasource }, env.TINYBIRD_BEARER_TOKEN)
+  );
   if (!osSchema.success) analytics.OSs = [];
   else analytics.OSs = osSchema.data.data;
 
 
-  const graph = RequestsSchema.safeParse(await tinybirdRequest("post_calls", { projectId, postId, fromDate, toDate }, env.TINYBIRD_BEARER_TOKEN));
+  const graph = RequestsSchema.safeParse(
+    await tinybirdRequest("post_calls", { projectId, postId, fromDate, toDate, datasource }, env.TINYBIRD_BEARER_TOKEN)
+  );
   if (!graph.success) return NextResponse.json({ error: "Error fetching data", post, analytics, graph: null, type }, { status: 500 });
 
   return NextResponse.json({ post, analytics, requests: requestsProcessor(graph.data.data, type) });
