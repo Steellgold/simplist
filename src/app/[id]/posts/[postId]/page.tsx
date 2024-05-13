@@ -12,6 +12,7 @@ import type { Analytics as AnalyticsType } from "../../../api/user/projects/post
 import { dayJS } from "@/dayjs/day-js";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { type SelectTime } from "@/utils/analytics";
+import { Editor } from "./content/editor";
 
 type PageParams = {
   params: {
@@ -180,7 +181,7 @@ const ProjectPost = ({ params: { id, postId } }: PageParams): ReactElement => {
         </TabsContent>
 
         <TabsContent value="edit">
-          <div>Edit</div>
+          <Editor title={post.title} />
         </TabsContent>
 
         <TabsContent value="variants">
