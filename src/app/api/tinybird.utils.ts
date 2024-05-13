@@ -6,7 +6,6 @@ type JSON =
   "ua_browser" |
   "ua_device" |
   "ua_os" |
-  "post" |
   "project";
 
 export const tinybirdRequest = async(
