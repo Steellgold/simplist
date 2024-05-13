@@ -49,6 +49,7 @@ export const SidebarLinks = ({ type }: getSidebarLinksProps): ReactElement => {
             href={link.href}
             className="flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary"
             key={index}
+            prefetch
           >
             {link.icon}
             {link.label}
@@ -75,7 +76,7 @@ export const SidebarLinks = ({ type }: getSidebarLinksProps): ReactElement => {
   return (
     <>
       {type === "sidebar-mobile" && (
-        <Link href="/" className="flex items-center gap-2 text-lg font-semibold mb-4">
+        <Link href="/" className="flex items-center gap-2 text-lg font-semibold mb-4" prefetch>
           <Image src="/_static/logos/simplist-light.png" alt="Simplist" width={120} height={17.81} />
         </Link>
       )}
@@ -85,6 +86,7 @@ export const SidebarLinks = ({ type }: getSidebarLinksProps): ReactElement => {
           href={baseURL + "/" + validLink(link.href, cuid)}
           className={getLinkStyle(validLink(link.href, cuid), type)}
           key={index}
+          prefetch
         >
           {link.icon}
           {link.label}
