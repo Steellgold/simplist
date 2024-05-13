@@ -4,7 +4,6 @@ import type { PropsWithChildren, ReactElement } from "react";
 import { useEffect, useState } from "react";
 import type { Component } from "./utils/component";
 import { z } from "zod";
-import { Loader2 } from "lucide-react";
 import { useProjectStore } from "@/store/project.store";
 
 type PageLayoutProps = {
@@ -15,13 +14,9 @@ type PageLayoutProps = {
 export const PageLayout: Component<PageLayoutProps> = ({ projectId, children, noFetch = false }): ReactElement => {
   const [isLogged, setIsLogged] = useState(true);
   const [isAllowed, setIsAllowed] = useState(true);
-  const [loading, setLoading] = useState(!noFetch);
   const { active, setActive } = useProjectStore();
 
   useEffect(() => {
-    if (noFetch) return setLoading(false);
-
-    setLoading(true);
     if (projectId) {
       if (active?.id !== projectId) setActive(projectId);
     }
@@ -37,7 +32,6 @@ export const PageLayout: Component<PageLayoutProps> = ({ projectId, children, no
       }
 
       setIsLogged(schema.data.isLogged);
-      if (!projectId) setLoading(false);
     };
 
     const fetchIsAllowed = async(): Promise<void> => {
@@ -51,20 +45,11 @@ export const PageLayout: Component<PageLayoutProps> = ({ projectId, children, no
       }
 
       setIsAllowed(schema.data.isAllowed);
-      setLoading(false);
     };
 
     void fetchIsLogged();
     if (projectId) void fetchIsAllowed();
   }, [projectId]);
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-[calc(100vh-4rem)]">
-        <Loader2 size={48} className="text-primary-500 animate-spin" />
-      </div>
-    );
-  }
 
   if (noFetch == false) {
     if (!isLogged) return <div>Not logged in</div>;
