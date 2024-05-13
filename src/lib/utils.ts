@@ -20,3 +20,12 @@ export const getRandomData = (): { date: string; requests: number }[] => {
   }
   return data;
 };
+
+export const random = (size: number = 16): string => {
+  const caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let id = "";
+  for (let i = 0; i < size; i++) {
+    id += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+  }
+  return id;
+};
