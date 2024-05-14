@@ -130,7 +130,7 @@ export const Editor = ({ title }: EditorProps): ReactElement => {
                   </Button>
 
                   <Dialog>
-                    <DialogTrigger>
+                    <DialogTrigger disabled={!isSelectionEmpty}>
                       <Button variant="inputStyle" disabled={!isSelectionEmpty}>
                         <ImageIcon className="h-4 w-4" />
                       </Button>
@@ -165,12 +165,8 @@ export const Editor = ({ title }: EditorProps): ReactElement => {
                     </DialogContent>
                   </Dialog>
 
-                  {/* <Button variant="inputStyle" disabled={isSelectionEmpty}>
-                    <Link className="h-4 w-4" />
-                  </Button> */}
-
                   <Dialog>
-                    <DialogTrigger>
+                    <DialogTrigger disabled={isSelectionEmpty}>
                       <Button variant="inputStyle" disabled={isSelectionEmpty}>
                         <Link className="h-4 w-4" />
                       </Button>
@@ -204,11 +200,8 @@ export const Editor = ({ title }: EditorProps): ReactElement => {
 
                   <Separator orientation="vertical" className="h-4" />
 
-                  {/* <Button variant="inputStyle" disabled={isSelectionEmpty}>
-                    H<span className="text-[10px]">?</span>
-                  </Button> */}
                   <Select defaultValue="h1">
-                    <SelectTrigger className="w-[100px]">
+                    <SelectTrigger className="w-[100px]" disabled={isSelectionEmpty}>
                       <SelectValue>Heading</SelectValue>
                     </SelectTrigger>
                     <SelectContent>
