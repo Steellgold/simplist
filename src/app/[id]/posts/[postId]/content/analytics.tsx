@@ -12,7 +12,7 @@ import { BrowsersAnalyticsCard } from "./analytics/browsers";
 import { RequestsAnalyticsCard } from "./analytics/requests";
 import type { SelectTime } from "@/utils/analytics";
 import { cn } from "@/utils";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart2, LineChart } from "lucide-react";
 
 type Analytics = PropsWithChildren & {
@@ -59,7 +59,6 @@ export const Analytics = ({
           <div className="flex items-center gap-4">
             {children}
 
-
             <Tabs defaultValue="account" onValueChange={(value) => setType(value as "step" | "monotone")}>
               <TabsList>
                 <TabsTrigger value="monotone">
@@ -70,11 +69,7 @@ export const Analytics = ({
                 </TabsTrigger>
               </TabsList>
             </Tabs>
-
-
           </div>
-
-
         </CardHeader>
 
         <CardContent>
