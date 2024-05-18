@@ -1,4 +1,4 @@
-import type { PropsWithChildren } from "react";
+import { useState, type PropsWithChildren } from "react";
 import type { ReactElement } from "react";
 import type { Browser, Cities, Countries, Device, Os, Regions } from "../../../../api/user/projects/post/analytics.type";
 import { CitiesAnalyticsCard } from "./analytics/cities";
@@ -11,6 +11,9 @@ import { OSsAnalyticsCard } from "./analytics/OSs";
 import { BrowsersAnalyticsCard } from "./analytics/browsers";
 import { RequestsAnalyticsCard } from "./analytics/requests";
 import type { SelectTime } from "@/utils/analytics";
+import { cn } from "@/utils";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { BarChart2, LineChart } from "lucide-react";
 
 type Analytics = PropsWithChildren & {
   cities: Cities["data"];
@@ -30,10 +33,12 @@ export const Analytics = ({
   selectedTime, graphData,
   children
 }: Analytics): ReactElement => {
+  const [type, setType] = useState<"step" | "monotone">("monotone");
+
   return (
     <div className="w-full grid grid-cols-1 gap-4">
       <CustomCard noHover>
-        <CardHeader className="flex justify-between flex-row items-center">
+        <CardHeader className="flex justify-between flex-col sm:flex-row">
           <div className="flex flex-col">
             <CardTitle>
               Requests {
@@ -51,21 +56,56 @@ export const Analytics = ({
               Requests over time {graphData.length > 0 && `(${graphData.reduce((acc, curr) => acc + curr.requests, 0)})`}</CardDescription>
           </div>
 
-          {children}
+          <div className="flex items-center gap-4">
+            {children}
+
+
+            <Tabs defaultValue="account" onValueChange={(value) => setType(value as "step" | "monotone")}>
+              <TabsList>
+                <TabsTrigger value="monotone">
+                  <LineChart size={16} />
+                </TabsTrigger>
+                <TabsTrigger value="step">
+                  <BarChart2 size={16} />
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+
+
+          </div>
+
+
         </CardHeader>
 
         <CardContent>
-          <RequestsAnalyticsCard data={graphData} />
+          <RequestsAnalyticsCard data={graphData} type={type} />
         </CardContent>
       </CustomCard>
 
-      <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <CitiesAnalyticsCard data={cities} />
-        <CountriesAnalyticsCard data={countries} />
-        <RegionsAnalyticsCard data={regions} />
-        <DevicesAnalyticsCard data={devices} />
-        <OSsAnalyticsCard data={OSs} />
-        <BrowsersAnalyticsCard data={browsers} />
+      <div className={cn("w-full gap-4", {
+        "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3": (
+          cities.length > 0 || countries.length > 0 || regions.length > 0
+          || devices.length > 0 || OSs.length > 0 || browsers.length > 0
+        ),
+        "mt-4": (
+          cities.length <= 0 && countries.length <= 0 && regions.length <= 0
+          && devices.length <= 0 && OSs.length <= 0 && browsers.length <= 0
+        )
+      })}>
+        {cities.length > 0 && <CitiesAnalyticsCard data={cities} />}
+        {countries.length > 0 && <CountriesAnalyticsCard data={countries} />}
+        {regions.length > 0 && <RegionsAnalyticsCard data={regions} />}
+        {devices.length > 0 && <DevicesAnalyticsCard data={devices} />}
+        {OSs.length > 0 && <OSsAnalyticsCard data={OSs} />}
+        {browsers.length > 0 && <BrowsersAnalyticsCard data={browsers} />}
+
+        {
+          cities.length === 0 && countries.length === 0 && regions.length === 0
+          && devices.length === 0 && OSs.length === 0 && browsers.length === 0
+          && <div className="w-full flex justify-center items-center">
+            <p className="text-gray-400">Your post has no analytics data yet. Check back later or choose a different time range.</p>
+          </div>
+        }
       </div>
     </div>
   );
