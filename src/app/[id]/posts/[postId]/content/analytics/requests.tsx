@@ -4,13 +4,21 @@ import type { Component } from "@/components/utils/component";
 
 type RequestsAnalyticsCardProps = {
   data: Array<{ date: string; requests: number }>;
+  type: "step" | "monotone";
 };
 
-export const RequestsAnalyticsCard: Component<RequestsAnalyticsCardProps> = ({ data }) => {
+export const RequestsAnalyticsCard: Component<RequestsAnalyticsCardProps> = ({ data, type = "monotone" }) => {
   return (
     <ResponsiveContainer width="100%" height={200}>
-      <AreaChart data={data} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
-        <Area type="bump" dataKey="requests" stroke="#404040" fill="url(#gradient)" />
+      <AreaChart
+        data={data}
+        margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
+      >
+        <Area
+          type={type}
+          dataKey="requests"
+          stroke="#404040" fill="url(#gradient)"
+        />
 
         <XAxis
           dataKey="date"
