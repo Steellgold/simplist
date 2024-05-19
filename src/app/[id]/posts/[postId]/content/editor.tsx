@@ -5,12 +5,13 @@ import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from 
 import { CustomCard } from "@/components/ui/custom-card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Bold, ImageIcon, Italic, Link, Sparkles, Strikethrough, Trash2, Upload } from "lucide-react";
+import { ImageIcon, Link, Sparkles, Trash2, Upload } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { MDB } from "./editor/button.markdown";
 
 type EditorProps = {
   ogTitle: string;
@@ -112,44 +113,9 @@ export const Editor = ({ ogTitle, ogExcerpt, ogContent, ogVisibility, ogBannerIm
 
               <CardContent>
                 <div className="flex items-center gap-1.5 mb-2">
-                  <Button variant="inputStyle" disabled={isSelectionEmpty} onClick={() => {
-                    if (contentRef.current) {
-                      const text = contentRef.current.value;
-                      const selectionStart = contentRef.current.selectionStart;
-                      const selectionEnd = contentRef.current.selectionEnd;
-
-                      const newText = `${text.slice(0, selectionStart)}*${selection}*${text.slice(selectionEnd)}`;
-                      setContent(newText);
-                    }
-                  }}>
-                    <Italic className="h-4 w-4" />
-                  </Button>
-
-                  <Button variant="inputStyle" disabled={isSelectionEmpty} onClick={() => {
-                    if (contentRef.current) {
-                      const text = contentRef.current.value;
-                      const selectionStart = contentRef.current.selectionStart;
-                      const selectionEnd = contentRef.current.selectionEnd;
-
-                      const newText = `${text.slice(0, selectionStart)}**${selection}**${text.slice(selectionEnd)}`;
-                      setContent(newText);
-                    }
-                  }}>
-                    <Bold className="h-4 w-4" />
-                  </Button>
-
-                  <Button variant="inputStyle" disabled={isSelectionEmpty} onClick={() => {
-                    if (contentRef.current) {
-                      const text = contentRef.current.value;
-                      const selectionStart = contentRef.current.selectionStart;
-                      const selectionEnd = contentRef.current.selectionEnd;
-
-                      const newText = `${text.slice(0, selectionStart)}~~${selection}~~${text.slice(selectionEnd)}`;
-                      setContent(newText);
-                    }
-                  }}>
-                    <Strikethrough className="h-4 w-4" />
-                  </Button>
+                  <MDB contentRef={contentRef} selection={selection ?? ""} isDisabled={isSelectionEmpty} onContentChange={setContent} type="bold" />
+                  <MDB contentRef={contentRef} selection={selection ?? ""} isDisabled={isSelectionEmpty} onContentChange={setContent} type="italic" />
+                  <MDB contentRef={contentRef} selection={selection ?? ""} isDisabled={isSelectionEmpty} onContentChange={setContent} type="strike" />
 
                   <Dialog>
                     <DialogTrigger disabled={!isSelectionEmpty}>
