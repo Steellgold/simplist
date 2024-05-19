@@ -3,14 +3,14 @@ import type { Component } from "@/components/utils/component";
 import { Bold } from "lucide-react";
 import type { RefObject } from "react";
 
-type ButtonBold = {
+type Bold = {
   contentRef: RefObject<HTMLTextAreaElement>;
   selection: string;
   isDisabled: boolean;
   onContentChange: (content: string) => void;
 };
 
-export const ButtonBold: Component<ButtonBold> = ({
+export const ButtonBold: Component<Bold> = ({
   contentRef,
   selection,
   isDisabled,

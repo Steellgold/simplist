@@ -3,14 +3,14 @@ import type { Component } from "@/components/utils/component";
 import { Italic } from "lucide-react";
 import type { RefObject } from "react";
 
-type ButtonBold = {
+type Italic = {
   contentRef: RefObject<HTMLTextAreaElement>;
   selection: string;
   isDisabled: boolean;
   onContentChange: (content: string) => void;
 };
 
-export const ButtonItalic: Component<ButtonBold> = ({
+export const ButtonItalic: Component<Italic> = ({
   contentRef,
   selection,
   isDisabled,
