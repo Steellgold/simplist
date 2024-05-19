@@ -119,7 +119,7 @@ export const Editor = ({ ogTitle, ogExcerpt, ogContent, ogVisibility, ogBannerIm
                       const selectionEnd = contentRef.current.selectionEnd;
 
                       const newText = `${text.slice(0, selectionStart)}*${selection}*${text.slice(selectionEnd)}`;
-                      contentRef.current.value = newText;
+                      setContent(newText);
                     }
                   }}>
                     <Italic className="h-4 w-4" />
@@ -132,7 +132,7 @@ export const Editor = ({ ogTitle, ogExcerpt, ogContent, ogVisibility, ogBannerIm
                       const selectionEnd = contentRef.current.selectionEnd;
 
                       const newText = `${text.slice(0, selectionStart)}**${selection}**${text.slice(selectionEnd)}`;
-                      contentRef.current.value = newText;
+                      setContent(newText);
                     }
                   }}>
                     <Bold className="h-4 w-4" />
@@ -145,7 +145,7 @@ export const Editor = ({ ogTitle, ogExcerpt, ogContent, ogVisibility, ogBannerIm
                       const selectionEnd = contentRef.current.selectionEnd;
 
                       const newText = `${text.slice(0, selectionStart)}~~${selection}~~${text.slice(selectionEnd)}`;
-                      contentRef.current.value = newText;
+                      setContent(newText);
                     }
                   }}>
                     <Strikethrough className="h-4 w-4" />
@@ -168,7 +168,6 @@ export const Editor = ({ ogTitle, ogExcerpt, ogContent, ogVisibility, ogBannerIm
                       <Button disabled variant="inputStyle">Upload Image&nbsp;&nbsp;<Badge variant={"outline"}>Soon</Badge></Button>
 
                       <DialogFooter>
-                        <Button variant="outline" onClick={() => {}}>Cancel</Button>
                         <Button
                           disabled={!imageURL || !imageAlt}
                           onClick={() => {
@@ -178,9 +177,9 @@ export const Editor = ({ ogTitle, ogExcerpt, ogContent, ogVisibility, ogBannerIm
                               const selectionEnd = contentRef.current.selectionEnd;
 
                               const newText = `${text.slice(0, selectionStart)}![${imageAlt}](${imageURL})${text.slice(selectionEnd)}`;
-                              contentRef.current.value = newText;
                               setImageURL(null);
                               setImageAlt(null);
+                              setContent(newText);
                             }
                           }}>Insert Image</Button>
                       </DialogFooter>
@@ -212,7 +211,7 @@ export const Editor = ({ ogTitle, ogExcerpt, ogContent, ogVisibility, ogBannerIm
                               const selectionEnd = contentRef.current.selectionEnd;
 
                               const newText = `${text.slice(0, selectionStart)}[${selection}](${linkURL})${text.slice(selectionEnd)}`;
-                              contentRef.current.value = newText;
+                              setContent(newText);
                               setLinkURL(null);
                             }
                           }}>Insert Link</Button>
@@ -230,7 +229,7 @@ export const Editor = ({ ogTitle, ogExcerpt, ogContent, ogVisibility, ogBannerIm
 
                       const heading = "#".repeat(Number(value[1]));
                       const newText = `${text.slice(0, selectionStart)}${heading} ${selection}${text.slice(selectionEnd)}`;
-                      contentRef.current.value = newText;
+                      setContent(newText);
                     }
                   }}>
                     <SelectTrigger className="w-[100px]" disabled={isSelectionEmpty}>
@@ -343,7 +342,15 @@ export const Editor = ({ ogTitle, ogExcerpt, ogContent, ogVisibility, ogBannerIm
               </CardContent>
 
               <CardFooter>
-                <Button variant="default" className="w-full">Save Post</Button>
+                <Button
+                  variant="default"
+                  className="w-full"
+                  disabled={
+                    (!title || !excerpt || !content || !visibility)
+                    || (title === ogTitle && excerpt === ogExcerpt && content === ogContent && visibility === ogVisibility)
+                  }>
+                    Save Post
+                </Button>
               </CardFooter>
             </CustomCard>
           </div>
