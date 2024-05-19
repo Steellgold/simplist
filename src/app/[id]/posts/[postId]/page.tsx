@@ -181,7 +181,13 @@ const ProjectPost = ({ params: { id, postId } }: PageParams): ReactElement => {
         </TabsContent>
 
         <TabsContent value="edit">
-          <Editor title={post.title} />
+          <Editor
+            ogTitle={post.title}
+            ogExcerpt={post.excerpt}
+            ogContent={post.content}
+            ogVisibility={post.status == "PUBLISHED" ? "published" : "drafted"}
+            ogBannerImage={post.banner || ""}
+          />
         </TabsContent>
 
         <TabsContent value="variants">
