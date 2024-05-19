@@ -8,7 +8,7 @@ type MarkdownButtonsType = {
   selection: string;
   isDisabled: boolean;
   onContentChange: (content: string) => void;
-  type: "bold" | "italic" | "strikethrough";
+  type: "bold" | "italic" | "strike";
 };
 
 export const markdownProcessor = ({ contentRef, selection, isDisabled, onContentChange, type }: MarkdownButtonsType): boolean => {
@@ -28,7 +28,7 @@ export const markdownProcessor = ({ contentRef, selection, isDisabled, onContent
     case "italic":
       newText = `${text.slice(0, selectionStart)}*${selection}*${text.slice(selectionEnd)}`;
       break;
-    case "strikethrough":
+    case "strike":
       newText = `${text.slice(0, selectionStart)}~~${selection}~~${text.slice(selectionEnd)}`;
       break;
   }
@@ -37,7 +37,7 @@ export const markdownProcessor = ({ contentRef, selection, isDisabled, onContent
   return true;
 };
 
-export const MarkdownButton: Component<MarkdownButtonsType> = ({ contentRef, selection, isDisabled, onContentChange, type }): ReactElement => {
+export const MDB: Component<MarkdownButtonsType> = ({ contentRef, selection, isDisabled, onContentChange, type }): ReactElement => {
   return (
     <Button
       variant="inputStyle"
@@ -45,7 +45,7 @@ export const MarkdownButton: Component<MarkdownButtonsType> = ({ contentRef, sel
       onClick={() => markdownProcessor({ contentRef, selection, isDisabled, onContentChange, type })}>
       {type === "bold" && <Bold className="h-4 w-4" />}
       {type === "italic" && <Italic className="h-4 w-4" />}
-      {type === "strikethrough" && <Strikethrough className="h-4 w-4" />}
+      {type === "strike" && <Strikethrough className="h-4 w-4" />}
     </Button>
   );
 };
