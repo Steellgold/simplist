@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactElement } from "react";
-import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { CustomCard } from "@/components/ui/custom-card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Bold, ImageIcon, Italic, Link, Sparkles, Strikethrough, Upload } from "lucide-react";
+import { Bold, ImageIcon, Italic, Link, Sparkles, Strikethrough, Trash2, Upload } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
@@ -13,10 +13,19 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Badge } from "@/components/ui/badge";
 
 type EditorProps = {
-  title: string;
+  ogTitle: string;
+  ogExcerpt: string;
+  ogContent: string;
+  ogVisibility: "published" | "drafted";
+  ogBannerImage: string;
 };
 
-export const Editor = ({ title }: EditorProps): ReactElement => {
+export const Editor = ({ ogTitle, ogExcerpt, ogContent, ogVisibility, ogBannerImage }: EditorProps): ReactElement => {
+  const [title, setTitle] = useState<string>(ogTitle);
+  const [excerpt, setExcerpt] = useState<string>(ogExcerpt);
+  const [content, setContent] = useState<string>(ogContent);
+  const [visibility, setVisibility] = useState<"published" | "drafted">(ogVisibility);
+
   const contentRef = useRef<HTMLTextAreaElement>(null);
   const [selection, setSelection] = useState<string | null>(null);
 
@@ -24,6 +33,9 @@ export const Editor = ({ title }: EditorProps): ReactElement => {
   const [imageAlt, setImageAlt] = useState<string | null>(null);
 
   const [linkURL, setLinkURL] = useState<string | null>(null);
+
+  const [_, setUploading] = useState<boolean>(false);
+  const [uploadedImage, setUploadedImage] = useState<string | null>(ogBannerImage);
 
   useEffect(() => {
     const handleSelection = (): void => {
@@ -66,7 +78,12 @@ export const Editor = ({ title }: EditorProps): ReactElement => {
               </CardHeader>
 
               <CardContent className="flex items-center flex-col sm:flex-row gap-2">
-                <Input placeholder="Enter the title of your blog post" value={title} />
+                <Input
+                  placeholder="Enter the title of your blog post"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+
                 <Button className="w-full sm:w-auto" variant={"ai"}>Assistant <Sparkles className="h-4 w-4 ml-1.5" strokeWidth={1} /></Button>
               </CardContent>
             </CustomCard>
@@ -78,7 +95,12 @@ export const Editor = ({ title }: EditorProps): ReactElement => {
               </CardHeader>
 
               <CardContent>
-                <Textarea placeholder="Enter the excerpt of your blog post here" className="w-full h-24 p-3 resize-none text-white rounded-md" />
+                <Textarea
+                  placeholder="Enter the excerpt of your blog post here"
+                  className="w-full h-24 p-3 resize-none text-white rounded-md"
+                  value={excerpt}
+                  onChange={(e) => setExcerpt(e.target.value)}
+                />
               </CardContent>
             </CustomCard>
 
@@ -200,7 +222,17 @@ export const Editor = ({ title }: EditorProps): ReactElement => {
 
                   <Separator orientation="vertical" className="h-4" />
 
-                  <Select defaultValue="h1">
+                  <Select defaultValue="h1" onValueChange={(value) => {
+                    if (contentRef.current) {
+                      const text = contentRef.current.value;
+                      const selectionStart = contentRef.current.selectionStart;
+                      const selectionEnd = contentRef.current.selectionEnd;
+
+                      const heading = "#".repeat(Number(value[1]));
+                      const newText = `${text.slice(0, selectionStart)}${heading} ${selection}${text.slice(selectionEnd)}`;
+                      contentRef.current.value = newText;
+                    }
+                  }}>
                     <SelectTrigger className="w-[100px]" disabled={isSelectionEmpty}>
                       <SelectValue>Heading</SelectValue>
                     </SelectTrigger>
@@ -219,6 +251,8 @@ export const Editor = ({ title }: EditorProps): ReactElement => {
                   ref={contentRef}
                   className="h-96 p-3"
                   placeholder="Enter the content of your blog post"
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
                 />
               </CardContent>
             </CustomCard>
@@ -227,12 +261,77 @@ export const Editor = ({ title }: EditorProps): ReactElement => {
           <div className="grid auto-rows-max gap-4">
             <CustomCard noHover>
               <CardHeader>
+                <CardTitle>Banner Image</CardTitle>
+                <CardDescription>Upload a banner image for your blog post. It will be displayed at the top of your post.</CardDescription>
+              </CardHeader>
+
+              <CardContent>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  alt="Placeholder Image"
+                  className="w-full max-w-[600px] rounded-lg"
+                  height="400"
+                  width="600"
+                  src={uploadedImage ?? "/_static/no-image.png"}
+                  style={{
+                    aspectRatio: "600/300",
+                    objectFit: "cover"
+                  }}
+                />
+
+                <div className="my-5" />
+
+                <input
+                  type="file"
+                  className="opacity-0 absolute z-[-1]"
+                  id="file-banner-input"
+                  accept="image/png, image/jpeg, image/jpg"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      setUploading(true);
+                      const reader = new FileReader();
+                      reader.onload = () => {
+                        setUploadedImage(reader.result as string);
+                        setUploading(false);
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                />
+
+                <div>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                    <Button
+                      size="sm"
+                      className="gap-1 w-full"
+                      onClick={() => document?.getElementById("file-banner-input")?.click()}
+                    >
+                      <Upload className="h-3.5 w-3.5" />
+                      Upload Image
+                    </Button>
+
+                    {uploadedImage && (
+                      <Button onClick={() => setUploadedImage(null)} size="sm" className="gap-1 w-full">
+                        <Trash2 className="h-3.5 w-3.5" />
+                        Remove Image
+                      </Button>
+                    )}
+                  </div>
+
+                  <p className="text-sm text-gray-400 mt-2">Accepted formats: jpg, jpeg, png</p>
+                </div>
+              </CardContent>
+            </CustomCard>
+
+            <CustomCard noHover>
+              <CardHeader>
                 <CardTitle>Visibility</CardTitle>
                 <CardDescription>Choose the visibility of your blog post. You can choose to make it published or drafted.</CardDescription>
               </CardHeader>
 
               <CardContent>
-                <Select defaultValue="published">
+                <Select defaultValue={visibility} onValueChange={(value) => setVisibility(value as "published" | "drafted")}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select the visibility of your blog post" />
                   </SelectTrigger>
@@ -242,21 +341,10 @@ export const Editor = ({ title }: EditorProps): ReactElement => {
                   </SelectContent>
                 </Select>
               </CardContent>
-            </CustomCard>
 
-            <CustomCard noHover>
-              <CardHeader>
-                <CardTitle>Banner Image</CardTitle>
-                <CardDescription>Upload a banner image for your blog post. It will be displayed at the top of your post.</CardDescription>
-              </CardHeader>
-
-              <CardContent>
-                <input type="file" className="opacity-0 absolute z-[-1]" id="file-banner-input" />
-                <Button size="sm" className="gap-1 w-full" onClick={() => document?.getElementById("file-banner-input")?.click()}>
-                  <Upload className="h-3.5 w-3.5" />
-                    Upload Image
-                </Button>
-              </CardContent>
+              <CardFooter>
+                <Button variant="default" className="w-full">Save Post</Button>
+              </CardFooter>
             </CustomCard>
           </div>
         </div>
