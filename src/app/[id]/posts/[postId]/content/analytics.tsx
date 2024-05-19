@@ -59,7 +59,7 @@ export const Analytics = ({
           <div className="flex items-center gap-4">
             {children}
 
-            <Tabs defaultValue="account" onValueChange={(value) => setType(value as "step" | "monotone")}>
+            <Tabs defaultValue="monotone" onValueChange={(value) => setType(value as "step" | "monotone")}>
               <TabsList>
                 <TabsTrigger value="monotone">
                   <LineChart size={16} />
