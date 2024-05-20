@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import type { Prisma } from "@prisma/client";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 type PageParams = {
   params: {
@@ -87,9 +88,19 @@ const ProjectPosts = ({ params: { id } }: PageParams): ReactElement => {
             <TabsTrigger value="grid" disabled={isLoading || !posts.length}>
               <Grid3X3 className="w-5" />
             </TabsTrigger>
-            <TabsTrigger value="list" disabled={isLoading || !posts.length}>
-              <Rows3 className="w-5" />
-            </TabsTrigger>
+            {/* disabled={isLoading || !posts.length} */}
+            <TooltipProvider delayDuration={250}>
+              <Tooltip>
+                <TooltipContent>
+                  This view is under development
+                </TooltipContent>
+                <TooltipTrigger>
+                  <TabsTrigger value="list" disabled>
+                    <Rows3 className="w-5" />
+                  </TabsTrigger>
+                </TooltipTrigger>
+              </Tooltip>
+            </TooltipProvider>
           </TabsList>
         </Tabs>
 
@@ -99,8 +110,9 @@ const ProjectPosts = ({ params: { id } }: PageParams): ReactElement => {
         </Button>
       </div>
       <div className={cn("w-full gap-3", {
-        "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3": view === "grid",
-        "grid grid-cols-1": view === "list"
+        "": !isLoading && filteredPosts.length === 0,
+        "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3": isLoading || filteredPosts.length > 0 && view === "grid",
+        "grid grid-cols-1": filteredPosts.length > 0 && view === "list"
       })}>
         {isLoading ? (
           <>
@@ -189,6 +201,13 @@ const ProjectPosts = ({ params: { id } }: PageParams): ReactElement => {
                 </CustomCard>
               </Link>
             ))}
+
+            {filteredPosts.length === 0 && !isLoading && (
+              <div className="h-[calc(100vh-200px)] flex items-center justify-center flex-col gap-3">
+                <h1 className="text-2xl font-semibold text-muted-foreground">No posts found</h1>
+                <p className="text-muted-foreground text-center">No posts found for this project, try to create a new one.</p>
+              </div>
+            )}
           </>
         )}
       </div>
