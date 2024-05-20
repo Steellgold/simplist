@@ -5,7 +5,7 @@ import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from 
 import { CustomCard } from "@/components/ui/custom-card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2, Sparkles, Trash2, Upload } from "lucide-react";
+import { Sparkles, Trash2, Upload } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
@@ -16,6 +16,7 @@ import { updatePost } from "@/actions/post";
 import { toast } from "sonner";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
+import { SelectHeadingMarkdown as SHM } from "./editor/select.heading";
 
 type EditorProps = {
   id: string;
@@ -42,7 +43,7 @@ export const Editor = ({ id, projectId, ogTitle, ogExcerpt, ogContent, ogVisibil
   const [_, setUploading] = useState<boolean>(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(ogBannerImage);
 
-  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const handleSelection = (): void => {
@@ -73,6 +74,14 @@ export const Editor = ({ id, projectId, ogTitle, ogExcerpt, ogContent, ogVisibil
 
   const isSelectionEmpty = !selection || selection.length === 0;
 
+  const hasChanges = (
+    title !== ogTitle
+    || excerpt !== ogExcerpt
+    || content !== ogContent
+    || visibility !== ogVisibility
+    || uploadedImage !== ogBannerImage
+  );
+
   return (
     <main className="grid items-start gap-4 mt-3">
       <div className="max-w-full">
@@ -88,6 +97,7 @@ export const Editor = ({ id, projectId, ogTitle, ogExcerpt, ogContent, ogVisibil
                 <Input
                   placeholder="Enter the title of your blog post"
                   value={title}
+                  disabled={isLoading}
                   onChange={(e) => setTitle(e.target.value)}
                 />
 
@@ -106,6 +116,7 @@ export const Editor = ({ id, projectId, ogTitle, ogExcerpt, ogContent, ogVisibil
                   placeholder="Enter the excerpt of your blog post here"
                   className="w-full h-24 p-3 resize-none text-white rounded-md"
                   value={excerpt}
+                  disabled={isLoading}
                   onChange={(e) => setExcerpt(e.target.value)}
                 />
               </CardContent>
@@ -119,37 +130,21 @@ export const Editor = ({ id, projectId, ogTitle, ogExcerpt, ogContent, ogVisibil
 
               <CardContent>
                 <div className="flex items-center gap-1.5 mb-2">
-                  <MDB contentRef={contentRef} selection={selection ?? ""} isDisabled={isSelectionEmpty} onContentChange={setContent} type="bold" />
-                  <MDB contentRef={contentRef} selection={selection ?? ""} isDisabled={isSelectionEmpty} onContentChange={setContent} type="italic" />
-                  <MDB contentRef={contentRef} selection={selection ?? ""} isDisabled={isSelectionEmpty} onContentChange={setContent} type="strike" />
-                  <BMI contentRef={contentRef} isDisabled={isSelectionEmpty} onContentChange={setContent} />
-                  <BML contentRef={contentRef} isDisabled={isSelectionEmpty} selection={selection ?? ""} onContentChange={setContent} />
+                  <MDB
+                    contentRef={contentRef}
+                    selection={selection ?? ""} isDisabled={isSelectionEmpty || isLoading} onContentChange={setContent} type="bold" />
+                  <MDB
+                    contentRef={contentRef}
+                    selection={selection ?? ""} isDisabled={isSelectionEmpty || isLoading} onContentChange={setContent} type="italic" />
+                  <MDB
+                    contentRef={contentRef}
+                    selection={selection ?? ""} isDisabled={isSelectionEmpty || isLoading} onContentChange={setContent} type="strike" />
+                  <BMI contentRef={contentRef} isDisabled={isLoading} onContentChange={setContent} />
+                  <BML contentRef={contentRef} isDisabled={isSelectionEmpty || isLoading} selection={selection ?? ""} onContentChange={setContent} />
 
                   <Separator orientation="vertical" className="h-4" />
 
-                  <Select defaultValue="h1" onValueChange={(value) => {
-                    if (contentRef.current) {
-                      const text = contentRef.current.value;
-                      const selectionStart = contentRef.current.selectionStart;
-                      const selectionEnd = contentRef.current.selectionEnd;
-
-                      const heading = "#".repeat(Number(value[1]));
-                      const newText = `${text.slice(0, selectionStart)}${heading} ${selection}${text.slice(selectionEnd)}`;
-                      setContent(newText);
-                    }
-                  }}>
-                    <SelectTrigger className="w-[100px]" disabled={isSelectionEmpty}>
-                      <SelectValue>Heading</SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="h1">H1</SelectItem>
-                      <SelectItem value="h2">H2</SelectItem>
-                      <SelectItem value="h3">H3</SelectItem>
-                      <SelectItem value="h4">H4</SelectItem>
-                      <SelectItem value="h5">H5</SelectItem>
-                      <SelectItem value="h6">H6</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <SHM contentRef={contentRef} isDisabled={isSelectionEmpty || isLoading} onContentChange={setContent} selection={selection ?? ""} />
                 </div>
 
                 <Textarea
@@ -157,6 +152,7 @@ export const Editor = ({ id, projectId, ogTitle, ogExcerpt, ogContent, ogVisibil
                   className="h-96 p-3"
                   placeholder="Enter the content of your blog post"
                   value={content}
+                  disabled={isLoading}
                   onChange={(e) => setContent(e.target.value)}
                 />
               </CardContent>
@@ -197,8 +193,9 @@ export const Editor = ({ id, projectId, ogTitle, ogExcerpt, ogContent, ogVisibil
                   type="file"
                   className="opacity-0 absolute z-[-1]"
                   id="file-banner-input"
-                  accept="image/png, image/jpeg, image/jpg"
+                  accept="image/png, image/jpeg, image/jpg, image/webp"
                   onChange={(e) => {
+                    if (isLoading) return;
                     const file = e.target.files?.[0];
                     if (file) {
                       setUploading(true);
@@ -214,7 +211,8 @@ export const Editor = ({ id, projectId, ogTitle, ogExcerpt, ogContent, ogVisibil
 
                 <div>
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                    <Button size="sm" className="gap-1 w-full" onClick={() => document?.getElementById("file-banner-input")?.click()}>
+                    <Button size="sm" className="gap-1 w-full" disabled={isLoading}
+                      onClick={() => document?.getElementById("file-banner-input")?.click()}>
                       <Upload className="h-3.5 w-3.5" />
                       Upload Image
                     </Button>
@@ -227,6 +225,7 @@ export const Editor = ({ id, projectId, ogTitle, ogExcerpt, ogContent, ogVisibil
                             : null
                         )}
                         size="sm"
+                        disabled={isLoading}
                         className="gap-1 w-full">
                         <Trash2 className="h-3.5 w-3.5" />
                         Remove Image
@@ -234,7 +233,8 @@ export const Editor = ({ id, projectId, ogTitle, ogExcerpt, ogContent, ogVisibil
                     )}
                   </div>
 
-                  <p className="text-sm text-gray-400 mt-2">Accepted formats: jpg, jpeg, png</p>
+                  <p className="text-sm text-gray-400 mt-2">Accepted formats: jpg, jpeg, png, webp</p>
+                  <p className="text-sm text-gray-400">Max file size: 5MB</p>
                 </div>
               </CardContent>
             </CustomCard>
@@ -246,7 +246,7 @@ export const Editor = ({ id, projectId, ogTitle, ogExcerpt, ogContent, ogVisibil
               </CardHeader>
 
               <CardContent>
-                <Select defaultValue={visibility} onValueChange={(value) => setVisibility(value as "PUBLISHED" | "DRAFT")}>
+                <Select defaultValue={visibility} onValueChange={(value) => setVisibility(value as "PUBLISHED" | "DRAFT")} disabled={isLoading}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select the visibility of your blog post" />
                   </SelectTrigger>
@@ -259,8 +259,9 @@ export const Editor = ({ id, projectId, ogTitle, ogExcerpt, ogContent, ogVisibil
 
               <CardFooter>
                 {!isNew && (
-                  <form action={() => {
-                    setIsSaving(true);
+                  <form onSubmit={(e) => {
+                    e.preventDefault();
+                    setIsLoading(true);
                     toast.promise(updatePost(id, {
                       title,
                       excerpt,
@@ -278,12 +279,7 @@ export const Editor = ({ id, projectId, ogTitle, ogExcerpt, ogContent, ogVisibil
                     <Button
                       variant="default"
                       className="w-full"
-                      disabled={
-                        isSaving
-                        || (!title || !excerpt || !content || !visibility)
-                      || (title === ogTitle && excerpt === ogExcerpt && content === ogContent && visibility === ogVisibility)
-                      }>
-                      {isSaving ? <Loader2 className="animate-spin h-4 w-4 mr-1" /> : <></>}
+                      disabled={!hasChanges || isLoading}>
                       Save Post
                     </Button>
                   </form>
