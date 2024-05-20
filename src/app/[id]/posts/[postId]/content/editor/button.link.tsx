@@ -10,16 +10,9 @@ type ButtonImageType = {
   isDisabled: boolean;
   selection: string;
   onContentChange: (content: string) => void;
-  handleStackChange?: (stack: string) => void;
 };
 
-export const ButtonMarkdownLink: Component<ButtonImageType> = ({
-  contentRef,
-  isDisabled,
-  selection,
-  onContentChange,
-  handleStackChange
-}): ReactElement => {
+export const ButtonMarkdownLink: Component<ButtonImageType> = ({ contentRef, isDisabled, selection, onContentChange }): ReactElement => {
   const [linkURL, setLinkURL] = useState<string | null>(null);
 
   return (
@@ -50,7 +43,6 @@ export const ButtonMarkdownLink: Component<ButtonImageType> = ({
                 const newText = `${text.slice(0, selectionStart)}[${selection}](${linkURL})${text.slice(selectionEnd)}`;
                 setLinkURL(null);
                 onContentChange(newText);
-                handleStackChange && handleStackChange(newText);
               }
             }}>Insert Link</Button>
         </DialogFooter>

@@ -10,10 +10,9 @@ type ButtonImageType = {
   contentRef: RefObject<HTMLTextAreaElement>;
   isDisabled: boolean;
   onContentChange: (content: string) => void;
-  handleStackChange?: (stack: string) => void;
 };
 
-export const ButtonMarkdownImage: Component<ButtonImageType> = ({ contentRef, isDisabled, onContentChange, handleStackChange }): ReactElement => {
+export const ButtonMarkdownImage: Component<ButtonImageType> = ({ contentRef, isDisabled, onContentChange }): ReactElement => {
   const [imageAlt, setImageAlt] = useState<string | null>(null);
   const [imageURL, setImageURL] = useState<string | null>(null);
 
@@ -47,7 +46,6 @@ export const ButtonMarkdownImage: Component<ButtonImageType> = ({ contentRef, is
                 setImageURL(null);
                 setImageAlt(null);
                 onContentChange(newText);
-                handleStackChange && handleStackChange(newText);
               }
             }}>Insert Image</Button>
         </DialogFooter>
