@@ -215,7 +215,14 @@ export const Editor = ({ id, projectId, ogTitle, ogExcerpt, ogContent, ogVisibil
                     </Button>
 
                     {uploadedImage && (
-                      <Button onClick={() => setUploadedImage(null)} size="sm" className="gap-1 w-full">
+                      <Button
+                        onClick={() => setUploadedImage(
+                          ogBannerImage
+                            ? ogBannerImage
+                            : null
+                        )}
+                        size="sm"
+                        className="gap-1 w-full">
                         <Trash2 className="h-3.5 w-3.5" />
                         Remove Image
                       </Button>
