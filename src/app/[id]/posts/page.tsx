@@ -111,8 +111,8 @@ const ProjectPosts = ({ params: { id } }: PageParams): ReactElement => {
         ) : (
           <>
             {filteredPosts.map((post, index) => (
-              <CustomCard key={index} className="p-4 rounded shadow">
-                <Link href={`/${id}/posts/${post.id}`}>
+              <Link href={`/${id}/posts/${post.id}`} key={index}>
+                <CustomCard className="p-4 rounded shadow">
                   {view === "grid" && (
                     <>
                       <CardTitle>{post.title}</CardTitle>
@@ -120,19 +120,27 @@ const ProjectPosts = ({ params: { id } }: PageParams): ReactElement => {
                         {post.excerpt.slice(0, 100)}
                         {post.excerpt.length > 100 && "..."}
                       </CardDescription>
-                      {post.banner && <Image
-                        src={post.banner}
-                        alt={post.title}
-                        className="w-full h-40 object-cover rounded-md"
-                        width={400}
-                        height={200}
-                      />}
+                      {post.banner ? (
+                        <Image
+                          src={post.banner}
+                          alt={post.title}
+                          className="w-full h-40 object-cover rounded-md"
+                          width={400}
+                          height={200}
+                        />
+                      ) : (
+                        <div className="w-full h-40 bg-[#131313] rounded-md flex items-center justify-center select-none">
+                          <p className="text-white text-center">
+                            No banner found
+                          </p>
+                        </div>
+                      )}
                     </>
                   )}
 
                   {view === "list" && (
                     <div className="flex gap-3 flex flex-col sm:flex-row">
-                      {post.banner && (
+                      {post.banner ? (
                         <div>
                           <Image
                             src={post.banner}
@@ -140,6 +148,12 @@ const ProjectPosts = ({ params: { id } }: PageParams): ReactElement => {
                             className="w-full sm:w-40 h-30 object-cover rounded-md"
                             width={200}
                             height={200} />
+                        </div>
+                      ) : (
+                        <div className="w-40 h-30 bg-[#131313] rounded-md flex items-center justify-center select-none">
+                          <p className="text-white text-center">
+                            No banner found
+                          </p>
                         </div>
                       )}
                       <div className="flex flex-col gap-1">
@@ -172,8 +186,8 @@ const ProjectPosts = ({ params: { id } }: PageParams): ReactElement => {
                       <span>{post.comments.length ?? 0}</span>
                     </div>
                   </div>
-                </Link>
-              </CustomCard>
+                </CustomCard>
+              </Link>
             ))}
           </>
         )}
