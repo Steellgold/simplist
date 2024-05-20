@@ -214,11 +214,7 @@ export const Editor = ({ id, projectId, ogTitle, ogExcerpt, ogContent, ogVisibil
 
                 <div>
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                    <Button
-                      size="sm"
-                      className="gap-1 w-full"
-                      onClick={() => document?.getElementById("file-banner-input")?.click()}
-                    >
+                    <Button size="sm" className="gap-1 w-full" onClick={() => document?.getElementById("file-banner-input")?.click()}>
                       <Upload className="h-3.5 w-3.5" />
                       Upload Image
                     </Button>
