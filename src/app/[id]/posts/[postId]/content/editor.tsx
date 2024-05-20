@@ -14,6 +14,7 @@ import { ButtonMarkdownImage as BMI } from "./editor/button.image";
 import { ButtonMarkdownLink as BML } from "./editor/button.link";
 import { updatePost } from "@/actions/post";
 import { toast } from "sonner";
+import Image from "next/image";
 
 type EditorProps = {
   id: string;
@@ -169,8 +170,7 @@ export const Editor = ({ id, projectId, ogTitle, ogExcerpt, ogContent, ogVisibil
               </CardHeader>
 
               <CardContent>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   alt="Placeholder Image"
                   className="w-full max-w-[600px] rounded-lg"
                   height="400"
