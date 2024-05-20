@@ -15,6 +15,7 @@ import { ButtonMarkdownLink as BML } from "./editor/button.link";
 import { updatePost } from "@/actions/post";
 import { toast } from "sonner";
 import Image from "next/image";
+import { Badge } from "@/components/ui/badge";
 
 type EditorProps = {
   id: string;
@@ -170,17 +171,25 @@ export const Editor = ({ id, projectId, ogTitle, ogExcerpt, ogContent, ogVisibil
               </CardHeader>
 
               <CardContent>
-                <Image
-                  alt="Placeholder Image"
-                  className="w-full max-w-[600px] rounded-lg"
-                  height="400"
-                  width="600"
-                  src={uploadedImage ?? "/_static/no-image.png"}
-                  style={{
-                    aspectRatio: "600/300",
-                    objectFit: "cover"
-                  }}
-                />
+                <div className="relative">
+                  <Image
+                    alt="Placeholder Image"
+                    className="w-full max-w-[600px] rounded-lg"
+                    height="400"
+                    width="600"
+                    src={uploadedImage ?? "/_static/no-image.png"}
+                    style={{
+                      aspectRatio: "600/300",
+                      objectFit: "cover"
+                    }}
+                  />
+
+                  {ogBannerImage !== uploadedImage && (
+                    <Badge className="absolute top-2 right-2" variant={"secondary"}>
+                      Preview
+                    </Badge>
+                  )}
+                </div>
 
                 <div className="my-5" />
 
