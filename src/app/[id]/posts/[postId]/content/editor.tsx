@@ -5,33 +5,42 @@ import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from 
 import { CustomCard } from "@/components/ui/custom-card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Trash2, Upload } from "lucide-react";
+import { Loader2, Sparkles, Trash2, Upload } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { MDB } from "./editor/button.markdown";
 import { ButtonMarkdownImage as BMI } from "./editor/button.image";
 import { ButtonMarkdownLink as BML } from "./editor/button.link";
+import { updatePost } from "@/actions/post";
+import { toast } from "sonner";
 
 type EditorProps = {
+  id: string;
+  projectId: string;
+
   ogTitle: string;
   ogExcerpt: string;
   ogContent: string;
-  ogVisibility: "published" | "drafted";
+  ogVisibility: "PUBLISHED" | "DRAFT";
   ogBannerImage: string;
+
+  isNew?: boolean;
 };
 
-export const Editor = ({ ogTitle, ogExcerpt, ogContent, ogVisibility, ogBannerImage }: EditorProps): ReactElement => {
+export const Editor = ({ id, projectId, ogTitle, ogExcerpt, ogContent, ogVisibility, ogBannerImage, isNew }: EditorProps): ReactElement => {
   const [title, setTitle] = useState<string>(ogTitle);
   const [excerpt, setExcerpt] = useState<string>(ogExcerpt);
   const [content, setContent] = useState<string>(ogContent);
-  const [visibility, setVisibility] = useState<"published" | "drafted">(ogVisibility);
+  const [visibility, setVisibility] = useState<"PUBLISHED" | "DRAFT">(ogVisibility);
 
   const contentRef = useRef<HTMLTextAreaElement>(null);
   const [selection, setSelection] = useState<string | null>(null);
 
   const [_, setUploading] = useState<boolean>(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(ogBannerImage);
+
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
   useEffect(() => {
     const handleSelection = (): void => {
@@ -225,27 +234,48 @@ export const Editor = ({ ogTitle, ogExcerpt, ogContent, ogVisibility, ogBannerIm
               </CardHeader>
 
               <CardContent>
-                <Select defaultValue={visibility} onValueChange={(value) => setVisibility(value as "published" | "drafted")}>
+                <Select defaultValue={visibility} onValueChange={(value) => setVisibility(value as "PUBLISHED" | "DRAFT")}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select the visibility of your blog post" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="published">Published</SelectItem>
-                    <SelectItem value="drafted">Drafted</SelectItem>
+                    <SelectItem value="PUBLISHED">Published</SelectItem>
+                    <SelectItem value="DRAFT">Drafted</SelectItem>
                   </SelectContent>
                 </Select>
               </CardContent>
 
               <CardFooter>
-                <Button
-                  variant="default"
-                  className="w-full"
-                  disabled={
-                    (!title || !excerpt || !content || !visibility)
-                    || (title === ogTitle && excerpt === ogExcerpt && content === ogContent && visibility === ogVisibility)
-                  }>
-                    Save Post
-                </Button>
+                {!isNew && (
+                  <form action={() => {
+                    setIsSaving(true);
+                    toast.promise(updatePost(id, {
+                      title,
+                      excerpt,
+                      content,
+                      status: visibility,
+                      lang: "EN",
+                      banner: uploadedImage,
+                      projectId
+                    }), {
+                      loading: "Saving post...",
+                      success: "Post saved successfully!",
+                      error: "Failed to save post."
+                    });
+                  }} className="w-full">
+                    <Button
+                      variant="default"
+                      className="w-full"
+                      disabled={
+                        isSaving
+                        || (!title || !excerpt || !content || !visibility)
+                      || (title === ogTitle && excerpt === ogExcerpt && content === ogContent && visibility === ogVisibility)
+                      }>
+                      {isSaving ? <Loader2 className="animate-spin h-4 w-4 mr-1" /> : <></>}
+                      Save Post
+                    </Button>
+                  </form>
+                )}
               </CardFooter>
             </CustomCard>
           </div>
