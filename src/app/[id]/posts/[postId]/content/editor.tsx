@@ -5,13 +5,13 @@ import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from 
 import { CustomCard } from "@/components/ui/custom-card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ImageIcon, Link, Sparkles, Trash2, Upload } from "lucide-react";
+import { Sparkles, Trash2, Upload } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import { MDB } from "./editor/button.markdown";
+import { ButtonMarkdownImage as BMI } from "./editor/button.image";
+import { ButtonMarkdownLink as BML } from "./editor/button.link";
 
 type EditorProps = {
   ogTitle: string;
@@ -29,11 +29,6 @@ export const Editor = ({ ogTitle, ogExcerpt, ogContent, ogVisibility, ogBannerIm
 
   const contentRef = useRef<HTMLTextAreaElement>(null);
   const [selection, setSelection] = useState<string | null>(null);
-
-  const [imageURL, setImageURL] = useState<string | null>(null);
-  const [imageAlt, setImageAlt] = useState<string | null>(null);
-
-  const [linkURL, setLinkURL] = useState<string | null>(null);
 
   const [_, setUploading] = useState<boolean>(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(ogBannerImage);
@@ -116,74 +111,8 @@ export const Editor = ({ ogTitle, ogExcerpt, ogContent, ogVisibility, ogBannerIm
                   <MDB contentRef={contentRef} selection={selection ?? ""} isDisabled={isSelectionEmpty} onContentChange={setContent} type="bold" />
                   <MDB contentRef={contentRef} selection={selection ?? ""} isDisabled={isSelectionEmpty} onContentChange={setContent} type="italic" />
                   <MDB contentRef={contentRef} selection={selection ?? ""} isDisabled={isSelectionEmpty} onContentChange={setContent} type="strike" />
-
-                  <Dialog>
-                    <DialogTrigger disabled={!isSelectionEmpty}>
-                      <Button variant="inputStyle" disabled={!isSelectionEmpty}>
-                        <ImageIcon className="h-4 w-4" />
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Insert Image</DialogTitle>
-                        <DialogDescription>Upload or insert a link to an image that you want to include in your blog post.</DialogDescription>
-                      </DialogHeader>
-
-                      <Input placeholder="Enter the alt text of the image" value={imageAlt ?? ""} onChange={(e) => setImageAlt(e.target.value)} />
-                      <Input placeholder="Enter the URL of the image" value={imageURL ?? ""} onChange={(e) => setImageURL(e.target.value)} />
-                      <Button disabled variant="inputStyle">Upload Image&nbsp;&nbsp;<Badge variant={"outline"}>Soon</Badge></Button>
-
-                      <DialogFooter>
-                        <Button
-                          disabled={!imageURL || !imageAlt}
-                          onClick={() => {
-                            if (contentRef.current) {
-                              const text = contentRef.current.value;
-                              const selectionStart = contentRef.current.selectionStart;
-                              const selectionEnd = contentRef.current.selectionEnd;
-
-                              const newText = `${text.slice(0, selectionStart)}![${imageAlt}](${imageURL})${text.slice(selectionEnd)}`;
-                              setImageURL(null);
-                              setImageAlt(null);
-                              setContent(newText);
-                            }
-                          }}>Insert Image</Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-
-                  <Dialog>
-                    <DialogTrigger disabled={isSelectionEmpty}>
-                      <Button variant="inputStyle" disabled={isSelectionEmpty}>
-                        <Link className="h-4 w-4" />
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Insert Link</DialogTitle>
-                        <DialogDescription>Insert a link to a website or another blog post.</DialogDescription>
-                      </DialogHeader>
-
-                      <Input placeholder="Enter the URL of the link" value={linkURL ?? ""} onChange={(e) => setLinkURL(e.target.value)} />
-
-                      <DialogFooter>
-                        <Button variant="outline" onClick={() => {}}>Cancel</Button>
-                        <Button
-                          disabled={!linkURL || !selection}
-                          onClick={() => {
-                            if (contentRef.current) {
-                              const text = contentRef.current.value;
-                              const selectionStart = contentRef.current.selectionStart;
-                              const selectionEnd = contentRef.current.selectionEnd;
-
-                              const newText = `${text.slice(0, selectionStart)}[${selection}](${linkURL})${text.slice(selectionEnd)}`;
-                              setContent(newText);
-                              setLinkURL(null);
-                            }
-                          }}>Insert Link</Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
+                  <BMI contentRef={contentRef} isDisabled={isSelectionEmpty} onContentChange={setContent} />
+                  <BML contentRef={contentRef} isDisabled={isSelectionEmpty} selection={selection ?? ""} onContentChange={setContent} />
 
                   <Separator orientation="vertical" className="h-4" />
 
