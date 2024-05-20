@@ -37,6 +37,9 @@ export const GET = async({ nextUrl }: NextRequest): Promise<NextResponse> => {
           lang: true
         }
       }
+    },
+    orderBy: {
+      updatedAt: "desc"
     }
   });
 
