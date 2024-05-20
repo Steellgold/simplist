@@ -8,10 +8,18 @@ type MarkdownButtonsType = {
   selection: string;
   isDisabled: boolean;
   onContentChange: (content: string) => void;
+  handleStackChange?: (stack: string) => void;
   type: "bold" | "italic" | "strike";
 };
 
-export const markdownProcessor = ({ contentRef, selection, isDisabled, onContentChange, type }: MarkdownButtonsType): boolean => {
+export const markdownProcessor = ({
+  contentRef,
+  selection,
+  isDisabled,
+  onContentChange,
+  handleStackChange,
+  type
+}: MarkdownButtonsType): boolean => {
   if (isDisabled) return false;
   if (!contentRef.current) return false;
   if (!selection) return false;
@@ -34,6 +42,7 @@ export const markdownProcessor = ({ contentRef, selection, isDisabled, onContent
   }
 
   onContentChange(newText);
+  handleStackChange && handleStackChange(newText);
   return true;
 };
 
