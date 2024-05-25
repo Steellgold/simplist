@@ -5,7 +5,7 @@ import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from 
 import { CustomCard } from "@/components/ui/custom-card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Trash2, Upload } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
@@ -14,9 +14,8 @@ import { ButtonMarkdownImage as BMI } from "./editor/button.image";
 import { ButtonMarkdownLink as BML } from "./editor/button.link";
 import { updatePost } from "@/actions/post";
 import { toast } from "sonner";
-import Image from "next/image";
-import { Badge } from "@/components/ui/badge";
 import { SelectHeadingMarkdown as SHM } from "./editor/select.heading";
+import { ImageUploader } from "./editor/image.uploader";
 
 type EditorProps = {
   id: string;
@@ -40,7 +39,6 @@ export const Editor = ({ id, projectId, ogTitle, ogExcerpt, ogContent, ogVisibil
   const contentRef = useRef<HTMLTextAreaElement>(null);
   const [selection, setSelection] = useState<string | null>(null);
 
-  const [_, setUploading] = useState<boolean>(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(ogBannerImage);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -173,75 +171,14 @@ export const Editor = ({ id, projectId, ogTitle, ogExcerpt, ogContent, ogVisibil
               </CardHeader>
 
               <CardContent>
-                <div className="relative">
-                  <Image
-                    alt="Placeholder Image"
-                    className="w-full max-w-[600px] rounded-lg"
-                    height="400"
-                    width="600"
-                    src={uploadedImage ?? "/_static/no-image.png"}
-                    style={{
-                      aspectRatio: "600/300",
-                      objectFit: "cover"
-                    }}
-                  />
-
-                  {ogBannerImage !== uploadedImage && (
-                    <Badge className="absolute top-2 right-2" variant={"secondary"}>
-                      Preview
-                    </Badge>
-                  )}
-                </div>
-
-                <div className="my-5" />
-
-                <input
-                  type="file"
-                  className="opacity-0 absolute z-[-1]"
-                  id="file-banner-input"
-                  accept="image/png, image/jpeg, image/jpg, image/webp"
-                  onChange={(e) => {
-                    if (isLoading) return;
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      setUploading(true);
-                      const reader = new FileReader();
-                      reader.onload = () => {
-                        setUploadedImage(reader.result as string);
-                        setUploading(false);
-                      };
-                      reader.readAsDataURL(file);
-                    }
-                  }}
+                <ImageUploader
+                  isDisabled={isLoading}
+                  isLoading={isLoading}
+                  image={uploadedImage}
+                  projectId={projectId}
+                  postId={id}
+                  onContentChange={setUploadedImage}
                 />
-
-                <div>
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                    <Button size="sm" className="gap-1 w-full" disabled={isLoading}
-                      onClick={() => document?.getElementById("file-banner-input")?.click()}>
-                      <Upload className="h-3.5 w-3.5" />
-                      Upload Image
-                    </Button>
-
-                    {uploadedImage && (
-                      <Button
-                        onClick={() => setUploadedImage(
-                          ogBannerImage
-                            ? ogBannerImage
-                            : null
-                        )}
-                        size="sm"
-                        disabled={isLoading}
-                        className="gap-1 w-full">
-                        <Trash2 className="h-3.5 w-3.5" />
-                        Remove Image
-                      </Button>
-                    )}
-                  </div>
-
-                  <p className="text-sm text-gray-400 mt-2">Accepted formats: jpg, jpeg, png, webp</p>
-                  <p className="text-sm text-gray-400">Max file size: 5MB</p>
-                </div>
               </CardContent>
             </CustomCard>
 
