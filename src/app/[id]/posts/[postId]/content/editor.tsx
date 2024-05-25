@@ -147,14 +147,20 @@ export const Editor = ({ id, projectId, ogTitle, ogExcerpt, ogContent, ogVisibil
                   <SHM contentRef={contentRef} isDisabled={isSelectionEmpty || isLoading} onContentChange={setContent} selection={selection ?? ""} />
                 </div>
 
-                <Textarea
-                  ref={contentRef}
-                  className="h-96 p-3"
-                  placeholder="Enter the content of your blog post"
-                  value={content}
-                  disabled={isLoading}
-                  onChange={(e) => setContent(e.target.value)}
-                />
+                <div className="relative w-full">
+                  <Textarea
+                    ref={contentRef}
+                    className="h-96 p-3"
+                    placeholder="Enter the content of your blog post"
+                    value={content}
+                    disabled={isLoading}
+                    onChange={(e) => setContent(e.target.value)}
+                  />
+
+                  {!content.replace(/\s/g, "").length && (
+                    <p className="absolute bottom-3 right-3 text-gray-400">You haven&apos;t written anything yet, start writing!</p>
+                  )}
+                </div>
               </CardContent>
             </CustomCard>
           </div>
@@ -279,7 +285,11 @@ export const Editor = ({ id, projectId, ogTitle, ogExcerpt, ogContent, ogVisibil
                     <Button
                       variant="default"
                       className="w-full"
-                      disabled={!hasChanges || isLoading}>
+                      disabled={
+                        !hasChanges
+                        || isLoading
+                        || !content.replace(/\s/g, "").length
+                      }>
                       Save Post
                     </Button>
                   </form>
