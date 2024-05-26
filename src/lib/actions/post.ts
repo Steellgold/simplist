@@ -29,7 +29,8 @@ export const updatePost = async(id: string, data: z.infer<typeof PostSchema>): P
       title: data.title,
       content: data.content,
       excerpt: data.excerpt,
-      status: data.status
+      status: data.status,
+      banner: data.banner
     }
   });
 
