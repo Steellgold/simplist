@@ -1,8 +1,7 @@
 import { z } from "zod";
 
 export const PostSchema = z.object({
-  slug: z.string().optional().nullable(),
-  rewriteSlug: z.boolean().optional().nullable(),
+  slug: z.string(),
   title: z.string()
     .min(3, { message: "Title must be at least 3 characters long" })
     .max(255, { message: "Title must be at most 255 characters long" }),
@@ -29,6 +28,6 @@ export const PostSchema = z.object({
   })).optional().nullable(),
   banner: z.string().optional().nullable(),
   status: z.enum(["DRAFT", "PUBLISHED"]),
-  projectId: z.string().optional().nullable(),
+  projectId: z.string(),
   lang: z.string().default("EN")
 });
