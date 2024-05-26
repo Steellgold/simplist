@@ -104,9 +104,11 @@ const ProjectPosts = ({ params: { id } }: PageParams): ReactElement => {
           </TabsList>
         </Tabs>
 
-        <Button className="flex gap-1" variant="default">
-          <PenBox className="w-4" />
-          New Post
+        <Button className="flex gap-1" variant="default" asChild>
+          <Link href={`/${id}/posts/new`}>
+            <PenBox className="w-4" />
+            New Post
+          </Link>
         </Button>
       </div>
       <div className={cn("w-full gap-3", {
