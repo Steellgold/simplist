@@ -5,33 +5,38 @@ import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from 
 import { CustomCard } from "@/components/ui/custom-card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Sparkles } from "lucide-react";
+import { Braces, Sparkles } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { MDB } from "./editor/button.markdown";
 import { ButtonMarkdownImage as BMI } from "./editor/button.image";
 import { ButtonMarkdownLink as BML } from "./editor/button.link";
-import { updatePost } from "@/actions/post";
+import { createPost, updatePost } from "@/actions/post";
 import { toast } from "sonner";
 import { SelectHeadingMarkdown as SHM } from "./editor/select.heading";
-import { ImageUploader } from "./editor/image.uploader";
+import { IMAGE_PLACEHOLDER, ImageUploader } from "./editor/image.uploader";
 import { DialogDeletePost } from "./editor/dialog.delete";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 type EditorProps = {
-  id: string;
+  id?: string;
   projectId: string;
 
-  ogTitle: string;
-  ogExcerpt: string;
-  ogContent: string;
-  ogVisibility: "PUBLISHED" | "DRAFT";
-  ogBannerImage: string;
+  ogTitle?: string;
+  ogExcerpt?: string;
+  ogContent?: string;
+  ogVisibility?: "PUBLISHED" | "DRAFT";
+  ogBannerImage?: string;
 
   isNew?: boolean;
 };
 
-export const Editor = ({ id, projectId, ogTitle, ogExcerpt, ogContent, ogVisibility, ogBannerImage, isNew }: EditorProps): ReactElement => {
+export const Editor = ({
+  id, projectId,
+  ogTitle = "", ogExcerpt = "", ogContent = "", ogVisibility = "DRAFT", ogBannerImage = IMAGE_PLACEHOLDER,
+  isNew
+}: EditorProps): ReactElement => {
   const [title, setTitle] = useState<string>(ogTitle);
   const [excerpt, setExcerpt] = useState<string>(ogExcerpt);
   const [content, setContent] = useState<string>(ogContent);
@@ -92,15 +97,27 @@ export const Editor = ({ id, projectId, ogTitle, ogExcerpt, ogContent, ogVisibil
                 <CardDescription>Enter the title of your blog post. It should be catchy and reflect the content of your post.</CardDescription>
               </CardHeader>
 
-              <CardContent className="flex items-center flex-col sm:flex-row gap-2">
-                <Input
-                  placeholder="Enter the title of your blog post"
-                  value={title}
-                  disabled={isLoading}
-                  onChange={(e) => setTitle(e.target.value)}
-                />
+              <CardContent className="flex flex-col">
+                <div className="flex items-center flex-col sm:flex-row gap-2">
+                  <Input
+                    placeholder="Enter the title of your blog post"
+                    value={title}
+                    disabled={isLoading}
+                    onChange={(e) => setTitle(e.target.value)}
+                  />
 
-                <Button className="w-full sm:w-auto" variant={"ai"}>Assistant <Sparkles className="h-4 w-4 ml-1.5" strokeWidth={1} /></Button>
+                  <Button className="w-full sm:w-auto" variant={"ai"}>Assistant <Sparkles className="h-4 w-4 ml-1.5" strokeWidth={1} /></Button>
+                </div>
+
+                {title && (
+                  <Alert className="mt-2">
+                    <Braces className="h-4 w-4" />
+                    <AlertTitle>API</AlertTitle>
+                    <AlertDescription>
+                      <kbd>GET /api/posts/{buildSlug(title)}</kbd>
+                    </AlertDescription>
+                  </Alert>
+                )}
               </CardContent>
             </CustomCard>
 
@@ -177,7 +194,7 @@ export const Editor = ({ id, projectId, ogTitle, ogExcerpt, ogContent, ogVisibil
                   isLoading={isLoading}
                   image={uploadedImage}
                   projectId={projectId}
-                  postId={id}
+                  postId={id ?? ""}
                   onContentChange={setUploadedImage}
                 />
               </CardContent>
@@ -202,18 +219,19 @@ export const Editor = ({ id, projectId, ogTitle, ogExcerpt, ogContent, ogVisibil
               </CardContent>
 
               <CardFooter>
-                {!isNew && (
+                {!isNew ? (
                   <form onSubmit={(e) => {
                     e.preventDefault();
                     setIsLoading(true);
-                    toast.promise(updatePost(id, {
+                    toast.promise(updatePost(id ?? "", {
                       title,
                       excerpt,
                       content,
                       status: visibility,
                       lang: "EN",
                       banner: uploadedImage,
-                      projectId
+                      projectId,
+                      slug: title.toLowerCase().replace(/\s/g, "-")
                     }), {
                       loading: "Saving post...",
                       success: "Post saved successfully!",
@@ -228,26 +246,64 @@ export const Editor = ({ id, projectId, ogTitle, ogExcerpt, ogContent, ogVisibil
                         || isLoading
                         || !content.replace(/\s/g, "").length
                       }>
-                      Save Post
+                      {visibility === "PUBLISHED" ? "Publish Post" : "Draft Post"}
+                      {hasChanges && "(Unsaved changes)"}
+                    </Button>
+                  </form>
+                ) : (
+                  <form onSubmit={(e) => {
+                    e.preventDefault();
+                    setIsLoading(true);
+                    toast.promise(createPost({
+                      title,
+                      excerpt,
+                      content,
+                      status: visibility,
+                      lang: "EN",
+                      banner: uploadedImage,
+                      projectId,
+                      slug: buildSlug(title)
+                    }), {
+                      loading: "Creating post...",
+                      success: "Post created successfully!",
+                      error: "Failed to create post."
+                    });
+                  }} className="w-full">
+                    <Button
+                      variant="default"
+                      className="w-full"
+                      disabled={
+                        !title
+                        || !excerpt
+                        || !content
+                        || !uploadedImage
+                        || isLoading
+                        || !content.replace(/\s/g, "").length
+                      }>
+                      {visibility === "PUBLISHED" ? "Create & Publish Post" : "Create & Draft Post"}
                     </Button>
                   </form>
                 )}
               </CardFooter>
             </CustomCard>
 
-            <CustomCard noHover isDanger>
-              <CardHeader>
-                <CardTitle>Danger Zone</CardTitle>
-                <CardDescription>Delete this blog post. This action cannot be undone.</CardDescription>
-              </CardHeader>
+            {!isNew && (
+              <CustomCard noHover isDanger>
+                <CardHeader>
+                  <CardTitle>Danger Zone</CardTitle>
+                  <CardDescription>Delete this blog post. This action cannot be undone.</CardDescription>
+                </CardHeader>
 
-              <CardContent>
-                <DialogDeletePost projectId={projectId} postId={id} />
-              </CardContent>
-            </CustomCard>
+                <CardContent>
+                  {id && <DialogDeletePost projectId={projectId} postId={id} />}
+                </CardContent>
+              </CustomCard>
+            )}
           </div>
         </div>
       </div>
     </main>
   );
 };
+
+const buildSlug = (title: string): string => title.toLowerCase().replace(/\s/g, "-").replace(/[^a-z0-9-]/g, "").replace(/-+/g, "-");
