@@ -42,7 +42,7 @@ export const SidebarHeader = (): ReactElement => {
       <span className="text-muted-foreground/80 mx-2 lg:mx-4 select-none">/</span>
 
       <Select defaultValue={active.id} onValueChange={(value) => {
-        router.push(url.replace(active.id, value));
+        router.push(url.replace(active.id, value).split("/").slice(0, 3).join("/"));
         setActive(value);
       }}>
         <SelectTrigger className="items-center border-b px-4 lg:px-6">
