@@ -127,7 +127,7 @@ export const GET = async({ headers, nextUrl }: NextRequest, { params }: Request)
     .month(Math.floor(Math.random() * 12))
     .year(Math.floor(Math.random() * 3) + 2020);
 
-  await fetch(`https://api.tinybird.co/v0/events?name=${activePost.id}`, {
+  await fetch("https://api.tinybird.co/v0/events?name=posts_metrics", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
