@@ -17,8 +17,8 @@ export const updatePost = async(id: string, data: z.infer<typeof PostSchema>): P
   const response = await fetch(`${env.NEXT_PUBLIC_APP_URL}/auth/is-allowed?projectId=${data.projectId}&userId=${user?.id}`);
   const schema = z.object({ isAllowed: z.boolean() }).safeParse(await response.json());
 
-  if (!schema.success) return { success: false, message: "Failed to check if you are allowed to update this project" };
-  if (!schema.data.isAllowed) return { success: false, message: "You are not allowed to update this project" };
+  if (!schema.success) return { success: false, message: "Failed to check if you are allowed to update this post" };
+  if (!schema.data.isAllowed) return { success: false, message: "You are not allowed to update this post" };
 
   const post = await db.$queryRaw<Post | null>`SELECT * FROM "Post" WHERE id = ${id}`;
   if (!post) return { success: false, message: "Post not found" };
@@ -36,4 +36,25 @@ export const updatePost = async(id: string, data: z.infer<typeof PostSchema>): P
 
   revalidatePath(`/${postData.projectId}/posts`);
   redirect(`/${postData.projectId}/posts`);
+};
+
+export const deletePost = async(id: string, projectId: string): Promise<{ success: boolean; message?: string }> => {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("User not found");
+
+  const response = await fetch(`${env.NEXT_PUBLIC_APP_URL}/auth/is-allowed?projectId=${projectId}&userId=${user?.id}`);
+  const schema = z.object({ isAllowed: z.boolean() }).safeParse(await response.json());
+
+  if (!schema.success) return { success: false, message: "Failed to check if you are allowed to delete this post" };
+  if (!schema.data.isAllowed) return { success: false, message: "You are not allowed to delete this post" };
+
+  const post = await db.$queryRaw<Post | null>`SELECT * FROM "Post" WHERE id = ${id}`;
+  if (!post) return { success: false, message: "Post not found" };
+
+  await db.post.delete({ where: { id } });
+  await supabase.storage.from("banners").remove([`${post.projectId}/${post.id}`]);
+
+  revalidatePath(`/${projectId}/posts`);
+  redirect(`/${projectId}/posts`);
 };
