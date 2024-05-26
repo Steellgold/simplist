@@ -148,7 +148,7 @@ export const ImageUploader: Component<ImageUploaderType> = ({
             Upload Image
           </Button>
 
-          {uploadedImage && (
+          {uploadedImage !== "/_static/no-image.png" && (
             <Button
               onClick={() => setUploadedImage("/_static/no-image.png")}
               size="sm"
