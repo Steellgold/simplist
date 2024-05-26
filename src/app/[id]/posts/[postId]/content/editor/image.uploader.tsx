@@ -22,8 +22,9 @@ type ImageUploaderType = {
   onContentChange: (content: string) => void;
 };
 
-const ALLOWED_FORMATS = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
+export const ALLOWED_FORMATS = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
+export const MAX_FILE_SIZE = 5 * 1024 * 1024;
+export const IMAGE_PLACEHOLDER = "/_static/no-image.png";
 
 export const ImageUploader: Component<ImageUploaderType> = ({
   isDisabled,
@@ -50,14 +51,14 @@ export const ImageUploader: Component<ImageUploaderType> = ({
           className="w-full max-w-[600px] rounded-lg"
           height="400"
           width="600"
-          src={uploadedImage ?? "/_static/no-image.png"}
+          src={uploadedImage ?? IMAGE_PLACEHOLDER}
           style={{
             aspectRatio: "600/300",
             objectFit: "cover"
           }}
         />
 
-        {uploadedImage !== "/_static/no-image.png" && <Badge className="absolute top-2 right-2" variant={"secondary"}>Preview</Badge>}
+        {uploadedImage !== IMAGE_PLACEHOLDER && <Badge className="absolute top-2 right-2" variant={"secondary"}>Preview</Badge>}
       </div>
 
       <Skeleton
@@ -95,7 +96,7 @@ export const ImageUploader: Component<ImageUploaderType> = ({
           }> => new Promise((resolve, reject) => {
             setUploading(true);
 
-            supabase.storage.from("banners").upload(`${projectId}/${postId}/${fileName}`, file, {
+            supabase.storage.from("banners").upload(`${projectId}/${fileName}`, file, {
               cacheControl: "3600",
               contentType: file.type
             })
@@ -103,7 +104,7 @@ export const ImageUploader: Component<ImageUploaderType> = ({
                 setUploading(false);
                 if (error) return reject(error.message);
 
-                const { data: { publicUrl } } = supabase.storage.from("banners").getPublicUrl(`${projectId}/${postId}/${fileName}`);
+                const { data: { publicUrl } } = supabase.storage.from("banners").getPublicUrl(`${projectId}/${fileName}`);
                 return resolve({
                   url: publicUrl,
                   name: fileName
@@ -125,7 +126,7 @@ export const ImageUploader: Component<ImageUploaderType> = ({
             error: (error: string) => error
           });
 
-          onContentChange("/_static/no-image.png");
+          onContentChange(IMAGE_PLACEHOLDER);
         }}
       />
 
@@ -137,9 +138,9 @@ export const ImageUploader: Component<ImageUploaderType> = ({
             Upload Image
           </Button>
 
-          {uploadedImage !== "/_static/no-image.png" && (
+          {uploadedImage !== IMAGE_PLACEHOLDER && (
             <Button
-              onClick={() => setUploadedImage("/_static/no-image.png")}
+              onClick={() => setUploadedImage(IMAGE_PLACEHOLDER)}
               size="sm"
               disabled={isLoading || isDisabled}
               className="gap-1 w-full"
