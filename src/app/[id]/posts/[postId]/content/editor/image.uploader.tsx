@@ -22,6 +22,7 @@ type ImageUploaderType = {
 };
 
 const ALLOWED_FORMATS = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
 export const ImageUploader: Component<ImageUploaderType> = ({
   isLoading,
@@ -75,7 +76,7 @@ export const ImageUploader: Component<ImageUploaderType> = ({
 
           console.log("Uploading image... 0");
 
-          if (e.target.files?.[0]?.size && e.target.files?.[0]?.size > 5 * 1024 * 1024) {
+          if (e.target.files?.[0]?.size && e.target.files?.[0]?.size > MAX_FILE_SIZE) {
             return toast.error("File size must be less than 5MB");
           }
 
@@ -162,7 +163,7 @@ export const ImageUploader: Component<ImageUploaderType> = ({
         </div>
 
         <p className="text-sm text-gray-400 mt-2">Accepted formats: {ALLOWED_FORMATS.join(", ").replace(/image\//g, "")}</p>
-        <p className="text-sm text-gray-400">Max file size: 5MB</p>
+        <p className="text-sm text-gray-400">Max file size: {MAX_FILE_SIZE / 1024 / 1024}MB</p>
       </div>
     </>
   );
