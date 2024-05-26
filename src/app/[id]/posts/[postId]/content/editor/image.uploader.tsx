@@ -161,7 +161,7 @@ export const ImageUploader: Component<ImageUploaderType> = ({
           )}
         </div>
 
-        <p className="text-sm text-gray-400 mt-2">Accepted formats: jpg, jpeg, png, webp</p>
+        <p className="text-sm text-gray-400 mt-2">Accepted formats: {ALLOWED_FORMATS.join(", ").replace(/image\//g, "")}</p>
         <p className="text-sm text-gray-400">Max file size: 5MB</p>
       </div>
     </>
