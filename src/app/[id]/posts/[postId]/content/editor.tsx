@@ -16,6 +16,7 @@ import { updatePost } from "@/actions/post";
 import { toast } from "sonner";
 import { SelectHeadingMarkdown as SHM } from "./editor/select.heading";
 import { ImageUploader } from "./editor/image.uploader";
+import { DialogDeletePost } from "./editor/dialog.delete";
 
 type EditorProps = {
   id: string;
@@ -232,6 +233,17 @@ export const Editor = ({ id, projectId, ogTitle, ogExcerpt, ogContent, ogVisibil
                   </form>
                 )}
               </CardFooter>
+            </CustomCard>
+
+            <CustomCard noHover isDanger>
+              <CardHeader>
+                <CardTitle>Danger Zone</CardTitle>
+                <CardDescription>Delete this blog post. This action cannot be undone.</CardDescription>
+              </CardHeader>
+
+              <CardContent>
+                <DialogDeletePost projectId={projectId} postId={id} />
+              </CardContent>
             </CustomCard>
           </div>
         </div>
