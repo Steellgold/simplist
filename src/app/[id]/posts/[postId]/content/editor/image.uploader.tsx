@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 type ImageUploaderType = {
+  isDisabled: boolean;
   isLoading: boolean;
   image: string | null;
 
@@ -25,6 +26,7 @@ const ALLOWED_FORMATS = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
 export const ImageUploader: Component<ImageUploaderType> = ({
+  isDisabled,
   isLoading,
   image,
 
@@ -70,11 +72,9 @@ export const ImageUploader: Component<ImageUploaderType> = ({
         className="opacity-0 absolute z-[-1]"
         id="file-banner-input"
         accept="image/png, image/jpeg, image/jpg, image/webp"
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         onChange={(e) => {
+          if (isDisabled) return;
           if (isLoading) return;
-
-          console.log("Uploading image... 0");
 
           if (e.target.files?.[0]?.size && e.target.files?.[0]?.size > MAX_FILE_SIZE) {
             return toast.error("File size must be less than 5MB");
@@ -125,25 +125,13 @@ export const ImageUploader: Component<ImageUploaderType> = ({
             error: (error: string) => error
           });
 
-          // const { data: { publicUrl } } = supabase.storage.from(`banners/${projectId}`).getPublicUrl(`${postId}/${fileName}`);
-
-          // if (file) {
-          //   setUploading(true);
-          //   const reader = new FileReader();
-          //   reader.onload = () => {
-          //     setUploadedImage(reader.result as string);
-          //     setUploading(false);
-          //   };
-          //   reader.readAsDataURL(file);
-          // }
-
           onContentChange("/_static/no-image.png");
         }}
       />
 
       <div>
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-          <Button size="sm" className="gap-1 w-full" disabled={isLoading}
+          <Button size="sm" className="gap-1 w-full" disabled={isLoading || isDisabled}
             onClick={() => document?.getElementById("file-banner-input")?.click()}>
             <Upload className="h-3.5 w-3.5" />
             Upload Image
@@ -153,7 +141,7 @@ export const ImageUploader: Component<ImageUploaderType> = ({
             <Button
               onClick={() => setUploadedImage("/_static/no-image.png")}
               size="sm"
-              disabled={isLoading}
+              disabled={isLoading || isDisabled}
               className="gap-1 w-full"
             >
               <Trash2 className="h-3.5 w-3.5" />
