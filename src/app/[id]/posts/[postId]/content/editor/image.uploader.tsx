@@ -1,15 +1,17 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { Component } from "@/components/utils/component";
+import { cn } from "@/utils";
 import { createClient } from "@/utils/supabase/client";
 import { Trash2, Upload } from "lucide-react";
 import Image from "next/image";
 import type { ReactElement } from "react";
-import { RefObject, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
+import { z } from "zod";
 
 type ImageUploaderType = {
-  isDisabled: boolean;
   isLoading: boolean;
   image: string | null;
 
@@ -22,7 +24,6 @@ type ImageUploaderType = {
 const ALLOWED_FORMATS = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
 
 export const ImageUploader: Component<ImageUploaderType> = ({
-  isDisabled,
   isLoading,
   image,
 
@@ -38,7 +39,9 @@ export const ImageUploader: Component<ImageUploaderType> = ({
 
   return (
     <>
-      <div className="relative">
+      <div className={cn("relative", {
+        "hidden": uploading
+      })}>
         <Image
           alt="Placeholder Image"
           className="w-full max-w-[600px] rounded-lg"
@@ -51,8 +54,13 @@ export const ImageUploader: Component<ImageUploaderType> = ({
           }}
         />
 
-        {image !== uploadedImage && <Badge className="absolute top-2 right-2" variant={"secondary"}>Preview</Badge>}
+        {uploadedImage !== "/_static/no-image.png" && <Badge className="absolute top-2 right-2" variant={"secondary"}>Preview</Badge>}
       </div>
+
+      <Skeleton
+        className={cn("w-full rounded-lg", { "hidden": !uploading })}
+        style={{ aspectRatio: "600/300" }}
+      />
 
       <div className="my-5" />
 
@@ -61,8 +69,11 @@ export const ImageUploader: Component<ImageUploaderType> = ({
         className="opacity-0 absolute z-[-1]"
         id="file-banner-input"
         accept="image/png, image/jpeg, image/jpg, image/webp"
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         onChange={(e) => {
           if (isLoading) return;
+
+          console.log("Uploading image... 0");
 
           if (e.target.files?.[0]?.size && e.target.files?.[0]?.size > 5 * 1024 * 1024) {
             return toast.error("File size must be less than 5MB");
@@ -73,15 +84,59 @@ export const ImageUploader: Component<ImageUploaderType> = ({
           }
 
           const file = e.target.files?.[0];
-          if (file) {
+          if (!file) return toast.error("No file selected");
+
+          const fileName = file.name.replace(/ /g, "-").toLowerCase();
+
+          const promise = (): Promise<{
+            url: string;
+            name: string;
+          }> => new Promise((resolve, reject) => {
             setUploading(true);
-            const reader = new FileReader();
-            reader.onload = () => {
-              setUploadedImage(reader.result as string);
-              setUploading(false);
-            };
-            reader.readAsDataURL(file);
-          }
+
+            supabase.storage.from("banners").upload(`${projectId}/${postId}/${fileName}`, file, {
+              cacheControl: "3600",
+              contentType: file.type
+            })
+              .then(({ error }) => {
+                setUploading(false);
+                if (error) return reject(error.message);
+
+                const { data: { publicUrl } } = supabase.storage.from("banners").getPublicUrl(`${projectId}/${postId}/${fileName}`);
+                return resolve({
+                  url: publicUrl,
+                  name: fileName
+                });
+              })
+              .catch(reject);
+          });
+
+          toast.promise(promise(), {
+            loading: "Uploading image...",
+            success: (data) => {
+              const schema = z.object({ url: z.string(), name: z.string() }).safeParse(data);
+              if (!schema.success) return "Failed to upload image.";
+
+              setUploadedImage(schema.data.url);
+              onContentChange(schema.data.url);
+              return `Image ${schema.data.name} uploaded successfully.`;
+            },
+            error: (error: string) => error
+          });
+
+          // const { data: { publicUrl } } = supabase.storage.from(`banners/${projectId}`).getPublicUrl(`${postId}/${fileName}`);
+
+          // if (file) {
+          //   setUploading(true);
+          //   const reader = new FileReader();
+          //   reader.onload = () => {
+          //     setUploadedImage(reader.result as string);
+          //     setUploading(false);
+          //   };
+          //   reader.readAsDataURL(file);
+          // }
+
+          onContentChange("/_static/no-image.png");
         }}
       />
 
@@ -95,7 +150,7 @@ export const ImageUploader: Component<ImageUploaderType> = ({
 
           {uploadedImage && (
             <Button
-              onClick={() => setUploadedImage(null)}
+              onClick={() => setUploadedImage("/_static/no-image.png")}
               size="sm"
               disabled={isLoading}
               className="gap-1 w-full"
