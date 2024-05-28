@@ -28,7 +28,7 @@ export const DialogDeletePost: Component<DeletePostDialog> = ({ projectId, postI
         <Input placeholder="Type DELETE to confirm" className="w-full mt-2" value={deleteText} onChange={(e) => setDeleteText(e.target.value)} />
         <p className="text-xs text-gray-400">This action cannot be undone.</p>
         <div className="flex items-center gap-2 mt-4 justify-between">
-          <AlertDialogCancel className="w-full">Cancel</AlertDialogCancel>
+          <AlertDialogCancel className="w-full" disabled={loading}>Cancel</AlertDialogCancel>
 
           <form onSubmit={(e) => {
             e.preventDefault();

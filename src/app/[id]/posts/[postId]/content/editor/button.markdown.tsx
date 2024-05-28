@@ -9,6 +9,7 @@ type MarkdownButtonsType = {
   isDisabled: boolean;
   onContentChange: (content: string) => void;
   type: "bold" | "italic" | "strike";
+  // type: "bold" | "italic" | "strike" | "line" | "quote" | "code" | "table";
 };
 
 export const markdownProcessor = ({
@@ -37,6 +38,18 @@ export const markdownProcessor = ({
     case "strike":
       newText = `${text.slice(0, selectionStart)}~~${selection}~~${text.slice(selectionEnd)}`;
       break;
+    // case "line":
+    //   newText = `${text}\n---\n`;
+    //   break;
+    // case "quote":
+    //   newText = `${text}\n> `;
+    //   break;
+    // case "code":
+    //   newText = `${text}\n\`\`\`\n\n\`\`\``;
+    //   break;
+    // case "table":
+    //   newText = `${text}\n| Header 1 | Header 2 |\n|----------|----------|\n| Row 1    | Row 2    |`;
+    //   break;
   }
 
   onContentChange(newText);
@@ -52,6 +65,9 @@ export const MDB: Component<MarkdownButtonsType> = ({ contentRef, selection, isD
       {type === "bold" && <Bold className="h-4 w-4" />}
       {type === "italic" && <Italic className="h-4 w-4" />}
       {type === "strike" && <Strikethrough className="h-4 w-4" />}
+      {/* {type === "line" && <Minus className="h-4 w-4" />}
+      {type === "quote" && <Quote className="h-4 w-4" />}
+      {type === "code" && <Table className="h-4 w-4" />} */}
     </Button>
   );
 };
