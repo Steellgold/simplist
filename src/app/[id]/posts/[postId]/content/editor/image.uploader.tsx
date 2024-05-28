@@ -17,7 +17,6 @@ type ImageUploaderType = {
   image: string | null;
 
   projectId: string;
-  postId: string;
 
   onContentChange: (content: string) => void;
 };
@@ -32,7 +31,6 @@ export const ImageUploader: Component<ImageUploaderType> = ({
   image,
 
   projectId,
-  postId,
 
   onContentChange
 }): ReactElement => {
@@ -133,14 +131,21 @@ export const ImageUploader: Component<ImageUploaderType> = ({
       <div>
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
           <Button size="sm" className="gap-1 w-full" disabled={isLoading || isDisabled}
-            onClick={() => document?.getElementById("file-banner-input")?.click()}>
+            onClick={() => {
+              document?.getElementById("file-banner-input")?.setAttribute("value", "");
+              document?.getElementById("file-banner-input")?.click();
+            }}>
             <Upload className="h-3.5 w-3.5" />
             Upload Image
           </Button>
 
           {uploadedImage !== IMAGE_PLACEHOLDER && (
             <Button
-              onClick={() => setUploadedImage(IMAGE_PLACEHOLDER)}
+              onClick={() => {
+                setUploadedImage(IMAGE_PLACEHOLDER);
+                document?.getElementById("file-banner-input")?.setAttribute("value", "");
+                onContentChange(IMAGE_PLACEHOLDER);
+              }}
               size="sm"
               disabled={isLoading || isDisabled}
               className="gap-1 w-full"
