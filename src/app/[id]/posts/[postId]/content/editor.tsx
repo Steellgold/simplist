@@ -5,19 +5,20 @@ import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from 
 import { CustomCard } from "@/components/ui/custom-card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Braces, Sparkles } from "lucide-react";
+import { ALargeSmall, Braces, Pen, Sparkles } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { MDB } from "./editor/button.markdown";
 import { ButtonMarkdownImage as BMI } from "./editor/button.image";
 import { ButtonMarkdownLink as BML } from "./editor/button.link";
-import { createPost, updatePost } from "@/actions/post";
+import { savePost } from "@/actions/post";
 import { toast } from "sonner";
 import { SelectHeadingMarkdown as SHM } from "./editor/select.heading";
 import { IMAGE_PLACEHOLDER, ImageUploader } from "./editor/image.uploader";
 import { DialogDeletePost } from "./editor/dialog.delete";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 
 type EditorProps = {
   id?: string;
@@ -179,6 +180,28 @@ export const Editor = ({
                 </div>
               </CardContent>
             </CustomCard>
+
+            <CustomCard noHover>
+              <CardHeader>
+                <CardTitle>Metadata</CardTitle>
+                <CardDescription>Add custom metadata to this post will be returned on the response API.</CardDescription>
+              </CardHeader>
+              <CardContent className="grid grid-cols-2 gap-2">
+                <Alert className="justify-between items-center flex flex-row gap-2.5 p-3 rounded-md">
+                  <div className="flex items-center gap-1.5">
+                    Salut
+                    <Badge variant="default">
+                      <ALargeSmall className="h-4 w-4" />&nbsp;String
+                    </Badge>
+                  </div>
+
+                  <Button variant="outline" size={"sm"} className="text-xs">
+                    <Pen className="h-3.5 w-3.5" />&nbsp;
+                    Edit
+                  </Button>
+                </Alert>
+              </CardContent>
+            </CustomCard>
           </div>
 
           <div className="grid auto-rows-max gap-4">
@@ -194,7 +217,6 @@ export const Editor = ({
                   isLoading={isLoading}
                   image={uploadedImage}
                   projectId={projectId}
-                  postId={id ?? ""}
                   onContentChange={setUploadedImage}
                 />
               </CardContent>
@@ -219,71 +241,36 @@ export const Editor = ({
               </CardContent>
 
               <CardFooter>
-                {!isNew ? (
-                  <form onSubmit={(e) => {
-                    e.preventDefault();
-                    setIsLoading(true);
-                    toast.promise(updatePost(id ?? "", {
-                      title,
-                      excerpt,
-                      content,
-                      status: visibility,
-                      lang: "EN",
-                      banner: uploadedImage,
-                      projectId,
-                      slug: title.toLowerCase().replace(/\s/g, "-")
-                    }), {
-                      loading: "Saving post...",
-                      success: "Post saved successfully!",
-                      error: "Failed to save post."
-                    });
-                  }} className="w-full">
-                    <Button
-                      variant="default"
-                      className="w-full"
-                      disabled={
-                        !hasChanges
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  setIsLoading(true);
+                  toast.promise(savePost(id ?? "", {
+                    title,
+                    excerpt,
+                    content,
+                    status: visibility,
+                    lang: "EN",
+                    banner: uploadedImage,
+                    projectId,
+                    slug: title.toLowerCase().replace(/\s/g, "-")
+                  }), {
+                    loading: "Saving post...",
+                    success: "Post saved successfully!",
+                    error: "Failed to save post."
+                  });
+                }} className="w-full">
+                  <Button
+                    variant="default"
+                    className="w-full"
+                    disabled={
+                      !hasChanges
                         || isLoading
                         || !content.replace(/\s/g, "").length
-                      }>
-                      {visibility === "PUBLISHED" ? "Publish Post" : "Draft Post"}
-                      {hasChanges && "(Unsaved changes)"}
-                    </Button>
-                  </form>
-                ) : (
-                  <form onSubmit={(e) => {
-                    e.preventDefault();
-                    setIsLoading(true);
-                    toast.promise(createPost({
-                      title,
-                      excerpt,
-                      content,
-                      status: visibility,
-                      lang: "EN",
-                      banner: uploadedImage,
-                      projectId,
-                      slug: buildSlug(title)
-                    }), {
-                      loading: "Creating post...",
-                      success: "Post created successfully!",
-                      error: "Failed to create post."
-                    });
-                  }} className="w-full">
-                    <Button
-                      variant="default"
-                      className="w-full"
-                      disabled={
-                        !title
-                        || !excerpt
-                        || !content
-                        || !uploadedImage
-                        || isLoading
-                        || !content.replace(/\s/g, "").length
-                      }>
-                      {visibility === "PUBLISHED" ? "Create & Publish Post" : "Create & Draft Post"}
-                    </Button>
-                  </form>
-                )}
+                    }>
+                    {visibility === "PUBLISHED" ? "Publish Post" : "Draft Post"}&nbsp;
+                    {hasChanges && "(Unsaved changes)"}
+                  </Button>
+                </form>
               </CardFooter>
             </CustomCard>
 
