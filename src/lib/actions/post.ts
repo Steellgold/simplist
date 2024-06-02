@@ -75,8 +75,6 @@ export const savePost = async(id: string | null, data: z.infer<typeof PostSchema
 
   revalidatePath(`/${postData.projectId}/posts`);
   redirect(`/${postData.projectId}/posts${id ? "" : `/${postData.id}`}`);
-
-  return { success: true };
 };
 
 export const deletePost = async(id: string, projectId: string): Promise<{ success: boolean; message?: string }> => {

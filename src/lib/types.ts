@@ -28,3 +28,10 @@ export type PostData = {
     };
   };
 }
+
+export type Metadata = {
+  key: string;
+  type: "string" | "number" | "boolean" | "date" | "time" | "datetime";
+  value: string | number | boolean;
+  isOld?: boolean;
+};
