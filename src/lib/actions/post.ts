@@ -26,13 +26,13 @@ export const savePost = async(id: string | null, data: z.infer<typeof PostSchema
     const post = await db.$queryRaw<Post | null>`SELECT * FROM "Post" WHERE id = ${id}`;
     if (!post) return { success: false, message: "Post not found" };
 
-    const oldMetadata = await db.$queryRaw<Meta[]>`SELECT * FROM "Meta" WHERE postId = ${id}`;
+    const oldMetadata = await db.$queryRaw<Meta[]>`SELECT * FROM "Meta" WHERE "postId" = ${id}`;
 
     const metadataToDelete = oldMetadata.filter((meta) => !data.metadata?.find((newMeta) => newMeta.id === meta.id));
     const metadataToCreate = data.metadata?.filter((newMeta) => !oldMetadata.find((meta) => meta.id === newMeta.id));
 
     if (metadataToDelete.length) {
-      await db.$queryRaw`DELETE FROM "Meta" WHERE id IN (${metadataToDelete.map((meta) => meta.id)})`;
+      await db.$queryRaw`DELETE FROM "Meta" WHERE id = ANY(${metadataToDelete.map((meta) => meta.id)})`;
     }
 
     if (metadataToCreate?.length) {
