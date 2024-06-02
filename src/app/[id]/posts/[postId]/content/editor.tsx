@@ -5,7 +5,7 @@ import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from 
 import { CustomCard } from "@/components/ui/custom-card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ALargeSmall, Braces, Pen, Sparkles } from "lucide-react";
+import { Braces } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
@@ -18,7 +18,14 @@ import { SelectHeadingMarkdown as SHM } from "./editor/select.heading";
 import { IMAGE_PLACEHOLDER, ImageUploader } from "./editor/image.uploader";
 import { DialogDeletePost } from "./editor/dialog.delete";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
+import { MetadataEditor } from "./editor/metadata.dialog";
+
+type Metadata = {
+  key: string;
+  type: "string" | "number" | "boolean" | "date" | "time" | "datetime";
+  value: string | number | boolean;
+  old?: boolean;
+};
 
 type EditorProps = {
   id?: string;
@@ -29,6 +36,7 @@ type EditorProps = {
   ogContent?: string;
   ogVisibility?: "PUBLISHED" | "DRAFT";
   ogBannerImage?: string;
+  ogMetadata?: Metadata[];
 
   isNew?: boolean;
 };
@@ -36,6 +44,7 @@ type EditorProps = {
 export const Editor = ({
   id, projectId,
   ogTitle = "", ogExcerpt = "", ogContent = "", ogVisibility = "DRAFT", ogBannerImage = IMAGE_PLACEHOLDER,
+  ogMetadata = [],
   isNew
 }: EditorProps): ReactElement => {
   const [title, setTitle] = useState<string>(ogTitle);
@@ -43,12 +52,15 @@ export const Editor = ({
   const [content, setContent] = useState<string>(ogContent);
   const [visibility, setVisibility] = useState<"PUBLISHED" | "DRAFT">(ogVisibility);
 
-  const contentRef = useRef<HTMLTextAreaElement>(null);
+  const [metadata, setMetadata] = useState<Metadata[]>(ogMetadata);
+
   const [selection, setSelection] = useState<string | null>(null);
+  const contentRef = useRef<HTMLTextAreaElement>(null);
 
   const [uploadedImage, setUploadedImage] = useState<string | null>(ogBannerImage);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
 
   useEffect(() => {
     const handleSelection = (): void => {
@@ -85,7 +97,10 @@ export const Editor = ({
     || content !== ogContent
     || visibility !== ogVisibility
     || uploadedImage !== ogBannerImage
+    || metadata !== ogMetadata
   );
+
+  console.log("console.log(metadata);", metadata);
 
   return (
     <main className="grid items-start gap-4 mt-3">
@@ -106,8 +121,6 @@ export const Editor = ({
                     disabled={isLoading}
                     onChange={(e) => setTitle(e.target.value)}
                   />
-
-                  <Button className="w-full sm:w-auto" variant={"ai"}>Assistant <Sparkles className="h-4 w-4 ml-1.5" strokeWidth={1} /></Button>
                 </div>
 
                 {title && (
@@ -181,27 +194,11 @@ export const Editor = ({
               </CardContent>
             </CustomCard>
 
-            <CustomCard noHover>
-              <CardHeader>
-                <CardTitle>Metadata</CardTitle>
-                <CardDescription>Add custom metadata to this post will be returned on the response API.</CardDescription>
-              </CardHeader>
-              <CardContent className="grid grid-cols-2 gap-2">
-                <Alert className="justify-between items-center flex flex-row gap-2.5 p-3 rounded-md">
-                  <div className="flex items-center gap-1.5">
-                    Salut
-                    <Badge variant="default">
-                      <ALargeSmall className="h-4 w-4" />&nbsp;String
-                    </Badge>
-                  </div>
-
-                  <Button variant="outline" size={"sm"} className="text-xs">
-                    <Pen className="h-3.5 w-3.5" />&nbsp;
-                    Edit
-                  </Button>
-                </Alert>
-              </CardContent>
-            </CustomCard>
+            <MetadataEditor
+              metadatas={metadata}
+              isLoading={isLoading}
+              onMetadataChange={(metadata) => setMetadata(metadata)}
+            />
           </div>
 
           <div className="grid auto-rows-max gap-4">
@@ -252,7 +249,8 @@ export const Editor = ({
                     lang: "EN",
                     banner: uploadedImage,
                     projectId,
-                    slug: title.toLowerCase().replace(/\s/g, "-")
+                    slug: title.toLowerCase().replace(/\s/g, "-"),
+                    metadata: metadata
                   }), {
                     loading: "Saving post...",
                     success: "Post saved successfully!",
