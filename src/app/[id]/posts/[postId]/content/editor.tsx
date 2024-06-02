@@ -19,13 +19,7 @@ import { IMAGE_PLACEHOLDER, ImageUploader } from "./editor/image.uploader";
 import { DialogDeletePost } from "./editor/dialog.delete";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { MetadataEditor } from "./editor/metadata.dialog";
-
-type Metadata = {
-  key: string;
-  type: "string" | "number" | "boolean" | "date" | "time" | "datetime";
-  value: string | number | boolean;
-  old?: boolean;
-};
+import type { Metadata } from "@/types";
 
 type EditorProps = {
   id?: string;
@@ -97,10 +91,16 @@ export const Editor = ({
     || content !== ogContent
     || visibility !== ogVisibility
     || uploadedImage !== ogBannerImage
-    || metadata !== ogMetadata
+    || metadata.length !== ogMetadata.length
+    || metadata.some((meta, index) => {
+      const ogMeta = ogMetadata[index];
+      return (
+        meta.key !== ogMeta.key
+        || meta.type !== ogMeta.type
+        || meta.value !== ogMeta.value
+      );
+    })
   );
-
-  console.log("console.log(metadata);", metadata);
 
   return (
     <main className="grid items-start gap-4 mt-3">
