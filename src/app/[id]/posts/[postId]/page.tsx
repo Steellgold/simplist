@@ -189,12 +189,6 @@ const ProjectPost = ({ params: { id, postId } }: PageParams): ReactElement => {
             ogContent={post.content}
             ogVisibility={post.status}
             ogBannerImage={post.banner || ""}
-            // type Metadata = {
-            //   key: string;
-            //   type: "string" | "number" | "boolean" | "date" | "time" | "datetime";
-            //   value: string | number | boolean;
-            //   old?: boolean;
-            // };
             ogMetadata={post.metadata.map((meta) => ({
               key: meta.key,
               type: meta.type,
