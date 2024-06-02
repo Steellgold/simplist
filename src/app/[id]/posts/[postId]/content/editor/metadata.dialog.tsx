@@ -7,15 +7,10 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { Component } from "@/components/utils/component";
-import { ALargeSmall, Binary, Calendar, CalendarClock, Clock9, Pen, Plus, ToggleLeft, Trash2 } from "lucide-react";
+import type { Metadata } from "@/types";
+import { ALargeSmall, Binary, Calendar, CalendarClock, Clock9, Pen, Plus, RotateCcw, ToggleLeft, Trash2 } from "lucide-react";
 import { useState } from "react";
-
-type Metadata = {
-  key: string;
-  type: "string" | "number" | "boolean" | "date" | "time" | "datetime";
-  value: string | number | boolean;
-  isOld?: boolean;
-};
+import { MetadataInput } from "./metadata.input";
 
 type MetadataEditorProps = {
   metadatas: Metadata[];
@@ -29,9 +24,9 @@ export const MetadataEditor: Component<MetadataEditorProps> = ({ metadatas, onMe
     type: "string",
     value: ""
   });
-  const [metadata, setMetadata] = useState<Metadata[]>(metadatas);
 
-  console.log(activeMetadata);
+  const [ogMetadata] = useState<Metadata[]>(metadatas);
+  const [metadata, setMetadata] = useState<Metadata[]>(metadatas);
 
   return (
     <CustomCard noHover>
@@ -41,143 +36,117 @@ export const MetadataEditor: Component<MetadataEditorProps> = ({ metadatas, onMe
           <CardDescription>Add custom metadata to this post will be returned on the response API.</CardDescription>
         </div>
 
-        <Dialog onOpenChange={() => setActiveMetadata({ key: "", type: "string", value: "" })}>
-          <DialogTrigger>
-            <Button variant="outline" className="text-xs">
-              <Plus className="h-3.5 w-3.5" />&nbsp;
-          Add Metadata
-            </Button>
-          </DialogTrigger>
+        <div className="flex gap-1">
+          <Button variant="outline" className="text-xs" onClick={() => {
+            setMetadata(ogMetadata);
+            onMetadataChange(ogMetadata);
+          }}>
+            <RotateCcw className="h-4 w-4" />&nbsp;Restore
+          </Button>
 
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add Metadata</DialogTitle>
-              <DialogDescription>Add custom metadata to this post will be returned on the response API.</DialogDescription>
-            </DialogHeader>
+          <Dialog onOpenChange={() => setActiveMetadata({ key: "", type: "string", value: "" })}>
+            <DialogTrigger>
+              <Button variant="outline" className="text-xs">
+                <Plus className="h-3.5 w-3.5" />&nbsp;Add Metadata
+              </Button>
+            </DialogTrigger>
 
-            <div className="gap-2 flex flex-col">
-              <div className="flex flex-row gap-1.5 w-full">
-                <Input
-                  placeholder="Key"
-                  type="text"
-                  onChange={(e) => {
-                    setActiveMetadata({
-                      key: e.target.value,
-                      value: activeMetadata?.value || "",
-                      type: activeMetadata?.type || "string"
-                    });
-                  }}
-                />
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add Metadata</DialogTitle>
+                <DialogDescription>Add custom metadata to this post will be returned on the response API.</DialogDescription>
+              </DialogHeader>
 
-                <Select
-                  disabled={isLoading}
-                  defaultValue="string"
-                  onValueChange={(value: "string" | "number" | "boolean" | "date" | "time" | "datetime") => {
-                    setActiveMetadata({
-                      key: activeMetadata?.key || "",
-                      type: value,
-                      value: value === "boolean" ? false : ""
-                    });
-                  }}>
-                  <SelectTrigger className="flex">
-                    <SelectValue placeholder="Type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="string">
-                      <div className="flex items-center gap-1">
-                        <ALargeSmall className="h-4 w-4" />&nbsp;String
-                      </div>
-                    </SelectItem>
+              <div className="gap-2 flex flex-col">
+                <div className="flex flex-row gap-1.5 w-full">
+                  <Input
+                    placeholder="Key"
+                    type="text"
+                    onChange={(e) => {
+                      setActiveMetadata({
+                        key: e.target.value,
+                        value: activeMetadata?.value || "",
+                        type: activeMetadata?.type || "string"
+                      });
+                    }}
+                  />
 
-                    <SelectItem value="number">
-                      <div className="flex items-center gap-1">
-                        <Binary className="h-4 w-4" />&nbsp;Number
-                      </div>
-                    </SelectItem>
+                  <Select
+                    disabled={isLoading}
+                    defaultValue="string"
+                    onValueChange={(value: "string" | "number" | "boolean" | "date" | "time" | "datetime") => {
+                      setActiveMetadata({
+                        key: activeMetadata?.key || "",
+                        type: value,
+                        value: value === "boolean" ? false : ""
+                      });
+                    }}>
+                    <SelectTrigger className="flex">
+                      <SelectValue placeholder="Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="string">
+                        <div className="flex items-center gap-1">
+                          <ALargeSmall className="h-4 w-4" />&nbsp;String
+                        </div>
+                      </SelectItem>
 
-                    <SelectItem value="boolean">
-                      <div className="flex items-center gap-1">
-                        <ToggleLeft className="h-4 w-4" />&nbsp;Boolean
-                      </div>
-                    </SelectItem>
+                      <SelectItem value="number">
+                        <div className="flex items-center gap-1">
+                          <Binary className="h-4 w-4" />&nbsp;Number
+                        </div>
+                      </SelectItem>
 
-                    <SelectItem value="date">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />&nbsp;Date
-                      </div>
-                    </SelectItem>
+                      <SelectItem value="boolean">
+                        <div className="flex items-center gap-1">
+                          <ToggleLeft className="h-4 w-4" />&nbsp;Boolean
+                        </div>
+                      </SelectItem>
 
-                    <SelectItem value="time">
-                      <div className="flex items-center gap-1">
-                        <Clock9 className="h-4 w-4" />&nbsp;Time
-                      </div>
-                    </SelectItem>
+                      <SelectItem value="date">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-4 w-4" />&nbsp;Date
+                        </div>
+                      </SelectItem>
 
-                    <SelectItem value="datetime">
-                      <div className="flex items-center gap-1">
-                        <CalendarClock className="h-4 w-4" />&nbsp;Datetime
-                      </div>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
+                      <SelectItem value="time">
+                        <div className="flex items-center gap-1">
+                          <Clock9 className="h-4 w-4" />&nbsp;Time
+                        </div>
+                      </SelectItem>
+
+                      <SelectItem value="datetime">
+                        <div className="flex items-center gap-1">
+                          <CalendarClock className="h-4 w-4" />&nbsp;Datetime
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <MetadataInput metadata={activeMetadata} onChange={setActiveMetadata} />
               </div>
-              {activeMetadata?.type === "string" ? (
-                <Input placeholder="Value" onChange={(e) => setActiveMetadata({ ...activeMetadata, value: e.target.value })} />
-              ) : activeMetadata?.type === "number" ? (
-                <Input placeholder="Value" type="number" onChange={(e) => setActiveMetadata({ ...activeMetadata, value: Number(e.target.value) })} />
-              ) : activeMetadata?.type === "boolean" ? (
-                <Select
-                  defaultValue="true"
-                  onValueChange={(value: "true" | "false") => {
-                    setActiveMetadata({
-                      ...activeMetadata,
-                      value: value === "true"
-                    });
 
-                    console.log(activeMetadata);
-                  }}>
-
-                  <SelectTrigger className="flex">
-                    <SelectValue placeholder="Value" />
-                  </SelectTrigger>
-
-                  <SelectContent>
-                    <SelectItem value="true">True</SelectItem>
-                    <SelectItem value="false">False</SelectItem>
-                  </SelectContent>
-                </Select>
-              ) : activeMetadata?.type === "date" ? (
-                <Input placeholder="Value" type="date" onChange={(e) => setActiveMetadata({ ...activeMetadata, value: e.target.value })} />
-              ) : activeMetadata?.type === "time" ? (
-                <Input placeholder="Value" type="time" onChange={(e) => setActiveMetadata({ ...activeMetadata, value: e.target.value })} />
-              ) : activeMetadata?.type === "datetime" ? (
-                <Input
-                  placeholder="Value" type="datetime-local"
-                  onChange={(e) => setActiveMetadata({ ...activeMetadata, value: e.target.value })}
-                />
-              ) : null}
-            </div>
-
-            <DialogFooter>
-              <Button
-                variant="default"
-                className="w-full"
-                disabled={
-                  !activeMetadata?.key.match(/^[a-zA-Z0-9]/)
+              <DialogFooter>
+                <Button
+                  variant="default"
+                  className="w-full"
+                  disabled={
+                    !activeMetadata?.key.match(/^[a-zA-Z0-9]/)
                     || activeMetadata?.value.toString().match(/^\s*$/) !== null
                     || metadata.find((m) => m.key === activeMetadata?.key) !== undefined
                     || isLoading
-                }
-                onClick={() => {
-                  setMetadata([...metadata, activeMetadata as Metadata]);
-                  onMetadataChange([...metadata, activeMetadata as Metadata]);
-                }}
-              >
+                  }
+                  onClick={() => {
+                    setMetadata([...metadata, activeMetadata as Metadata]);
+                    onMetadataChange([...metadata, activeMetadata as Metadata]);
+                  }}
+                >
                 Add Metadata
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
       </CardHeader>
       <CardContent className="grid grid-cols-2 gap-2">
         {metadata.map(({ key, type }, index) => (
@@ -195,9 +164,110 @@ export const MetadataEditor: Component<MetadataEditorProps> = ({ metadatas, onMe
             </div>
 
             <div className="flex gap-2.5">
-              <Button variant="outline" size={"sm"} className="text-xs">
-                <Pen className="h-3.5 w-3.5" />&nbsp;Edit
-              </Button>
+              <Dialog onOpenChange={() => setActiveMetadata(metadata.find((m) => m.key === key) || null)}>
+                <DialogTrigger>
+                  <Button variant="outline" size={"sm"} className="text-xs">
+                    <Pen className="h-3.5 w-3.5" />&nbsp;Edit
+                  </Button>
+                </DialogTrigger>
+
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Edit Metadata</DialogTitle>
+                    <DialogDescription>Edit custom metadata to this post will be returned on the response API.</DialogDescription>
+                  </DialogHeader>
+
+                  <div className="gap-2 flex flex-col">
+                    <div className="flex flex-row gap-1.5 w-full">
+                      <Input
+                        placeholder="Key"
+                        type="text"
+                        value={activeMetadata?.key}
+                        onChange={(e) => {
+                          setActiveMetadata({
+                            key: e.target.value,
+                            value: activeMetadata?.value || "",
+                            type: activeMetadata?.type || "string"
+                          });
+                        }}
+                      />
+
+                      <Select
+                        disabled={isLoading}
+                        defaultValue={activeMetadata?.type}
+                        onValueChange={(value: "string" | "number" | "boolean" | "date" | "time" | "datetime") => {
+                          setActiveMetadata({
+                            key: activeMetadata?.key || "",
+                            type: value,
+                            value: value === "boolean" ? false : ""
+                          });
+                        }}>
+                        <SelectTrigger className="flex">
+                          <SelectValue placeholder="Type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="string">
+                            <div className="flex items-center gap-1">
+                              <ALargeSmall className="h-4 w-4" />&nbsp;String
+                            </div>
+                          </SelectItem>
+
+                          <SelectItem value="number">
+                            <div className="flex items-center gap-1">
+                              <Binary className="h-4 w-4" />&nbsp;Number
+                            </div>
+                          </SelectItem>
+
+                          <SelectItem value="boolean">
+                            <div className="flex items-center gap-1">
+                              <ToggleLeft className="h-4 w-4" />&nbsp;Boolean
+                            </div>
+                          </SelectItem>
+
+                          <SelectItem value="date">
+                            <div className="flex items-center gap-1">
+                              <Calendar className="h-4 w-4" />&nbsp;Date
+                            </div>
+                          </SelectItem>
+
+                          <SelectItem value="time">
+                            <div className="flex items-center gap-1">
+                              <Clock9 className="h-4 w-4" />&nbsp;Time
+                            </div>
+                          </SelectItem>
+
+                          <SelectItem value="datetime">
+                            <div className="flex items-center gap-1">
+                              <CalendarClock className="h-4 w-4" />&nbsp;Datetime
+                            </div>
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <MetadataInput metadata={activeMetadata} onChange={setActiveMetadata} />
+                  </div>
+
+                  <DialogFooter>
+                    <Button
+                      variant="default"
+                      className="w-full"
+                      disabled={
+                        !activeMetadata?.key.match(/^[a-zA-Z0-9]/)
+                        || activeMetadata?.value.toString().match(/^\s*$/) !== null
+                        || metadata.find((m) => m.key === activeMetadata?.key) !== undefined
+                        || isLoading
+                      }
+                      onClick={() => {
+                        setMetadata(metadata.map((m) => m.key === key ? activeMetadata as Metadata : m));
+                        onMetadataChange(metadata.map((m) => m.key === key ? activeMetadata as Metadata : m));
+                      }}
+                    >
+                    Edit Metadata
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
 
               <Button variant="outline" size={"sm"} className="text-xs" onClick={() => {
                 setMetadata(metadata.filter((m) => m.key !== key));
