@@ -3,24 +3,26 @@
 
 import { env } from "@/env.mjs";
 import { cn } from "@/utils";
-import { Folders, KeySquare, StickyNote } from "lucide-react";
+import { Folders, KeySquare, MessagesSquare, Settings2Icon, StickyNote } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactElement } from "react";
+import { Badge } from "./ui/badge";
 
 type Link = {
   href: string;
   label: string;
   icon?: ReactElement;
   disabled?: boolean;
+  isNew?: boolean;
 }
 
 const links: Link[] = [
-  // { href: "/[cuid]", label: "Dashboard", icon: <Building2 className="h-4 w-4" /> },
   { href: "/[cuid]/posts", label: "Posts", icon: <StickyNote className="h-4 w-4" /> },
-  { href: "/[cuid]/keys", label: "API Keys", icon: <KeySquare className="h-4 w-4" /> }
-  // { href: "/[cuid]/settings", label: "Settings", icon: <Settings2Icon className="h-4 w-4" /> }
+  { href: "/[cuid]/keys", label: "API Keys", icon: <KeySquare className="h-4 w-4" /> },
+  { href: "/[cuid]/comments", label: "Comments", icon: <MessagesSquare className="h-4 w-4" />, isNew: true },
+  { href: "/[cuid]/settings", label: "Settings", icon: <Settings2Icon className="h-4 w-4" /> }
 ];
 
 const homeLink: Link[] = [{ href: "/", label: "Projects", icon: <Folders className="h-4 w-4" /> }];
@@ -47,9 +49,11 @@ export const SidebarLinks = ({ type }: getSidebarLinksProps): ReactElement => {
             href={link.href}
             className="flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary"
             key={index}
+            prefetch
           >
             {link.icon}
             {link.label}
+            {link.isNew && <Badge>New</Badge>}
           </Link>
         ))}
       </>
@@ -72,7 +76,7 @@ export const SidebarLinks = ({ type }: getSidebarLinksProps): ReactElement => {
   return (
     <>
       {type === "sidebar-mobile" && (
-        <Link href="/" className="flex items-center gap-2 text-lg font-semibold mb-4">
+        <Link href="/" className="flex items-center gap-2 text-lg font-semibold mb-4" prefetch>
           <Image src="/_static/logos/simplist-light.png" alt="Simplist" width={120} height={17.81} />
         </Link>
       )}
@@ -82,9 +86,11 @@ export const SidebarLinks = ({ type }: getSidebarLinksProps): ReactElement => {
           href={baseURL + "/" + validLink(link.href, cuid)}
           className={getLinkStyle(validLink(link.href, cuid), type)}
           key={index}
+          prefetch
         >
           {link.icon}
           {link.label}
+          {link.isNew && <Badge>New</Badge>}
         </Link>
       ))}
     </>

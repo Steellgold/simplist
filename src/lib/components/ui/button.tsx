@@ -20,6 +20,9 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         rose: "bg-[#eb4dd0] shadow hover:bg-[#eb4dd0]/90",
+
+        ai: "inline-flex h-12 items-center justify-center rounded-md border border-gray-800 bg-gradient-to-t from-[#ababab] from-0% to-[#f2f2f2] px-6 font-medium text-gray-950 transition-colors hover:from-0% hover:to-[#f2f2f2]/90 hover:text-gray-950",
+        inputStyle: "bg-[#1a1a1a] text-white border border-input shadow-sm hover:bg-accent hover:text-accent-foreground",
       },
       size: {
         default: "h-9 px-4 py-2",

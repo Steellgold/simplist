@@ -8,7 +8,7 @@ export const Providers: Component<PropsWithChildren> = ({ children }) => {
   return (
     <QueryProvider>
       <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-        <Toaster />
+        <Toaster richColors />
 
         {children}
       </ThemeProvider>

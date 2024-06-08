@@ -12,10 +12,13 @@ export const env = createEnv({
 
     TINYBIRD_BEARER_TOKEN: z.string(),
 
-    WEBHOOK_DISCORD_URL: z.string()
+    WEBHOOK_DISCORD_URL: z.string(),
+
+    NEXT_PUBLIC_ENVIRONMENT: z.string().optional(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string(),
+    NEXT_PUBLIC_ENVIRONMENT: z.string().optional(),
   },
   runtimeEnv: {
     UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
@@ -27,6 +30,8 @@ export const env = createEnv({
 
     TINYBIRD_BEARER_TOKEN: process.env.TINYBIRD_BEARER_TOKEN,
 
-    WEBHOOK_DISCORD_URL: process.env.WEBHOOK_DISCORD_URL
+    WEBHOOK_DISCORD_URL: process.env.WEBHOOK_DISCORD_URL,
+
+    NEXT_PUBLIC_ENVIRONMENT: process.env.NEXT_PUBLIC_ENVIRONMENT,
   },
 });

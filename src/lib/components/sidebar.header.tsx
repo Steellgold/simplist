@@ -1,18 +1,32 @@
 "use client";
 
-import { Building2 } from "lucide-react";
 import Link from "next/link";
-import type { ReactElement } from "react";
+import { useEffect, useState, type ReactElement } from "react";
 import { useProjectStore } from "@/store/project.store";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { Skeleton } from "./ui/skeleton";
 
 export const SidebarHeader = (): ReactElement => {
-  const { activeProject } = useProjectStore();
-  const url = usePathname();
+  const [isLoading, setIsLoading] = useState(true);
 
-  if (!activeProject || url === "/") return (
-    <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
+  const { active, projects, setActive } = useProjectStore();
+  const url = usePathname();
+  const router = useRouter();
+
+  useEffect(() => {
+    setIsLoading(false);
+  }, []);
+
+  if (isLoading) return (
+    <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6 select-none">
+      <Skeleton className="w-full h-6" />
+    </div>
+  );
+
+  if (!active || url === "/") return (
+    <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6 select-none">
       <Link href="/">
         <Image src="/_static/logos/simplist-light.png" alt="Logo" width={120} height={17.81} />
       </Link>
@@ -20,11 +34,28 @@ export const SidebarHeader = (): ReactElement => {
   );
 
   return (
-    <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
-      <Link href="/" className="flex items-center gap-2 font-semibold">
-        <Building2 className="h-6 w-6" />
-        <span className="">{activeProject.name}</span>
+    <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6 select-none">
+      <Link href="/">
+        <Image src="/_static/logos/simple-light.png" alt="Logo" width={14.38} height={20.02} />
       </Link>
+
+      <span className="text-muted-foreground/80 mx-2 lg:mx-4 select-none">/</span>
+
+      <Select defaultValue={active.id} onValueChange={(value) => {
+        router.push(url.replace(active.id, value).split("/").slice(0, 3).join("/"));
+        setActive(value);
+      }}>
+        <SelectTrigger className="items-center border-b px-4 lg:px-6">
+          <SelectValue placeholder="Select a project" />
+        </SelectTrigger>
+        <SelectContent>
+          {projects.map((project) => (
+            <SelectItem key={project.id} value={project.id}>
+              {project.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   );
 };
