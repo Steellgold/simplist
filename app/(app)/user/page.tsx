@@ -1,7 +1,9 @@
+"use client";
+
 const Page = () => {
   return (
-    <div className="flex flex-col min-h-screen">
-      <p>	
+    <div className="flex flex-col">
+      <p>
         App Page
       </p>
     </div>
