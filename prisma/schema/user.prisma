@@ -1,5 +1,6 @@
 model User {
   id               String       @id
+  username         String
   name             String
   email            String
   emailVerified    Boolean

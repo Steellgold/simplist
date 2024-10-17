@@ -10,7 +10,6 @@ export default authMiddleware({
 			return NextResponse.redirect(new URL("/app", baseURL));
 		}
 
-
     // If the user is not signed in and trying to access a page that requires authentication
 		if (request.nextUrl.pathname.startsWith("/app") && !session) {
       return NextResponse.redirect(new URL("/sign-in", baseURL));
@@ -22,5 +21,5 @@ export default authMiddleware({
 })
  
 export const config = {
-  matcher: ["/app/:path*", "/sign-in"],
+  matcher: ["/app/:path*", "/user/:path*", "/sign-in"],
 }
