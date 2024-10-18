@@ -4,7 +4,7 @@ import { PropsWithChildren } from "react";
 
 const Layout: Component<PropsWithChildren> = ({ children }) => {
   return (
-    <AppLayout title="Home">
+    <AppLayout path={["Overview"]}>
       {children}
     </AppLayout>
   )
