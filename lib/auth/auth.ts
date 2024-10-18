@@ -6,14 +6,13 @@ import { username, passkey, organization, twoFactor } from "better-auth/plugins"
 const prisma = new PrismaClient();
 
 export const auth = betterAuth({
-  database: prismaAdapter(prisma, {
-    provider: "postgresql"
-  }),
+  appName: "Simplist",
+  database: prismaAdapter(prisma, { provider: "postgresql" }),
   
   secret: process.env.BETTER_AUTH_SECRET as string,
-  emailAndPassword: {
-    enabled: true
-  },
+  
+  emailAndPassword: { enabled: true},
+  
   socialProviders: {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID as string,
@@ -23,13 +22,15 @@ export const auth = betterAuth({
       clientId: process.env.GITHUB_CLIENT_ID as string,
       clientSecret: process.env.GITHUB_CLIENT_SECRET as string
     }
-  },
+  },  
+  
   plugins: [
     username(),
     passkey(),
     organization(),
     twoFactor()
   ],
+  
   trustedOrigins: [
     "localhost:3000",
     "simplist.blog",
