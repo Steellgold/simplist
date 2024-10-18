@@ -7,6 +7,10 @@ model Organization {
   metadata   String?
   Member     Member[]
   Invitation Invitation[]
+  //
+  posts      Post[]
+  tags       Tag[]
+  categories Category[]
 
   @@unique([slug])
   @@map("organization")
@@ -20,6 +24,10 @@ model Member {
   email          String
   role           String
   createdAt      DateTime
+  //
+  posts          Post[]
+  tags           Tag[]
+  categories     Category[]
 
   @@map("member")
 }
