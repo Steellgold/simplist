@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "auth:generate": "@better-auth/cli generate --config lib/auth/auth.ts"
+    "auth:generate": "npx @better-auth/cli generate --config lib/auth/auth.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
