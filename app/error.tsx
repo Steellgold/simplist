@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { ReactElement } from "react";
+import type { ReactElement } from "react";
 
 type ErrorProps = {
   error: Error & { digest?: string }

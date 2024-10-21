@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { ChevronsUpDown, LogOut } from "lucide-react"
+import { ChevronsUpDown, LogOut } from "lucide-react";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
-import { signOut, useSession } from "@/lib/auth/client"
-import { useRouter } from "next/navigation"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
+import { signOut, useSession } from "@/lib/auth/client";
+import { useRouter } from "next/navigation";
 
 export const NavUser = () => {
   const { isMobile } = useSidebar();
@@ -18,7 +18,7 @@ export const NavUser = () => {
     return <></>;
   }
 
-  const handleSignOut = async (event: React.FormEvent) => {
+  const handleSignOut = async(event: React.FormEvent) => {
     event.preventDefault();
     await signOut();
     router.refresh();
@@ -63,5 +63,5 @@ export const NavUser = () => {
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
-}
+  );
+};

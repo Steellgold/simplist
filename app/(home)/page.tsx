@@ -1,9 +1,10 @@
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
-import { BookText, Zap } from "lucide-react"
-import { dayJS } from "@/lib/day-js"
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { BookText, Zap } from "lucide-react";
+import { dayJS } from "@/lib/day-js";
+import type { ReactElement } from "react";
 
-const Page = () => {
+const Page = (): ReactElement => {
   return (
     <div className="flex flex-col min-h-screen">
       <header className="px-4 lg:px-6 h-14 flex items-center">
@@ -51,7 +52,7 @@ const Page = () => {
         </nav>
       </footer>
     </div>
-  )
-}
+  );
+};
 
 export default Page;

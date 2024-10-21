@@ -1,9 +1,11 @@
-import { PropsWithChildren } from "react";
-import { Component } from "./component";
+import type { PropsWithChildren } from "react";
+import type { Component } from "./component";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "./ui/sidebar";
 import { AppSidebar } from "./sidebar/app-sidebar";
+import { Separator } from "./ui/separator";
+import SidebarBreadcrumb from "./sidebar/sidebar-breadcrumb";
 
-type LayoutProps = PropsWithChildren
+type LayoutProps = PropsWithChildren;
 
 export const AppLayout: Component<LayoutProps> = ({ children }) => {
   return (
@@ -13,6 +15,8 @@ export const AppLayout: Component<LayoutProps> = ({ children }) => {
         <header className="flex h-16 shrink-0 items-center gap-2">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
+            <Separator orientation="vertical" className="mr-2 h-4" />
+            <SidebarBreadcrumb />
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
@@ -20,5 +24,5 @@ export const AppLayout: Component<LayoutProps> = ({ children }) => {
         </div>
       </SidebarInset>
     </SidebarProvider>
-  )
-}
+  );
+};

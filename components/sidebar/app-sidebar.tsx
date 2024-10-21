@@ -23,41 +23,9 @@ const data: {
       url: "/app",
       icon: LayoutGrid,
       items: [
-        {
-          title: "Posts",
-          url: "/app/posts",
-        },
-        {
-          title: "Categories",
-          url: "/app/categories",
-        },
-        {
-          title: "Tags",
-          url: "/app/tags",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
+        { title: "Posts", url: "/app/posts" },
+        { title: "Categories", url: "/app/categories" },
+        { title: "Tags", url: "/app/tags" }
       ],
     },
     {
@@ -65,20 +33,24 @@ const data: {
       url: "/app/settings",
       icon: Settings2,
       items: [
-        {
-          title: "General",
-          url: "/app/settings",
-        },
-        {
-          title: "Members",
-          url: "/app/settings/team",
-        },
-        {
-          title: "Billing",
-          url: "/app/settings/billing",
-        }
+        { title: "General", url: "/app/settings" },
+        { title: "Members", url: "/app/settings/team" },
+        { title: "Billing", url: "/app/settings/billing" },
+        { title: "Integrations", url: "/app/settings/integrations" },
+        { title: "API", url: "/app/settings/api" }
       ],
     },
+    {
+      title: "Documentation",
+      url: "#",
+      icon: BookOpen,
+      items: [
+        { title: "Introduction", url: "#" },
+        { title: "Get Started", url: "#" },
+        { title: "Tutorials", url: "#" },
+        { title: "Changelog", url: "#" }
+      ],
+    }
   ],
   navSecondary: [
     {
@@ -116,7 +88,7 @@ export const AppSidebar: Component<ComponentProps<typeof Sidebar>> = (props) => 
         <SidebarMenu>
           <SidebarMenuItem>
             {isPendingActiveOrganization || isPendingListOrganizations ? (
-              <Skeleton className="w-full h-[54px] bg-secondary" />
+              <Skeleton className="w-full h-[54px]" />
             ) : (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

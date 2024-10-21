@@ -5,9 +5,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { client } from "@/lib/auth/client";
+import type { ReactElement } from "react";
 import { useState } from "react";
 
-const Page = () => {
+const Page = (): ReactElement => {
   const [organizationName, setOrganizationName] = useState("");
 
   return (
@@ -19,14 +20,15 @@ const Page = () => {
             Create a new organization to start using the platform.
           </CardDescription>
         </CardHeader>
-        
+
         <CardContent>
           <Label htmlFor="organization-name">Organization name</Label>
           <Input id="organization-name" value={organizationName} onChange={e => setOrganizationName(e.target.value)} />
         </CardContent>
 
         <CardFooter className="flex justify-end">
-          <Button onClick={async () => {
+          {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
+          <Button onClick={async() => {
             const creation = await client.organization.create({
               name: organizationName,
               slug: Math.random().toString(36).substring(2, 8)
@@ -43,7 +45,7 @@ const Page = () => {
         </CardFooter>
       </Card>
     </div>
-  )
-}
+  );
+};
 
 export default Page;

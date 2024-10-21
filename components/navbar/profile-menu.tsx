@@ -1,11 +1,13 @@
 "use client";
 
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger }
+  from "../ui/dropdown-menu";
 import { Loader2, LogOut, Settings, User as UserIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button, buttonVariants } from "../ui/button";
 import Link from "next/link";
-import { ReactElement, useState } from "react";
+import type { ReactElement } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signOut, useSession } from "@/lib/auth/client";
 
@@ -19,7 +21,7 @@ export const ProfileMenu = (): ReactElement => {
       <Button variant="outline" size="icon" className="rounded-full">
         <Loader2 className="h-4 w-4 animate-spin" />
       </Button>
-    )
+    );
   }
 
   if (!session) {
@@ -27,10 +29,10 @@ export const ProfileMenu = (): ReactElement => {
       <Link href="/sign-in" className={buttonVariants({ variant: "outline", size: "icon", className: "rounded-full" })}>
         <UserIcon className="h-4 w-4" />
       </Link>
-    )
+    );
   }
 
-  const handleSignOut = async (event: React.FormEvent) => {
+  const handleSignOut = async(event: React.FormEvent) => {
     setLoading(true);
     event.preventDefault();
     await signOut();
@@ -59,29 +61,32 @@ export const ProfileMenu = (): ReactElement => {
             <p className="text-xs text-muted-foreground">{session.user?.email}</p>
           </div>
         </DropdownMenuLabel>
-        
+
         <DropdownMenuSeparator />
-        
+
         <DropdownMenuItem>
           <Link href="/profile" className="block w-full flex items-center">
             <UserIcon className="mr-2 h-4 w-4" />
             <span>Profile</span>
           </Link>
         </DropdownMenuItem>
-        
+
         <DropdownMenuItem>
           <Link href="/settings" className="block w-full flex items-center">
             <Settings className="mr-2 h-4 w-4" />
             <span>Settings</span>
           </Link>
         </DropdownMenuItem>
-        
-        <DropdownMenuItem onClick={handleSignOut} disabled={loading}>
+
+        <DropdownMenuItem
+          onClick={handleSignOut}
+          disabled={loading}
+        >
           {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
           {!loading && <LogOut className="mr-2 h-4 w-4" />}
           <span>Log out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
-}
+  );
+};

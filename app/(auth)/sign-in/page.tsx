@@ -10,20 +10,21 @@ import { FaGoogle } from "react-icons/fa";
 import { Fingerprint, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import type { ReactElement } from "react";
 import { useState } from "react";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { signIn } from "@/lib/auth/client";
 
-const Page = () => {
+const Page = (): ReactElement => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [loadingSocial, setLoadingSocial] = useState<null | "passkey" | "github" | "google">(null);
-  
+
   const router = useRouter();
 
   return (
@@ -75,29 +76,29 @@ const Page = () => {
 
               <Label htmlFor="rememberMe" className="text-sm">Remember me</Label>
             </div>
-            
+
             <Button
               type="submit"
               className="w-full"
               disabled={loading}
-              onClick={async () => {
+              // eslint-disable-next-line @typescript-eslint/no-misused-promises
+              onClick={async() => {
                 await signIn.email({
-                    email: email,
-                    password: password,
-                    callbackURL: "/app",
-                    dontRememberMe: !rememberMe,
-                  }, {
-                    onRequest: () => {
-                      setLoading(true);
-                    },
-                    onResponse: () => {
-                      setLoading(false);
-                    },
-                    onError: (ctx) => {
-                      toast.error(ctx.error.message);
-                    },
+                  email: email,
+                  password: password,
+                  callbackURL: "/app",
+                  dontRememberMe: !rememberMe
+                }, {
+                  onRequest: () => {
+                    setLoading(true);
                   },
-                );
+                  onResponse: () => {
+                    setLoading(false);
+                  },
+                  onError: (ctx) => {
+                    toast.error(ctx.error.message);
+                  }
+                },);
               }}
             >
               {loading && loadingSocial === null ? <Loader2 size={16} className="animate-spin" /> : "Login"}
@@ -110,7 +111,7 @@ const Page = () => {
             <div className="grid gap-2">
               <Button variant="outline" className="w-full"
                 onClick={() => {
-                  signIn.social({
+                  void signIn.social({
                     provider: "github",
                     callbackURL: "/app"
                   }, {
@@ -122,7 +123,7 @@ const Page = () => {
                       toast.error(ctx.error.message);
                       setLoadingSocial(null);
                       setLoading(false);
-                    },
+                    }
                   });
                 }}
                 disabled={loading}
@@ -133,7 +134,7 @@ const Page = () => {
 
               <Button variant="outline" className="w-full"
                 onClick={() => {
-                  signIn.social({
+                  void signIn.social({
                     provider: "google",
                     callbackURL: "/app"
                   }, {
@@ -145,7 +146,7 @@ const Page = () => {
                       toast.error(ctx.error.message);
                       setLoadingSocial(null);
                       setLoading(false);
-                    },
+                    }
                   });
                 }}
                 disabled={loading}
@@ -156,8 +157,8 @@ const Page = () => {
 
               <Button variant="outline" className="w-full"
                 onClick={() => {
-                  signIn.passkey({
-                    autoFill: true,
+                  void signIn.passkey({
+                    autoFill: true
                   }, {
                     onRequest: () => {
                       setLoading(true);
@@ -172,7 +173,7 @@ const Page = () => {
                       toast.error(ctx.error.message);
                       setLoadingSocial(null);
                       setLoading(false);
-                    },
+                    }
                   });
                 }}
                 disabled={loading}
@@ -196,7 +197,7 @@ const Page = () => {
         </CardContent>
       </Card>
     </div>
-  )
-}
+  );
+};
 
 export default Page;

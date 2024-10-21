@@ -1,6 +1,6 @@
 import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
-import { ReactElement } from "react";
+import type { ReactElement } from "react";
 
 const NotFound = (): ReactElement => (
   <div className="flex flex-col items-center justify-center h-screen">
@@ -12,7 +12,7 @@ const NotFound = (): ReactElement => (
         </p>
 
         <div className="flex flex-row gap-2 justify-center items-center mt-4">
-          <Link className={buttonVariants({ variant: "default"})} href="/">
+          <Link className={buttonVariants({ variant: "default" })} href="/">
             Go Home
           </Link>
         </div>

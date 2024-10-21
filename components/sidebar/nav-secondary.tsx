@@ -1,17 +1,17 @@
 "use client";
 
-import { Moon, Sun, type LucideIcon } from "lucide-react"
+import { Moon, Sun, type LucideIcon } from "lucide-react";
 
 import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar"
-import { Component } from "../component"
+  SidebarMenuItem
+} from "@/components/ui/sidebar";
+import type { Component } from "../component";
 import { useTheme } from "next-themes";
-import { ComponentPropsWithoutRef } from "react";
+import type { ComponentPropsWithoutRef } from "react";
 
 type NavSecondaryProps = {
   items: {
@@ -50,5 +50,5 @@ export const NavSecondary: Component<NavSecondaryProps> = ({ items, ...props }) 
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
-  )
-}
+  );
+};

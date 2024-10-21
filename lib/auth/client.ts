@@ -21,28 +21,28 @@ export const client = createAuthClient({
       // }
     }
   }
-})
+});
 
 export const {
-	signUp,
-	signIn,
-	signOut,
+  signUp,
+  signIn,
+  signOut,
 
   session,
-	useSession,
-	
+  useSession,
+
   user,
-	
+
   organization,
-	useListOrganizations,
-	useActiveOrganization,
-  
+  useListOrganizations,
+  useActiveOrganization,
+
   forgetPassword,
   resetPassword,
-  
+
   passkey,
   useListPasskeys,
-  
+
   sendVerificationEmail,
   verifyEmail
 } = client;

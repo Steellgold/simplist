@@ -1,40 +1,43 @@
-"use client"
+"use client";
 
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Menu } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useState, ReactElement } from "react"
-import { useTheme } from "next-themes"
-import Image from "next/image"
-import Link from "next/link"
-import { ThemeSwitcher } from "../theme-switcher"
-import { ProfileMenu } from "./profile-menu"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Menu } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import type { ReactElement } from "react";
+import { useState } from "react";
+import { useTheme } from "next-themes";
+import Image from "next/image";
+import Link from "next/link";
+import { ThemeSwitcher } from "../theme-switcher";
+import { ProfileMenu } from "./profile-menu";
 
 type NavItem = {
   href: string
   label: string | ReactElement
   children?: ReactElement
-  position?: 'left' | 'center' | 'right'
+  position?: "left" | "center" | "right"
 }
 
 const navItems: NavItem[] = [
-  { href: '/', label: 'Home', position: 'left' },
-  { href: '/pricing', label: 'Pricing', position: 'left' }
-]
+  { href: "/", label: "Home", position: "left" },
+  { href: "/pricing", label: "Pricing", position: "left" }
+];
 
 export const ResponsiveNavbarComponent = (): ReactElement => {
   const [isOpen, setIsOpen] = useState(false);
   const { theme } = useTheme();
 
-  const renderNavItem = (item: NavItem) => (
-    <Link key={item.href} href={item.href} className="text-sm font-medium text-muted-foreground hover:text-primary mx-2" onClick={() => setIsOpen(false)}>
+  const renderNavItem = (item: NavItem): ReactElement => (
+    <Link
+      key={item.href} href={item.href}
+      className="text-sm font-medium text-muted-foreground hover:text-primary mx-2" onClick={() => setIsOpen(false)}>
       {item.children || item.label}
     </Link>
-  )
+  );
 
-  const leftItems = navItems.filter(item => item.position === 'left');
-  const centerItems = navItems.filter(item => item.position === 'center');
-  const rightItems = navItems.filter(item => item.position === 'right');
+  const leftItems = navItems.filter(item => item.position === "left");
+  const centerItems = navItems.filter(item => item.position === "center");
+  const rightItems = navItems.filter(item => item.position === "right");
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
@@ -98,5 +101,5 @@ export const ResponsiveNavbarComponent = (): ReactElement => {
         </div>
       </nav>
     </header>
-  )
-}
+  );
+};

@@ -1,6 +1,6 @@
-import { Component } from "@/components/component";
+import type { Component } from "@/components/component";
 import { ResponsiveNavbarComponent } from "@/components/navbar/responsive-navbar";
-import { PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
 
 const Layout: Component<PropsWithChildren> = ({ children }) => {
   return (
@@ -8,7 +8,7 @@ const Layout: Component<PropsWithChildren> = ({ children }) => {
       <ResponsiveNavbarComponent />
       {children}
     </div>
-  )
-}
+  );
+};
 
 export default Layout;
