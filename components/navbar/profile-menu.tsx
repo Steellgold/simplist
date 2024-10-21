@@ -32,7 +32,7 @@ export const ProfileMenu = (): ReactElement => {
     );
   }
 
-  const handleSignOut = async(event: React.FormEvent) => {
+  const handleSignOut = async(event: React.FormEvent): Promise<void> => {
     setLoading(true);
     event.preventDefault();
     await signOut();
@@ -79,6 +79,7 @@ export const ProfileMenu = (): ReactElement => {
         </DropdownMenuItem>
 
         <DropdownMenuItem
+          // eslint-disable-next-line @typescript-eslint/no-misused-promises
           onClick={handleSignOut}
           disabled={loading}
         >
