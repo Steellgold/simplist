@@ -1,11 +1,9 @@
 import { PropsWithChildren } from "react";
 import { Component } from "./component";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "./ui/sidebar";
-import { AppSidebar } from "./app-sidebar";
+import { AppSidebar } from "./sidebar/app-sidebar";
 
-type LayoutProps = {
-  path: string[]
-} & PropsWithChildren
+type LayoutProps = PropsWithChildren
 
 export const AppLayout: Component<LayoutProps> = ({ children }) => {
   return (

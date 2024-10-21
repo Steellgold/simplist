@@ -9,7 +9,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { Component } from "./component"
+import { Component } from "../component"
 import { useTheme } from "next-themes";
 import { ComponentPropsWithoutRef } from "react";
 

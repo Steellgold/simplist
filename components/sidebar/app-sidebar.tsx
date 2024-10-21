@@ -1,35 +1,39 @@
 "use client"
 
 import { BookOpen, ChevronsUpDown, LayoutGrid, LifeBuoy, Plus, Send, Settings2 } from "lucide-react"
-import { NavProject } from "@/components/nav-project"
-import { NavSecondary } from "@/components/nav-secondary"
+import { NavProject } from "@/components/sidebar/nav-project"
+import { NavSecondary } from "@/components/sidebar/nav-secondary"
 import { NavUser } from "@/components/nav-user"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger } from "./ui/dropdown-menu"
-import { Component } from "./component"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger } from "../ui/dropdown-menu"
+import { Component } from "../component"
 import { useActiveOrganization, useListOrganizations, client } from "@/lib/auth/client";
-import { Skeleton } from "./ui/skeleton"
+import { Skeleton } from "../ui/skeleton"
 import { ComponentProps } from "react"
+import { usePathname } from "next/navigation"
+import { NavItemsProps } from "@/components/sidebar/nav-project"
 
-const data = {
+const data: {
+  navMain: NavItemsProps["items"]
+  navSecondary: NavItemsProps["items"]
+} = {
   navMain: [
     {
       title: "Overview",
-      url: "#",
+      url: "/app",
       icon: LayoutGrid,
-      isActive: true,
       items: [
         {
           title: "Posts",
-          url: "#",
+          url: "/app/posts",
         },
         {
           title: "Categories",
-          url: "#",
+          url: "/app/categories",
         },
         {
           title: "Tags",
-          url: "#",
+          url: "/app/tags",
         },
       ],
     },
@@ -58,20 +62,20 @@ const data = {
     },
     {
       title: "Settings",
-      url: "#",
+      url: "/app/settings",
       icon: Settings2,
       items: [
         {
           title: "General",
-          url: "#",
+          url: "/app/settings",
         },
         {
           title: "Members",
-          url: "#",
+          url: "/app/settings/team",
         },
         {
           title: "Billing",
-          url: "#",
+          url: "/app/settings/billing",
         }
       ],
     },
@@ -94,6 +98,18 @@ export const AppSidebar: Component<ComponentProps<typeof Sidebar>> = (props) => 
   const { data: organizations, isPending: isPendingListOrganizations } = useListOrganizations();
   const { data: organization, isPending: isPendingActiveOrganization } = useActiveOrganization();
 
+  const pathname = usePathname();
+
+  data.navMain = data.navMain.map((item) => ({
+    ...item,
+    isActive: item.url === pathname || (item.items?.some(subItem => subItem.url === pathname) ?? false),
+  }));
+  
+  data.navSecondary = data.navSecondary.map((item) => ({
+    ...item,
+    isActive: item.url === pathname || (item.items?.some(subItem => subItem.url === pathname) ?? false),
+  }));  
+
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
@@ -105,6 +121,10 @@ export const AppSidebar: Component<ComponentProps<typeof Sidebar>> = (props) => 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+                    <div className="flex size-6 items-center justify-center rounded-sm border mr-1.5">
+                      {organization?.logo}
+                    </div>
+
                     <div className="grid flex-1 text-left text-sm leading-tight">
                       <span className="truncate font-semibold">{organization?.name}</span>
                       <span className="truncate text-xs">{organization?.slug}</span>

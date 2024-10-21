@@ -18,10 +18,9 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
+import { Component } from "../component"
 
-export function NavProject({
-  items,
-}: {
+export type NavItemsProps = {
   items: {
     title: string
     url: string
@@ -32,7 +31,9 @@ export function NavProject({
       url: string
     }[]
   }[]
-}) {
+}
+
+export const NavProject: Component<NavItemsProps> = ({ items }) => {
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Project</SidebarGroupLabel>
