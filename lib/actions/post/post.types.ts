@@ -8,6 +8,12 @@ export const GetPost = {
         id: true
       }
     },
+    author: {
+      select: {
+        id: true,
+        email: true
+      }
+    },
     tags: {
       select: {
         name: true,
