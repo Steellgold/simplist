@@ -4,8 +4,8 @@ model Post {
   exerpt  String
   content String
 
-  author   Member @relation(fields: [authorId], references: [id], onDelete: SetNull)
-  authorId String
+  author   Member @relation(fields: [authorId], references: [id], onDelete: SetDefault)
+  authorId String @default("Deleted User")
 
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   organizationId String
