@@ -1,7 +1,8 @@
 "use client";
 
 import { useBreadcrumbStore } from "@/hooks/use-breadcrumb";
-import { ReactElement, useEffect } from "react";
+import type { ReactElement } from "react";
+import { useEffect } from "react";
 
 const Page = (): ReactElement => {
   const setBreadcrumb = useBreadcrumbStore((state) => state.setBreadcrumb);
@@ -11,11 +12,11 @@ const Page = (): ReactElement => {
   }, [setBreadcrumb]);
 
   return (
-    <div className="container">
+    <div>
       <h1>Overview</h1>
       <p>...</p>
     </div>
-  )
-}
+  );
+};
 
 export default Page;

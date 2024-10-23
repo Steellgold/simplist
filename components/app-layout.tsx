@@ -5,9 +5,7 @@ import { AppSidebar } from "./sidebar/app-sidebar";
 import { Separator } from "./ui/separator";
 import SidebarBreadcrumb from "./sidebar/sidebar-breadcrumb";
 
-type LayoutProps = PropsWithChildren;
-
-export const AppLayout: Component<LayoutProps> = ({ children }) => {
+export const AppLayout: Component<PropsWithChildren> = ({ children }) => {
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -19,7 +17,7 @@ export const AppLayout: Component<LayoutProps> = ({ children }) => {
             <SidebarBreadcrumb />
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+        <div className="p-4 pt-0">
           {children}
         </div>
       </SidebarInset>
