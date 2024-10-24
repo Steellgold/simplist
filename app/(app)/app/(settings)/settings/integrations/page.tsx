@@ -3,7 +3,7 @@ import type { ReactElement } from "react";
 const Page = (): ReactElement => {
   return (
     <div className="container mx-auto p-4 mt-16">
-      <h1>Settings</h1>
+      <h1>Integrations</h1>
     </div>
   );
 };
