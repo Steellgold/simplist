@@ -6,7 +6,7 @@ import { NavSecondary } from "@/components/sidebar/nav-secondary";
 import { NavUser } from "@/components/nav-user";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
-  DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger } from "../ui/dropdown-menu";
+  DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import type { Component } from "../component";
 import { useActiveOrganization, useListOrganizations, client } from "@/lib/auth/client";
 import { Skeleton } from "../ui/skeleton";
