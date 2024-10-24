@@ -68,25 +68,9 @@ const data: {
 };
 
 export const AppSidebar: Component<ComponentProps<typeof Sidebar>> = (props) => {
-  const { data: organizations, isPending: isPendingListOrganizations } = useListOrganizations();
   const { data: organization, isPending: isPendingActiveOrganization } = useActiveOrganization();
+  const { data: organizations } = useListOrganizations();
   const pathname = usePathname();
-
-  if (isPendingActiveOrganization || isPendingListOrganizations) {
-    return (
-      <Sidebar variant="inset" {...props}>
-        <SidebarHeader>
-          <Skeleton className="h-16 w-full" />
-        </SidebarHeader>
-        <SidebarContent>
-          <Skeleton className="h-16 w-full" />
-          <Skeleton className="h-16 w-full" />
-          <Skeleton className="h-16 w-full" />
-          <Skeleton className="h-16 w-full" />
-        </SidebarContent>
-      </Sidebar>
-    );
-  }
 
   data.navMain = data.navMain.map((item) => ({
     ...item,
@@ -103,51 +87,51 @@ export const AppSidebar: Component<ComponentProps<typeof Sidebar>> = (props) => 
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
-                  <div className="flex size-6 items-center justify-center rounded-sm border mr-1.5">
-                    {organization?.logo}
-                  </div>
+            {!isPendingActiveOrganization ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+                    <div className="flex size-6 items-center justify-center rounded-sm border mr-1.5">
+                      {organization?.logo}
+                    </div>
 
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">{organization?.name}</span>
-                    <span className="truncate text-xs">{organization?.slug}</span>
-                  </div>
+                    <div className="grid flex-1 text-left text-sm leading-tight">
+                      <span className="truncate font-semibold">{organization?.name}</span>
+                      <span className="truncate text-xs">{organization?.slug}</span>
+                    </div>
 
-                  <ChevronsUpDown className="ml-auto" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
+                    <ChevronsUpDown className="ml-auto" />
+                  </SidebarMenuButton>
+                </DropdownMenuTrigger>
 
-              <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg" align="start" side="bottom" sideOffset={4}>
-                {organizations && organizations.length > 0 && (
-                  <DropdownMenuLabel className="text-xs text-muted-foreground">Organizations</DropdownMenuLabel>
-                )}
+                <DropdownMenuContent
+                  className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+                  align="start" side="bottom" sideOffset={4}
+                >
+                  {organizations && organizations.length > 0 && (
+                    <DropdownMenuLabel className="text-xs text-muted-foreground">Organizations</DropdownMenuLabel>
+                  )}
 
-                {organizations && organizations.length > 0 && organizations.map((org, index) => (
-                  <DropdownMenuItem
-                    key={org.id}
-                    onClick={() => client.organization.setActive(organizations?.[index].id ?? "")}
-                    className="gap-2 p-2"
-                  >
-                    <div className="flex size-6 items-center justify-center rounded-sm border">{org.logo}</div>
+                  {organizations && organizations.length > 0 && organizations.filter(org => org.id !== organization?.id).map((org) => (
+                    <DropdownMenuItem key={org.id} onClick={() => client.organization.setActive(org.id)} className="gap-2 p-2">
+                      <div className="flex size-6 items-center justify-center rounded-sm border">{org.logo}</div>
+                      {org.name}
+                    </DropdownMenuItem>
+                  ))}
 
-                    {org.name}
+                  {organizations && organizations.filter(org => org.id !== organization?.id).length > 0 && <DropdownMenuSeparator />}
 
-                    <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
+                  <DropdownMenuItem className="gap-2 p-2">
+                    <div className="flex size-6 items-center justify-center rounded-md border bg-background">
+                      <Plus className="size-4" />
+                    </div>
+                    <div className="font-medium text-muted-foreground">New organization</div>
                   </DropdownMenuItem>
-                ))}
-
-                {organizations && organizations.length > 0 && <DropdownMenuSeparator />}
-
-                <DropdownMenuItem className="gap-2 p-2">
-                  <div className="flex size-6 items-center justify-center rounded-md border bg-background">
-                    <Plus className="size-4" />
-                  </div>
-                  <div className="font-medium text-muted-foreground">New organization</div>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Skeleton className="w-full h-14" />
+            )}
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>

@@ -12,7 +12,7 @@ const SidebarBreadcrumb = (): ReactElement => {
     <Breadcrumb>
       <BreadcrumbList>
         {breadcrumbs.map((breadcrumb, index) => (
-          <BreadcrumbItem key={index} className="hidden md:block">
+          <BreadcrumbItem key={index} className="hidden md:flex">
             <BreadcrumbLink asChild>
               <Link href={breadcrumb.href}>
                 {breadcrumb.label}
@@ -24,7 +24,7 @@ const SidebarBreadcrumb = (): ReactElement => {
           </BreadcrumbItem>
         ))}
 
-        {breadcrumbs.length > 0 && <BreadcrumbSeparator className="hidden md:block" />}
+        {breadcrumbs.length > 0 && <BreadcrumbSeparator className="hidden md:flex" />}
 
         <BreadcrumbItem>
           <BreadcrumbPage>{title}</BreadcrumbPage>
