@@ -22,7 +22,7 @@ import Link from "next/link";
 import type { ReactElement } from "react";
 import { useEffect } from "react";
 
-const generateChartData = () => Array.from({ length: 17 }, (_, index) => ({
+const generateChartData = (): { month: string; Performance: number }[] => Array.from({ length: 18 }, (_, index) => ({
   month: dayJS().subtract(17 - index, "months").format("MMM YY"),
   Performance: Math.floor(Math.random() * 100)
 }));
