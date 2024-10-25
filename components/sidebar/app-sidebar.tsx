@@ -11,7 +11,6 @@ import type { Component } from "../component";
 import { useActiveOrganization, useListOrganizations, client } from "@/lib/auth/client";
 import { Skeleton } from "../ui/skeleton";
 import type { ComponentProps } from "react";
-import { usePathname } from "next/navigation";
 import type { NavItemsProps } from "@/components/sidebar/nav-project";
 
 const data: {
@@ -70,17 +69,6 @@ const data: {
 export const AppSidebar: Component<ComponentProps<typeof Sidebar>> = (props) => {
   const { data: organization, isPending: isPendingActiveOrganization } = useActiveOrganization();
   const { data: organizations } = useListOrganizations();
-  const pathname = usePathname();
-
-  data.navMain = data.navMain.map((item) => ({
-    ...item,
-    isActive: item.url === pathname || (item.items?.some(subItem => subItem.url === pathname) ?? false)
-  }));
-
-  data.navSecondary = data.navSecondary.map((item) => ({
-    ...item,
-    isActive: item.url === pathname || (item.items?.some(subItem => subItem.url === pathname) ?? false)
-  }));
 
   return (
     <Sidebar variant="inset" {...props}>

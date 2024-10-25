@@ -12,6 +12,9 @@ import {
 import type { Component } from "../component";
 import { useTheme } from "next-themes";
 import type { ComponentPropsWithoutRef } from "react";
+import { ClientOnly } from "../ui/client-only";
+import { Skeleton } from "../ui/skeleton";
+import Link from "next/link";
 
 type NavSecondaryProps = {
   items: {
@@ -31,21 +34,25 @@ export const NavSecondary: Component<NavSecondaryProps> = ({ items, ...props }) 
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton asChild size="sm">
-                <a href={item.url}>
-                  <item.icon />
+                <Link href={item.url}>
+                  <ClientOnly fallback={<Skeleton className="w-3 h-3" />}>
+                    <item.icon />
+                  </ClientOnly>
                   <span>{item.title}</span>
-                </a>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
 
           <SidebarMenuItem>
-            <SidebarMenuButton size="sm" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
-              <>
-                {theme === "dark" ? <Sun /> : <Moon />}
-                <span>Switch to {theme === "dark" ? "light" : "dark"} mode</span>
-              </>
-            </SidebarMenuButton>
+            <ClientOnly fallback={<Skeleton className="w-20 h-6" />}>
+              <SidebarMenuButton size="sm" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+                <>
+                  {theme === "dark" ? <Sun /> : <Moon />}
+                  <span>Switch to {theme === "dark" ? "light" : "dark"} mode</span>
+                </>
+              </SidebarMenuButton>
+            </ClientOnly>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarGroupContent>

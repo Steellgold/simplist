@@ -3,12 +3,14 @@
 import { ChevronsUpDown, LogOut } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem,
+  DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
 import { signOut, useSession } from "@/lib/auth/client";
 import { useRouter } from "next/navigation";
+import type { ReactElement } from "react";
 
-export const NavUser = () => {
+export const NavUser = (): ReactElement => {
   const { isMobile } = useSidebar();
   const { data, isPending } = useSession();
 
@@ -18,7 +20,7 @@ export const NavUser = () => {
     return <></>;
   }
 
-  const handleSignOut = async(event: React.FormEvent) => {
+  const handleSignOut = async(event: React.MouseEvent): Promise<void> => {
     event.preventDefault();
     await signOut();
     router.refresh();
@@ -41,7 +43,10 @@ export const NavUser = () => {
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg" side={isMobile ? "bottom" : "right"} align="end" sideOffset={4}>
+          <DropdownMenuContent
+            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+            side={isMobile ? "bottom" : "right"} align="end" sideOffset={4}
+          >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
@@ -55,7 +60,9 @@ export const NavUser = () => {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleSignOut} className="text-destructive cursor-pointer">
+            <DropdownMenuItem
+              onClick={(event) => void handleSignOut(event)}
+              className="text-destructive cursor-pointer">
               <LogOut />
               Log out
             </DropdownMenuItem>

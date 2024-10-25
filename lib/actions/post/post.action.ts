@@ -7,7 +7,7 @@ import { GetPost } from "./post.types";
 import prisma from "@/lib/db";
 
 export const getPost = async(id: string): Promise<GetPostType> => {
-  const session = await auth.api.getSession({ headers: headers() });
+  const session = await auth.api.getSession({ headers: await headers() });
   if (!session) throw new Error("Unauthorized");
 
   return prisma.post.findFirstOrThrow({
@@ -17,7 +17,7 @@ export const getPost = async(id: string): Promise<GetPostType> => {
 };
 
 export const getPosts = async(): Promise<GetPostType[]> => {
-  const session = await auth.api.getSession({ headers: headers() });
+  const session = await auth.api.getSession({ headers: await headers() });
   if (!session) throw new Error("Unauthorized");
 
   return prisma.post.findMany({
