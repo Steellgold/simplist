@@ -116,7 +116,7 @@ const PostCard: Component<{ post: GetPostType; organization: Organization }> = (
     </div>
     <CardFooter className="flex justify-between p-5 gap-2 justify-end">
       <PostChart />
-      <PostActions postId={post.id} />
+      <PostActions postSlug={post.slug} />
     </CardFooter>
   </Card>
 );
@@ -160,9 +160,9 @@ const PostChart = (): ReactElement => (
   </div>
 );
 
-const PostActions = ({ postId }: { postId: string }): ReactElement => (
+const PostActions = ({ postSlug }: { postSlug: string }): ReactElement => (
   <div className="flex flex-row md:flex-col gap-1 md:gap-0.5">
-    <Link className={buttonVariants({ variant: "outline", size: "icon" })} href={`/app/posts/${postId}`} passHref prefetch>
+    <Link className={buttonVariants({ variant: "outline", size: "icon" })} href={`/app/posts/${postSlug}`} passHref prefetch>
       <Edit size={16} />
     </Link>
     <Button variant="outline" size="icon">
