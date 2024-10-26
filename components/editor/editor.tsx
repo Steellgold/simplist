@@ -1,0 +1,133 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import type { Component } from "../component";
+import type { EditorProps, PostInfo } from "./editor.types";
+import { useBreadcrumbStore } from "@/hooks/use-breadcrumb";
+import { Lang } from "@/lib/lang";
+import { EditorTitle } from "./editor.title";
+import { EditorExcerpt } from "./editor.excerpt";
+import { EditorContent } from "./editor.content";
+import { EditorHeader } from "./editor.header";
+import { Card, CardDescription, CardHeader, CardTitle } from "../ui/card";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog";
+import { Button } from "../ui/button";
+import { Trash } from "lucide-react";
+import { EditorBanner } from "./editor.banner";
+import { EditorSave } from "./editor.save";
+
+export const Editor: Component<EditorProps> = ({ isNew = false, posts = [], dbId }) => {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const setBreadcrumb = useBreadcrumbStore((state) => state.setBreadcrumb);
+  useEffect(() => setBreadcrumb([
+    { href: "/app", label: "Overview" },
+    { href: "/app/posts", label: "Posts" }
+  ], isNew ? "New" : posts[activeIndex].title.slice(0, 20) + "..."),
+  [setBreadcrumb, isNew, posts, activeIndex]);
+
+  const [postsData, setPostsData] = useState<PostInfo>(
+    posts.length ? posts : [{ title: "", excerpt: "", content: "", lang: Lang.EN }]
+  );
+
+  const handleLanguageChange = (lang: Lang): void => {
+    const existingIndex = postsData.findIndex(post => post.lang === lang);
+    if (existingIndex !== -1) {
+      setActiveIndex(existingIndex);
+    } else {
+      const newPostInfo = [...postsData, { title: "", excerpt: "", content: "", lang }];
+      setPostsData(newPostInfo);
+      setActiveIndex(newPostInfo.length - 1);
+    }
+  };
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+      <div className="col-span-6 md:col-span-4 space-y-3">
+        <EditorHeader
+          activeIndex={activeIndex}
+          postInfo={postsData}
+          onLanguageChange={handleLanguageChange}
+          setActiveIndex={setActiveIndex}
+        />
+
+        <EditorTitle
+          setValue={(title) => {
+            const newPostInfo = [...postsData];
+            newPostInfo[activeIndex].title = title;
+            setPostsData(newPostInfo);
+          }}
+          activeIndex={activeIndex}
+          postInfo={postsData}
+        />
+
+        <EditorExcerpt
+          setValue={(excerpt) => {
+            const newPostInfo = [...postsData];
+            newPostInfo[activeIndex].excerpt = excerpt;
+            setPostsData(newPostInfo);
+          }}
+          activeIndex={activeIndex}
+          postInfo={postsData}
+        />
+
+        <EditorContent
+          setValue={(content) => {
+            const newPostInfo = [...postsData];
+            newPostInfo[activeIndex].content = content;
+            setPostsData(newPostInfo);
+          }}
+          activeIndex={activeIndex}
+          postInfo={postsData}
+        />
+
+        {postsData[activeIndex].lang !== Lang.EN && (
+          <Card variant="destructive">
+            <CardHeader className="flex flex-row justify-between gap-4">
+              <div>
+                <CardTitle>Danger Zone</CardTitle>
+                <CardDescription>Are you sure you want to delete this language from the post?</CardDescription>
+              </div>
+
+              <div>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" size={"sm"}>
+                      <Trash size={16} />
+                    </Button>
+                  </AlertDialogTrigger>
+
+                  <AlertDialogContent>
+                    <AlertDialogTitle>Delete Language</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to delete the language from the post?
+                    </AlertDialogDescription>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        variant="destructive"
+                        onClick={() => {
+                          const newPostInfo = postsData.filter((_, index) => index !== activeIndex);
+                          setPostsData(newPostInfo);
+                          setActiveIndex(0);
+                        }}
+                      >
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+            </CardHeader>
+          </Card>
+        )}
+      </div>
+
+      <div className="col-span-6 md:col-span-2 space-y-3">
+        <EditorBanner />
+        <EditorSave isNew={isNew} postInfo={postsData} postId={dbId} />
+      </div>
+    </div>
+  );
+};

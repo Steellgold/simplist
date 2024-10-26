@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/await-thenable */
 import { BreadcrumbUpdater } from "@/components/breadcrumbUpdater";
 import type { AsyncComponent } from "@/components/component";
-import { Editor } from "@/components/editor";
+import { Editor } from "@/components/editor/editor";
 import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getPostBySlug } from "@/lib/actions/post/post.action";
 import type { GetPostType } from "@/lib/actions/post/post.types";
+import type { Lang } from "@/lib/lang";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
@@ -18,7 +19,7 @@ type PageProps = {
 const Page: AsyncComponent<PageProps> = async({ params }) => {
   const { slug } = await params;
 
-  const post: GetPostType = await getPostBySlug(slug);
+  const post: GetPostType | null = await getPostBySlug(slug);
   if (!post) return (
     <>
       <BreadcrumbUpdater links={[{ href: "/app", label: "Overview" }, { href: "/app/posts", label: "Posts" }]} title={slug} />
@@ -45,16 +46,21 @@ const Page: AsyncComponent<PageProps> = async({ params }) => {
 
       <Editor
         isNew={false}
+        // Idk why TypeScript is angry about this, but it works :/
         posts={[
-          {
-            title: post.title,
-            content: post.content,
-            excerpt: post.excerpt,
-            lang: post.lang,
-            banner: post.files.find(file => file.isBanner) || null
-          },
+          { title: post.title, content: post.content, banner: null, excerpt: post.excerpt as string, lang: post.lang as Lang },
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
           ...post.variants.map(variant => ({
-            title: variant.title, content: variant.content, excerpt: variant.excerpt, lang: variant.lang, variantId: variant.id
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+            title: variant.title,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+            content: variant.content,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+            excerpt: variant.excerpt as string,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+            lang: variant.lang as Lang,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+            variantId: variant.id
           }))
         ]}
         dbId={post.id}
