@@ -11,6 +11,8 @@ model Organization {
   posts      Post[]
   tags       Tag[]
   categories Category[]
+  variants   Variant[]
+  files      File[]
 
   @@unique([slug])
   @@map("organization")
@@ -28,6 +30,8 @@ model Member {
   posts          Post[]
   tags           Tag[]
   categories     Category[]
+  files          File[]
+  variants       Variant[]
 
   @@map("member")
 }

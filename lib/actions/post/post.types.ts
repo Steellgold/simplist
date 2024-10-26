@@ -28,6 +28,27 @@ export const GetPost = {
         createdAt: true,
         id: true
       }
+    },
+    files: {
+      select: {
+        name: true,
+        url: true,
+        isBanner: true,
+        authorId: true,
+        mimeType: true,
+        size: true,
+        createdAt: true,
+        id: true
+      }
+    },
+    variants: {
+      select: {
+        title: true,
+        content: true,
+        excerpt: true,
+        id: true,
+        lang: true
+      }
     }
   }
 };

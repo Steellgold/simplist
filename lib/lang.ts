@@ -45,3 +45,26 @@ export const LANGUAGES: Record<Lang, string> = {
   [Lang.IT]: "Italiano",
   [Lang.LN]: "Lingala"
 };
+
+export const LANGUAGE_FLAGS: Record<Lang, string> = {
+  [Lang.EN]: "🇬🇧",
+  [Lang.ZH]: "🇨🇳",
+  [Lang.HI]: "🇮🇳",
+  [Lang.ES]: "🇪🇸",
+  [Lang.BN]: "🇧🇩",
+  [Lang.RU]: "🇷🇺",
+  [Lang.PT]: "🇵🇹",
+  [Lang.FR]: "🇫🇷",
+  [Lang.UR]: "🇵🇰",
+  [Lang.JP]: "🇯🇵",
+  [Lang.AR]: "🇸🇦",
+  [Lang.KO]: "🇰🇷",
+  [Lang.VI]: "🇻🇳",
+  [Lang.TH]: "🇹🇭",
+  [Lang.GU]: "🇮🇳",
+  [Lang.TR]: "🇹🇷",
+  [Lang.FA]: "🇮🇷",
+  [Lang.DE]: "🇩🇪",
+  [Lang.IT]: "🇮🇹",
+  [Lang.LN]: "🇨🇩"
+};
