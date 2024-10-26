@@ -1,15 +1,15 @@
 "use client";
 
+import { MarkdownPlease } from "@/components/mdx";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { useBreadcrumbStore } from "@/hooks/use-breadcrumb";
 import { Lang, LANGUAGES } from "@/lib/lang";
 import { Combine } from "lucide-react";
 import type { ReactElement } from "react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 type PostInfo = {
@@ -20,12 +20,6 @@ type PostInfo = {
 }[];
 
 const Page = (): ReactElement => {
-  const setBreadcrumb = useBreadcrumbStore((state) => state.setBreadcrumb);
-  useEffect(() => setBreadcrumb([
-    { href: "/app", label: "Overview" },
-    { href: "/app/posts", label: "Posts" }
-  ], "New"), [setBreadcrumb]);
-
   const [postInfo, setPostInfo] = useState<PostInfo>([
     { title: "English post v1", excerpt: "This is a post in English.", content: "Once upon a time...", lang: Lang.EN },
     { title: "French post v1", excerpt: "C'est un post en français.", content: "Il était une fois...", lang: Lang.FR }
@@ -188,10 +182,7 @@ const Page = (): ReactElement => {
           </CardHeader>
 
           <CardContent>
-            <div className="p-4 bg-gray-900 rounded-lg">
-              <h1 className="text-2xl font-semibold">{postInfo[activeIndex].title}</h1>
-              <p className="text-lg text-gray-600">{postInfo[activeIndex].excerpt}</p>
-            </div>
+            <MarkdownPlease content={postInfo[activeIndex].content} />
           </CardContent>
         </Card>
       </div>

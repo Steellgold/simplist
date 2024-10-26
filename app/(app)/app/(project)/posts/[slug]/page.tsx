@@ -1,42 +1,65 @@
-"use client";
+/* eslint-disable @typescript-eslint/await-thenable */
+import { BreadcrumbUpdater } from "@/components/breadcrumbUpdater";
+import type { AsyncComponent } from "@/components/component";
+import { Editor } from "@/components/editor";
+import { buttonVariants } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
+import { getPostBySlug } from "@/lib/actions/post/post.action";
+import type { GetPostType } from "@/lib/actions/post/post.types";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
-import type { Component } from "@/components/component";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Textarea } from "@/components/ui/textarea";
-import { useBreadcrumbStore } from "@/hooks/use-breadcrumb";
-import { Calendar, CalendarIcon, X } from "lucide-react";
-import { useEffect, useState } from "react";
-import { format } from "date-fns";
-
-const Page: Component<{ params: { slug: string } }> = ({ params }) => {
-  const setBreadcrumb = useBreadcrumbStore((state) => state.setBreadcrumb);
-  useEffect(() => {
-    setBreadcrumb([
-      { label: "Overview", href: "/app" },
-      { label: "Posts", href: "/app/posts" }
-    ], params.slug);
-  }, [setBreadcrumb, params.slug]);
-
-  const [content, setContent] = useState("");
-  const [isPreview, setIsPreview] = useState(false);
-  const [publishDate, setPublishDate] = useState<Date>();
-  const [files, setFiles] = useState<File[]>([]);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    if (e.target.files) {
-      setFiles([...files, ...Array.from(e.target.files)]);
-    }
+type PageProps = {
+  params: {
+    slug: string;
   };
+};
 
-  const removeFile = (index: number): void => {
-    setFiles(files.filter((_, i) => i !== index));
-  };
+const Page: AsyncComponent<PageProps> = async({ params }) => {
+  const { slug } = await params;
+
+  const post: GetPostType = await getPostBySlug(slug);
+  if (!post) return (
+    <>
+      <BreadcrumbUpdater links={[{ href: "/app", label: "Overview" }, { href: "/app/posts", label: "Posts" }]} title={slug} />
+
+      <EmptyState
+        title="Post not found"
+        description="The post you are looking for does not exist."
+        actions={[
+          <Link className={buttonVariants({ variant: "outline" })} href="/app/posts" key="back">
+            <ArrowLeft size={16} />
+            Back to posts
+          </Link>
+        ]}
+      />
+    </>
+  );
 
   return (
-    <></>
+    <>
+      <BreadcrumbUpdater links={[
+        { href: "/app", label: "Overview" },
+        { href: "/app/posts", label: "Posts" }
+      ]} title={slug} />
+
+      <Editor
+        isNew={false}
+        posts={[
+          {
+            title: post.title,
+            content: post.content,
+            excerpt: post.excerpt,
+            lang: post.lang,
+            banner: post.files.find(file => file.isBanner) || null
+          },
+          ...post.variants.map(variant => ({
+            title: variant.title, content: variant.content, excerpt: variant.excerpt, lang: variant.lang, variantId: variant.id
+          }))
+        ]}
+        dbId={post.id}
+      />
+    </>
   );
 };
 
