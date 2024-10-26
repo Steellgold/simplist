@@ -12,16 +12,19 @@ const SidebarBreadcrumb = (): ReactElement => {
     <Breadcrumb>
       <BreadcrumbList>
         {breadcrumbs.map((breadcrumb, index) => (
-          <BreadcrumbItem key={index} className="hidden md:flex">
-            <BreadcrumbLink asChild>
-              <Link href={breadcrumb.href}>
-                {breadcrumb.label}
-              </Link>
-            </BreadcrumbLink>
+          <div key={index} className="flex items-center gap-2">
+            <BreadcrumbItem key={index} className="hidden md:flex">
+              <BreadcrumbLink asChild>
+                <Link href={breadcrumb.href}>
+                  {breadcrumb.label}
+                </Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+
             {index < breadcrumbs.length - 1 && (
               <BreadcrumbSeparator className="hidden md:block" />
             )}
-          </BreadcrumbItem>
+          </div>
         ))}
 
         {breadcrumbs.length > 0 && <BreadcrumbSeparator className="hidden md:flex" />}
