@@ -13,7 +13,7 @@ export type EditorProps = {
   isNew?: boolean;
   posts?: PostInfo;
   files?: File[];
-  dbId: string;
+  dbId?: string;
 };
 
 export type EditorElementProps = {

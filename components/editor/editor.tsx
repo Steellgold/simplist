@@ -17,7 +17,7 @@ import { Trash } from "lucide-react";
 import { EditorBanner } from "./editor.banner";
 import { EditorSave } from "./editor.save";
 
-export const Editor: Component<EditorProps> = ({ isNew = false, posts = [], dbId }) => {
+export const Editor: Component<EditorProps> = ({ isNew = false, posts = [], dbId = "" }) => {
   const [activeIndex, setActiveIndex] = useState(0);
 
   const setBreadcrumb = useBreadcrumbStore((state) => state.setBreadcrumb);

@@ -1,6 +1,6 @@
 import type { UseQueryOptions } from "@tanstack/react-query";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getPost, getPostBySlug, getPosts, updatePost } from "./post.action";
+import { createPost, getPost, getPostBySlug, getPosts, updatePost } from "./post.action";
 import type { UseMutationResult } from "@tanstack/react-query";
 import type { GetPostType } from "./post.types";
 import type { Prisma } from "@prisma/client";
@@ -32,6 +32,15 @@ export const useUpdatePost = (): UseMutationResult<unknown, unknown, { id: strin
 
   return useMutation({
     mutationFn: (data: { id: string; data: Prisma.PostUpdateInput }) => updatePost(data.id, data.data),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["getPosts"] })
+  });
+};
+
+export const useCreatePost = (): UseMutationResult<unknown, unknown, Prisma.PostCreateInput, unknown> => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: Prisma.PostCreateInput) => createPost(data),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["getPosts"] })
   });
 };

@@ -52,3 +52,13 @@ export const updatePost = async(id: string, data: Prisma.PostUpdateInput): Promi
     include: GetPost.include
   });
 };
+
+export const createPost = async(data: Prisma.PostCreateInput): Promise<GetPostType> => {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  return prisma.post.create({
+    data: { ...data },
+    include: GetPost.include
+  });
+};
