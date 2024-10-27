@@ -68,6 +68,7 @@ model Variant {
   //
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
+  files          File[]
 }
 
 model File {
@@ -89,6 +90,9 @@ model File {
   //
   post           Post?        @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId         String?
+  // 
+  variant        Variant?     @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  variantId      String?
 }
 
 enum TagColor {

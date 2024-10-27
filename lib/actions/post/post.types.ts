@@ -47,7 +47,19 @@ export const GetPost = {
         content: true,
         excerpt: true,
         id: true,
-        lang: true
+        lang: true,
+        files: {
+          select: {
+            name: true,
+            url: true,
+            isBanner: true,
+            authorId: true,
+            mimeType: true,
+            size: true,
+            createdAt: true,
+            id: true
+          }
+        }
       }
     }
   }

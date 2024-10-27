@@ -16,19 +16,28 @@ import { Button } from "../ui/button";
 import { Trash } from "lucide-react";
 import { EditorBanner } from "./editor.banner";
 import { EditorSave } from "./editor.save";
+import { nanoid } from "nanoid";
 
 export const Editor: Component<EditorProps> = ({ isNew = false, posts = [], dbId = "" }) => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [newPostID, setNewPostID] = useState<string>("");
+
+  const [toDelete, setToDelete] = useState<Lang[]>([]);
 
   const setBreadcrumb = useBreadcrumbStore((state) => state.setBreadcrumb);
   useEffect(() => setBreadcrumb([
     { href: "/app", label: "Overview" },
     { href: "/app/posts", label: "Posts" }
-  ], isNew ? "New" : posts[activeIndex].title.slice(0, 20) + "..."),
+  ], isNew ? "New" : posts[0].title.slice(0, 20) + "..."),
   [setBreadcrumb, isNew, posts, activeIndex]);
 
+  useEffect(() => {
+    if (isNew) setNewPostID(nanoid(20));
+    else setNewPostID(dbId);
+  }, [isNew, dbId]);
+
   const [postsData, setPostsData] = useState<PostInfo>(
-    posts.length ? posts : [{ title: "", excerpt: "", content: "", lang: Lang.EN }]
+    posts.length ? posts : [{ title: "", excerpt: "", content: "", lang: Lang.EN, banner: null }]
   );
 
   const handleLanguageChange = (lang: Lang): void => {
@@ -36,7 +45,14 @@ export const Editor: Component<EditorProps> = ({ isNew = false, posts = [], dbId
     if (existingIndex !== -1) {
       setActiveIndex(existingIndex);
     } else {
-      const newPostInfo = [...postsData, { title: "", excerpt: "", content: "", lang }];
+      const newPostInfo = [...postsData, {
+        title: "",
+        excerpt: "",
+        content: "",
+        lang,
+        banner: null,
+        persist: true
+      }];
       setPostsData(newPostInfo);
       setActiveIndex(newPostInfo.length - 1);
     }
@@ -111,6 +127,7 @@ export const Editor: Component<EditorProps> = ({ isNew = false, posts = [], dbId
                           const newPostInfo = postsData.filter((_, index) => index !== activeIndex);
                           setPostsData(newPostInfo);
                           setActiveIndex(0);
+                          setToDelete([...toDelete, postsData[activeIndex].lang]);
                         }}
                       >
                         Delete
@@ -125,8 +142,19 @@ export const Editor: Component<EditorProps> = ({ isNew = false, posts = [], dbId
       </div>
 
       <div className="col-span-6 md:col-span-2 space-y-3">
-        <EditorBanner />
-        <EditorSave isNew={isNew} postInfo={postsData} postId={dbId} />
+        <EditorBanner
+          isNew={isNew}
+          postId={newPostID}
+          postInfo={postsData}
+          setBanner={(banner) => {
+            const newPostInfo = [...postsData];
+            newPostInfo[activeIndex].banner = banner;
+            setPostsData(newPostInfo);
+          }}
+          activeIndex={activeIndex}
+        />
+
+        <EditorSave isNew={isNew} postInfo={postsData} postId={isNew ? newPostID : dbId} toDelete={toDelete} />
       </div>
     </div>
   );

@@ -35,7 +35,7 @@ export const EditorHeader: Component<EditorHeaderProps> = ({ activeIndex, postIn
                   <span className="flex items-center gap-1.5">
                     {postInfo.some(post => post.lang === key as Lang) ? (
                       <CircleDotDashed size={16} className={cn("text-muted-foreground", {
-                        "animate-pulse text-blue-500": postInfo[activeIndex].lang === key as Lang
+                        "text-blue-500": postInfo[activeIndex].lang === key as Lang
                       })} />
                     ) : null}
 

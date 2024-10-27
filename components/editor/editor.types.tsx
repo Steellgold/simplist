@@ -1,10 +1,22 @@
 import type { Lang } from "@/lib/lang";
 
+type Banner = {
+  name: string;
+  type: string;
+  id: string;
+
+  url: string;
+  size: number;
+
+  uploadedAt: Date;
+  uploadedBy: string;
+};
+
 export type PostInfo = {
   title: string;
   excerpt: string;
   content: string;
-  banner?: string | null;
+  banner?: Banner | null;
   lang: Lang;
   variantId?: string;
 }[];
@@ -34,5 +46,16 @@ export type EditorHeaderProps = {
 export type EditorSaveProps = {
   isNew: boolean;
   postInfo: PostInfo;
+  postId: string;
+
+  toDelete: Lang[];
+};
+
+export type EditorBannerProps = {
+  activeIndex: number;
+  postInfo: PostInfo;
+  setBanner: (banner: Banner | null) => void;
+
+  isNew: boolean;
   postId: string;
 };

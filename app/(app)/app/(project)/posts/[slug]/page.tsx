@@ -6,6 +6,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getPostBySlug } from "@/lib/actions/post/post.action";
 import type { GetPostType } from "@/lib/actions/post/post.types";
+import { dayJS } from "@/lib/day-js";
 import type { Lang } from "@/lib/lang";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -48,10 +49,24 @@ const Page: AsyncComponent<PageProps> = async({ params }) => {
         isNew={false}
         // Idk why TypeScript is angry about this, but it works :/
         posts={[
-          { title: post.title, content: post.content, banner: null, excerpt: post.excerpt as string, lang: post.lang as Lang },
+          {
+            title: post.title,
+            content: post.content,
+            banner: post.files && post.files[0] ? {
+              id: post.files[0].id as string,
+              url: post.files[0].url as string,
+              name: post.files[0].name as string,
+              size: post.files[0].size as number,
+              type: post.files[0].mimeType as string,
+              uploadedAt: dayJS(post.files[0].createdAt).toDate(),
+              uploadedBy: post.files[0].authorId ? post.files[0].authorId : ""
+            } : null,
+            excerpt: post.excerpt as string,
+            lang: post.lang as Lang
+          },
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
           ...post.variants.map(variant => ({
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+            // eslint-disable-next-line @typescript-eslint  /no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
             title: variant.title,
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
             content: variant.content,
@@ -60,7 +75,24 @@ const Page: AsyncComponent<PageProps> = async({ params }) => {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
             lang: variant.lang as Lang,
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-            variantId: variant.id
+            variantId: variant.id,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+            banner: variant.files && variant.files[0] ? {
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+              id: variant.files[0].id as string,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+              url: variant.files[0].url as string,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+              name: variant.files[0].name as string,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+              size: variant.files[0].size as number,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+              type: variant.files[0].mimeType as string,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+              uploadedAt: dayJS(variant.files[0].createdAt).toDate(),
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+              uploadedBy: variant.files[0].authorId ? variant.files[0].authorId : ""
+            } : null
           }))
         ]}
         dbId={post.id}

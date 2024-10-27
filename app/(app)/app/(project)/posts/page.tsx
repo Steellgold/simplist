@@ -108,7 +108,14 @@ const PostCard: Component<{ post: GetPostType; organization: Organization }> = (
   <Card className={cn("flex flex-col md:flex-row justify-between")}>
     <div className="flex flex-col md:flex-row">
       <div className="p-5 -mb-6 md:mb-0">
-        <ImageWrapper title={post.title} />
+        <div className="relative w-full h-52 md:w-56 md:h-full">
+          <Image
+            src={post.files.find((file) => file.isBanner)?.url || "/_static/placeholder.png"}
+            alt={post.title}
+            fill
+            className="rounded-lg object-cover"
+          />
+        </div>
       </div>
       <CardHeader className="flex flex-col md:flex-row">
         <PostDetails post={post} organization={organization} />
@@ -121,17 +128,11 @@ const PostCard: Component<{ post: GetPostType; organization: Organization }> = (
   </Card>
 );
 
-const ImageWrapper: Component<{ title: string }> = ({ title }) => (
-  <div className="relative w-full h-52 md:w-56 md:h-full">
-    <Image src="https://placehold.co/600x500/png" alt={title} fill className="rounded-lg object-cover" />
-  </div>
-);
-
 const PostDetails: Component<{ post: GetPostType; organization: Organization }> = ({ post, organization }) => (
   <div className="flex flex-col justify-between gap-1">
     <div className="flex flex-col gap-1">
       <CardTitle className="line-clamp-1">{post.title}</CardTitle>
-      <CardDescription className="line-clamp-1">{post.exerpt}</CardDescription>
+      <CardDescription className="line-clamp-1">{post.excerpt}</CardDescription>
       <CardDescription className="text-sm text-muted-foreground">
         Published on {dayJS(post.createdAt).format("DD MMM YYYY")}
         &nbsp;by {organization?.members.find((member) => member.id === post.author.id)?.user.name}
@@ -150,13 +151,13 @@ const PostDetails: Component<{ post: GetPostType; organization: Organization }> 
 
 const PostChart = (): ReactElement => (
   <div className="bg-primary/5 rounded-lg w-full h-full hidden md:block">
-    <SparkAreaChart
+    {/* <SparkAreaChart
       data={generateChartData()}
       categories={["Performance"]}
       index="month"
       colors={["yellow"]}
       className="md:h-full md:w-36 lg:w-48 xl:w-60 2xl:w-72"
-    />
+    /> */}
   </div>
 );
 
