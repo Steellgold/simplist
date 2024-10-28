@@ -5,18 +5,22 @@ import type { Component } from "../component";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
 import { useState } from "react";
 import { Button } from "../ui/button";
-import { ImageOff, ImagePlus, Loader2 } from "lucide-react";
+import { ImageOff, ImagePlus, Images, Loader2, Upload } from "lucide-react";
 import { toast } from "sonner";
-import type { EditorBannerProps } from "./editor.types";
+import type { Banner, EditorBannerProps } from "./editor.types";
 import { useActiveOrganization, useSession } from "@/lib/auth/client";
 import { Skeleton } from "../ui/skeleton";
-import { nanoid } from "nanoid";
 import { z } from "zod";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { EditorFilesModal } from "./modals/editor.files.modal";
 
 export const EditorBanner: Component<EditorBannerProps> = ({ postInfo, setBanner, postId, activeIndex }) => {
   const [isUploading, setIsUploading] = useState(false);
+  const [isFilesOpen, setIsFilesOpen] = useState(false);
+
   const { data: organization, isPending } = useActiveOrganization();
   const { data: session, isPending: isSessionPending } = useSession();
+
 
   return (
     <Card>
@@ -95,8 +99,7 @@ export const EditorBanner: Component<EditorBannerProps> = ({ postInfo, setBanner
               return;
             }
 
-            const fileId = nanoid(20);
-            let callApiUrl = "/api/banner/upload?filename=" + fileId;
+            let callApiUrl = "/api/banner/upload?filename=" + Buffer.from(file.name).toString("base64");
             callApiUrl += organization ? "&organization=" + organization.id : "";
             callApiUrl += "&post=" + postId;
 
@@ -105,7 +108,11 @@ export const EditorBanner: Component<EditorBannerProps> = ({ postInfo, setBanner
               body: file
             });
 
-            const schema = z.object({ url: z.string() }).safeParse(await response.json());
+            const schema = z.object({
+              url: z.string(),
+              id: z.string()
+            }).safeParse(await response.json());
+
             if (!schema.success) {
               toast.error("Failed to upload image.");
               setIsUploading(false);
@@ -117,7 +124,7 @@ export const EditorBanner: Component<EditorBannerProps> = ({ postInfo, setBanner
               size: file.size,
               name: file.name,
               type: file.type,
-              id: fileId,
+              id: schema.data.id,
               uploadedAt: new Date(),
               uploadedBy: session?.user?.id ?? ""
             });
@@ -127,18 +134,36 @@ export const EditorBanner: Component<EditorBannerProps> = ({ postInfo, setBanner
           }} hidden />
 
           {organization && session && !isPending && !isSessionPending ? (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => (document.querySelector("input[type=file]") as HTMLInputElement)?.click()}
-              disabled={isUploading}
-            >
-              {!isUploading ? <ImagePlus size={16} /> : <Loader2 size={16} className="animate-spin" />}
-              Upload Image
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" disabled={isUploading} size={"sm"}>
+                  {isUploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ImagePlus className="mr-2 h-4 w-4" />}
+                  Upload Image
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" side="bottom">
+                <DropdownMenuItem onSelect={() => (document.querySelector("input[type=file]") as HTMLInputElement)?.click()}>
+                  <Upload className="mr-2 h-4 w-4" />
+                  From Remote
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => setIsFilesOpen(true)}>
+                  <Images className="mr-2 h-4 w-4" />
+                  Browse Files
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <Skeleton className="w-24 h-8" />
           )}
+
+          <EditorFilesModal
+            isOpen={isFilesOpen}
+            onOpenChange={setIsFilesOpen}
+            onSelected={(banner: Banner) => {
+              setBanner(banner);
+              console.log(banner);
+              setIsFilesOpen(false);
+            }} />
         </div>
       </CardFooter>
     </Card>

@@ -29,6 +29,9 @@ model Post {
   slug           String       @default(cuid())
   lang           Lang         @default(EN)
   // 
+  banner         File?        @relation(fields: [bannerId], references: [id], onDelete: SetNull)
+  bannerId       String?
+  // 
   author         Member       @relation(fields: [authorId], references: [id], onDelete: SetDefault)
   authorId       String       @default("Deleted User")
   // 
@@ -36,7 +39,7 @@ model Post {
   organizationId String
   // 
   published      Boolean      @default(false)
-  publishedAt    DateTime?
+  scheduledAt    DateTime?
   //
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
@@ -44,7 +47,6 @@ model Post {
   tags           Tag[]
   categories     Category[]
   comments       Comment[]
-  files          File[]
   variants       Variant[]
 
   @@unique([slug, organizationId])
@@ -56,6 +58,9 @@ model Variant {
   excerpt        String
   content        String
   lang           Lang
+  // 
+  banner         File?        @relation(fields: [bannerId], references: [id], onDelete: SetNull)
+  bannerId       String?
   //
   author         Member       @relation(fields: [authorId], references: [id], onDelete: SetDefault)
   authorId       String       @default("Deleted User")
@@ -68,31 +73,6 @@ model Variant {
   //
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
-  files          File[]
-}
-
-model File {
-  id             String       @id
-  isBanner       Boolean      @default(false)
-  name           String
-  size           Int
-  mimeType       String
-  url            String
-  //
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  //
-  author         Member?      @relation(fields: [authorId], references: [id], onDelete: SetDefault)
-  authorId       String?      @default("Deleted User")
-  //
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  organizationId String
-  //
-  post           Post?        @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId         String?
-  // 
-  variant        Variant?     @relation(fields: [variantId], references: [id], onDelete: Cascade)
-  variantId      String?
 }
 
 enum TagColor {

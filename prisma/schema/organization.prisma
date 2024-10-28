@@ -18,6 +18,26 @@ model Organization {
   @@map("organization")
 }
 
+model File {
+  id             String       @id
+  name           String
+  size           Int
+  url            String
+  mimeType       String       @default("image/png")
+  //
+  member         Member       @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId       String
+  // 
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  //
+  posts          Post[]
+  variants       Variant[]
+  // 
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
 model Member {
   id             String       @id
   organizationId String
@@ -30,9 +50,10 @@ model Member {
   posts          Post[]
   tags           Tag[]
   categories     Category[]
-  files          File[]
   variants       Variant[]
+  files          File[]
 
+  @@unique([userId, organizationId])
   @@map("member")
 }
 

@@ -17,7 +17,7 @@ export const DELETE = async(request: Request): Promise<NextResponse> => {
   if (!fileId) return NextResponse.json({ error: "No file ID provided" }, { status: 400 });
 
   const { data, error } = await supabase.storage.from("banners").remove([organization + "/" + postId + "/" + fileId]);
-  
+
   const prismaData = await prisma.file.findFirst({
     where: {
       id: fileId
@@ -31,7 +31,7 @@ export const DELETE = async(request: Request): Promise<NextResponse> => {
       }
     });
   }
-  
+
   if (error) return NextResponse.json({ error: "Failed to delete image" }, { status: 500 });
   if (!data) return NextResponse.json({ error: "Failed to retrieve image" }, { status: 500 });
 

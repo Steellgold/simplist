@@ -28,7 +28,7 @@ import { nanoid } from "nanoid";
 import { useActiveOrganization, useSession } from "@/lib/auth/client";
 import { Skeleton } from "../ui/skeleton";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { cn } from "@/lib/utils";
+import { cn, slugify } from "@/lib/utils";
 import { Calendar } from "../ui/calendar";
 import {
   Select,
@@ -37,9 +37,9 @@ import {
   SelectTrigger,
   SelectValue
 } from "../ui/select";
-import { Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 
-export const EditorSave: Component<EditorSaveProps> = ({ isNew, postInfo, postId, toDelete }) => {
+export const EditorSave: Component<EditorSaveProps> = ({ isNew, postInfo, postId }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [time, setTime] = useState<string | undefined>(undefined);
@@ -71,61 +71,47 @@ export const EditorSave: Component<EditorSaveProps> = ({ isNew, postInfo, postId
     const mutation = isNew ? create.mutate : update.mutate;
 
     const createPostPayload: Prisma.PostCreateInput = {
-      id: postId, // Because we are generating the ID on the "Editor" component to pass it down to the "EditorBanner" component (for uploading images)
-      published,
-      organization: { connect: { id: organization.id } },
-      author: { connect: { id: organization.members.find(m => m.userId === session.user.id)?.id } },
-      publishedAt: combinedDateTime,
+      id: postId || nanoid(),
       title: postInfo[0].title,
       excerpt: postInfo[0].excerpt,
       content: postInfo[0].content,
-      lang: postInfo[0].lang ?? "EN",
+      lang: postInfo[0].lang,
+      published,
+      scheduledAt: combinedDateTime || undefined,
+      author: {
+        connect: {
+          id: organization.members.find((member) => member.userId === session.user.id)?.id
+        }
+      },
+      organization: {
+        connect: {
+          id: organization.id
+        }
+      },
+      banner: postInfo[0].banner ? {
+        connect: {
+          id: postInfo[0].banner.id
+        }
+      } : undefined,
       variants: {
-        createMany: {
+        createMany: postInfo.slice(1).length > 0 ? {
           data: postInfo.slice(1).map((variant) => ({
-            id: nanoid(20),
+            id: nanoid(),
             title: variant.title,
             excerpt: variant.excerpt,
             content: variant.content,
-            lang: variant.lang ?? "EN",
-            organizationId: organization.id,
-            authorId: organization.members.find(m => m.userId === session.user.id)?.id,
-            files: variant.banner ? {
-              createMany: {
-                data: [{
-                  id: variant.banner.id,
-                  url: variant.banner.url,
-                  mimeType: variant.banner.type,
-                  size: variant.banner.size,
-                  name: variant.banner.name,
-                  authorId: organization.members.find(m => m.userId === session.user.id)?.id,
-                  isBanner: true,
-                  postId: postId,
-                  organizationId: organization.id
-                }]
+            lang: variant.lang,
+            banner: variant.banner ? {
+              connect: {
+                id: variant.banner.id
               }
-            } : []
-          }))
-        }
-      },
-      files: {
-        createMany: {
-          data: postInfo[0].banner ? [{
-            id: postInfo[0].banner.id,
-            url: postInfo[0].banner.url,
-            mimeType: postInfo[0].banner.type,
-            size: postInfo[0].banner.size,
-            name: postInfo[0].banner.name,
-            authorId: organization.members.find(m => m.userId === session.user.id)?.id,
-            isBanner: true,
+            } : undefined,
             organizationId: organization.id
-          }] : []
-        }
-      }
+          }))
+        } : undefined
+      },
+      slug: slugify(postInfo[0].title)
     };
-
-    console.log(postId)
-    console.log(postInfo)
 
     const updatePostPayload: Prisma.PostUpdateArgs = {
       // @ts-expect-error - This is a hack, TypeScript please ignore this
@@ -135,81 +121,32 @@ export const EditorSave: Component<EditorSaveProps> = ({ isNew, postInfo, postId
         excerpt: postInfo[0].excerpt,
         content: postInfo[0].content,
         lang: postInfo[0].lang,
+        bannerId: postInfo[0].banner ? postInfo[0].banner.id : undefined,
         variants: {
-          upsert: postInfo.slice(1).map((variant) => ({
+          upsert: postInfo.slice(1).length > 0 ? postInfo.slice(1).map((variant) => ({
             where: {
-              id: variant.variantId || nanoid(20)
+              id: variant.variantId
             },
             update: {
-              id: variant.variantId,
               title: variant.title,
               excerpt: variant.excerpt,
               content: variant.content,
               lang: variant.lang,
-              files: variant.banner ? {
-                upsert: {
-                  where: {
-                    id: variant.banner.id
-                  },
-                  update: {
-                    id: variant.banner.id,
-                    url: variant.banner.url,
-                    mimeType: variant.banner.type,
-                    size: variant.banner.size,
-                    name: variant.banner.name,
-                    authorId: organization.members.find(m => m.userId === session.user.id)?.id,
-                    isBanner: true,
-                    postId: postId,
-                    organizationId: organization.id
-                  },
-                  create: {
-                    id: variant.banner.id,
-                    url: variant.banner.url,
-                    mimeType: variant.banner.type,
-                    size: variant.banner.size,
-                    name: variant.banner.name,
-                    authorId: organization.members.find(m => m.userId === session.user.id)?.id,
-                    isBanner: true,
-                    postId: postId,
-                    organizationId: organization.id
-                  }
-                }
-              } : {}
+              bannerId: variant.banner ? variant.banner.id : undefined
             },
             create: {
-              id: nanoid(20),
+              id: nanoid(),
               title: variant.title,
               excerpt: variant.excerpt,
               content: variant.content,
               lang: variant.lang,
-              organizationId: organization.id,
-              authorId: organization.members.find(m => m.userId === session.user.id)?.id,
-              files: {
-                createMany: {
-                  data: variant.banner ? [{
-                    id: variant.banner.id,
-                    url: variant.banner.url,
-                    mimeType: variant.banner.type,
-                    size: variant.banner.size,
-                    name: variant.banner.name,
-                    authorId: organization.members.find(m => m.userId === session.user.id)?.id,
-                    isBanner: true,
-                    postId: postId,
-                    organizationId: organization.id
-                  }] : []
-                }
-              }
+              bannerId: variant.banner ? variant.banner.id : undefined,
+              organizationId: organization.id
             }
-          })),
-          deleteMany: {
-            lang: {
-              in: toDelete.map((lang) => lang)
-            }
-          }
+          })) : undefined
         }
       }
     };
-    
 
     setIsSaving(true);
     // @ts-expect-error - This is a hack, TypeScript please ignore this

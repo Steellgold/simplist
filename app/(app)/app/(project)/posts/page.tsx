@@ -8,7 +8,6 @@ import { ClientOnly } from "@/components/ui/client-only";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { SparkAreaChart } from "@/components/ui/tremor/spark-chart";
 import { useBreadcrumbStore } from "@/hooks/use-breadcrumb";
 import { useGetPosts } from "@/lib/actions/post/post.hook";
 import type { GetPostType } from "@/lib/actions/post/post.types";
@@ -22,10 +21,10 @@ import Link from "next/link";
 import type { ReactElement } from "react";
 import { useEffect } from "react";
 
-const generateChartData = (): { month: string; Performance: number }[] => Array.from({ length: 18 }, (_, index) => ({
-  month: dayJS().subtract(17 - index, "months").format("MMM YY"),
-  Performance: Math.floor(Math.random() * 100)
-}));
+// const generateChartData = (): { month: string; Performance: number }[] => Array.from({ length: 18 }, (_, index) => ({
+//   month: dayJS().subtract(17 - index, "months").format("MMM YY"),
+//   Performance: Math.floor(Math.random() * 100)
+// }));
 
 const Page = (): ReactElement => {
   const setBreadcrumb = useBreadcrumbStore((state) => state.setBreadcrumb);
@@ -110,7 +109,7 @@ const PostCard: Component<{ post: GetPostType; organization: Organization }> = (
       <div className="p-5 -mb-6 md:mb-0">
         <div className="relative w-full h-52 md:w-56 md:h-full">
           <Image
-            src={post.files.find((file) => file.isBanner)?.url || "/_static/placeholder.png"}
+            src={post.banner?.url || "/_static/placeholder.png"}
             alt={post.title}
             fill
             className="rounded-lg object-cover"

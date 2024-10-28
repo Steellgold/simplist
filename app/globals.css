@@ -94,3 +94,36 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* 
+
+
+*/
+
+.file-grid {
+  overflow-y: auto;
+  max-height: calc(100% - 120px);
+  
+  /* Webkit browsers like Chrome, Safari */
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+    border-radius: 5px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground));
+    border-radius: 5px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--foreground));
+  }
+
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--muted-foreground)) hsl(var(--background));
+}

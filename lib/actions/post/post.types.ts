@@ -8,6 +8,17 @@ export const GetPost = {
         id: true
       }
     },
+    banner: {
+      select: {
+        id: true,
+        url: true,
+        name: true,
+        size: true,
+        mimeType: true,
+        createdAt: true,
+        memberId: true
+      }
+    },
     author: {
       select: {
         id: true,
@@ -29,18 +40,6 @@ export const GetPost = {
         id: true
       }
     },
-    files: {
-      select: {
-        name: true,
-        url: true,
-        isBanner: true,
-        authorId: true,
-        mimeType: true,
-        size: true,
-        createdAt: true,
-        id: true
-      }
-    },
     variants: {
       select: {
         title: true,
@@ -48,16 +47,15 @@ export const GetPost = {
         excerpt: true,
         id: true,
         lang: true,
-        files: {
+        banner: {
           select: {
-            name: true,
+            id: true,
             url: true,
-            isBanner: true,
-            authorId: true,
-            mimeType: true,
+            name: true,
             size: true,
+            mimeType: true,
             createdAt: true,
-            id: true
+            memberId: true
           }
         }
       }

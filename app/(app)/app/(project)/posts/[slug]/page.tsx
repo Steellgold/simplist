@@ -6,7 +6,6 @@ import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getPostBySlug } from "@/lib/actions/post/post.action";
 import type { GetPostType } from "@/lib/actions/post/post.types";
-import { dayJS } from "@/lib/day-js";
 import type { Lang } from "@/lib/lang";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -47,51 +46,36 @@ const Page: AsyncComponent<PageProps> = async({ params }) => {
 
       <Editor
         isNew={false}
-        // Idk why TypeScript is angry about this, but it works :/
         posts={[
           {
             title: post.title,
             content: post.content,
-            banner: post.files && post.files[0] ? {
-              id: post.files[0].id as string,
-              url: post.files[0].url as string,
-              name: post.files[0].name as string,
-              size: post.files[0].size as number,
-              type: post.files[0].mimeType as string,
-              uploadedAt: dayJS(post.files[0].createdAt).toDate(),
-              uploadedBy: post.files[0].authorId ? post.files[0].authorId : ""
+            banner: post.banner ? {
+              id: post.banner.id,
+              url: post.banner.url,
+              name: post.banner.name,
+              size: post.banner.size,
+              type: post.banner.mimeType,
+              uploadedAt: post.banner.createdAt,
+              uploadedBy: post.banner.memberId
             } : null,
-            excerpt: post.excerpt as string,
+            excerpt: post.excerpt,
             lang: post.lang as Lang
           },
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
           ...post.variants.map(variant => ({
-            // eslint-disable-next-line @typescript-eslint  /no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
             title: variant.title,
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
             content: variant.content,
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-            excerpt: variant.excerpt as string,
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+            excerpt: variant.excerpt,
             lang: variant.lang as Lang,
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
             variantId: variant.id,
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-            banner: variant.files && variant.files[0] ? {
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-              id: variant.files[0].id as string,
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-              url: variant.files[0].url as string,
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-              name: variant.files[0].name as string,
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-              size: variant.files[0].size as number,
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-              type: variant.files[0].mimeType as string,
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-              uploadedAt: dayJS(variant.files[0].createdAt).toDate(),
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-              uploadedBy: variant.files[0].authorId ? variant.files[0].authorId : ""
+            banner: variant.banner ? {
+              id: variant.banner.id,
+              url: variant.banner.url,
+              name: variant.banner.name,
+              size: variant.banner.size,
+              type: variant.banner.mimeType,
+              uploadedAt: variant.banner.createdAt,
+              uploadedBy: variant.banner.memberId
             } : null
           }))
         ]}

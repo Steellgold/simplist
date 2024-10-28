@@ -1,6 +1,6 @@
 import type { Lang } from "@/lib/lang";
 
-type Banner = {
+export type Banner = {
   name: string;
   type: string;
   id: string;
