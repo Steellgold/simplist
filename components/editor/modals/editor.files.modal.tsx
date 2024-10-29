@@ -33,10 +33,12 @@ export const EditorFilesModal: Component<EditorFilesModalProps> = ({ onSelected,
   const { data: files, isPending, refetch, isRefetching } = useGetFiles();
   const { data: organization, isPending: isOrgPending } = useActiveOrganization();
 
-  const [filesSearch, setFilesSearch] = useState<GetFileType[]>(files || []);
+  const [search, setSearch] = useState<string>("");
 
   if (isOrgPending) return <Skeleton className="w-full" />;
   if (isPending) return <Skeleton className="w-full" />;
+
+  const filesSearch = files?.filter((file) => file.name.toLowerCase().includes(search.toLowerCase())) || [];
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -132,7 +134,7 @@ export const EditorFilesModal: Component<EditorFilesModalProps> = ({ onSelected,
 
         <DialogFooter className="flex justify-end gap-2 mt-4">
           <Input placeholder="Search files..." onChange={(value: ChangeEvent<HTMLInputElement>) => {
-            setFilesSearch(files?.filter((file) => file.name.toLowerCase().includes(value.target.value.toLowerCase())) || []);
+            setSearch(value.target.value);
           }} />
 
           {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}

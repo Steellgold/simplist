@@ -9,10 +9,12 @@ export const getFiles = async(): Promise<GetFileType[]> => {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) throw new Error("Unauthorized");
 
-  return prisma.file.findMany({
+  const data = await prisma.file.findMany({
     where: {
       organizationId: session?.session.activeOrganizationId
     },
     include: GetFile.include
   });
+
+  return data;
 };
