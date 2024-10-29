@@ -18,7 +18,6 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { ChangeEvent } from "react";
 import { useState } from "react";
-import type { GetFileType } from "@/lib/actions/file/file.types";
 import { EmptyState } from "@/components/ui/empty-state";
 import Link from "next/link";
 
