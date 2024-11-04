@@ -44,10 +44,6 @@ const Page: AsyncComponent<PageProps> = async({ params }) => {
         { href: "/app/posts", label: "Posts" }
       ]} title={slug} />
 
-      {/* <pre>
-        {JSON.stringify(post, null, 2)}
-      </pre> */}
-
       <Editor
         isNew={false}
         posts={[

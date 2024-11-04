@@ -15,3 +15,14 @@ export const slugify = (text: string = ""): string => {
     .replace(/\s+/g, "-") // replace spaces with hyphens
     .replace(/-+/g, "-"); // remove consecutive hyphens
 };
+
+export const metaStringify = (value: number | string | boolean): string => {
+  return value.toString();
+};
+
+export const metaParse = (value: string): number | string | boolean => {
+  if (value === "true") return true;
+  if (value === "false") return false;
+  if (!isNaN(Number(value))) return Number(value);
+  return value;
+};

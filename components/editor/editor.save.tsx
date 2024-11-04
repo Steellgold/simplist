@@ -28,7 +28,7 @@ import { nanoid } from "nanoid";
 import { useActiveOrganization, useSession } from "@/lib/auth/client";
 import { Skeleton } from "../ui/skeleton";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { cn, slugify } from "@/lib/utils";
+import { cn, metaStringify, slugify } from "@/lib/utils";
 import { Calendar } from "../ui/calendar";
 import {
   Select,
@@ -110,6 +110,16 @@ export const EditorSave: Component<EditorSaveProps> = ({ isNew, postInfo, postId
           }))
         } : undefined
       },
+      meta: {
+        createMany: postInfo[0].metadatas.length > 0 ? {
+          data: postInfo[0].metadatas.map((metadata) => ({
+            id: metadata.id || nanoid(),
+            key: metadata.key,
+            value: metaStringify(metadata.value),
+            type: metadata.type
+          }))
+        } : undefined
+      },
       slug: slugify(postInfo[0].title)
     };
 
@@ -122,6 +132,24 @@ export const EditorSave: Component<EditorSaveProps> = ({ isNew, postInfo, postId
         content: postInfo[0].content,
         lang: postInfo[0].lang,
         bannerId: postInfo[0].banner ? postInfo[0].banner.id : undefined,
+        meta: {
+          upsert: postInfo[0].metadatas.length > 0 ? postInfo[0].metadatas.map((metadata) => ({
+            where: {
+              id: metadata.id
+            },
+            update: {
+              key: metadata.key,
+              value: metaStringify(metadata.value),
+              type: metadata.type
+            },
+            create: {
+              id: metadata.id || nanoid(),
+              key: metadata.key,
+              value: metaStringify(metadata.value),
+              type: metadata.type
+            }
+          })) : undefined
+        },
         variants: {
           upsert: postInfo.slice(1).length > 0 ? postInfo.slice(1).map((variant) => ({
             where: {
@@ -132,7 +160,8 @@ export const EditorSave: Component<EditorSaveProps> = ({ isNew, postInfo, postId
               excerpt: variant.excerpt,
               content: variant.content,
               lang: variant.lang,
-              bannerId: variant.banner ? variant.banner.id : undefined
+              bannerId: variant.banner ? variant.banner.id : undefined,
+              authorId: organization.members.find((member) => member.userId === session.user.id)?.id
             },
             create: {
               id: nanoid(),
@@ -141,6 +170,7 @@ export const EditorSave: Component<EditorSaveProps> = ({ isNew, postInfo, postId
               content: variant.content,
               lang: variant.lang,
               bannerId: variant.banner ? variant.banner.id : undefined,
+              authorId: organization.members.find((member) => member.userId === session.user.id)?.id,
               organizationId: organization.id
             }
           })) : undefined

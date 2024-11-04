@@ -53,6 +53,7 @@ export const Editor: Component<EditorProps> = ({ isNew = false, posts = [], dbId
         lang,
         banner: null,
         metadatas: [],
+        variantId: nanoid(20),
         persist: true
       }];
       setPostsData(newPostInfo);

@@ -17,7 +17,6 @@ import type { GetPostType } from "@/lib/actions/post/post.types";
 import { useActiveOrganization } from "@/lib/auth/client";
 import type { Organization  } from "@/lib/ba.types";
 import { dayJS } from "@/lib/day-js";
-import { cn } from "@/lib/utils";
 import { Archive, BookDashed, Calendar, Copy, Edit } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -143,10 +142,16 @@ const PostCard: Component<{ post: GetPostType; organization: Organization }> = (
 
         <Separator orientation="vertical" className="h-8" />
 
-        {post.scheduledAt && (
-          <Badge className={cn("flex gap-1 text-xs px-2 py-1", "font-medium hover:bg-primary")}>
+        {post.scheduledAt && !post.published && (
+          <Badge variant={"tag-default"}>
             <Calendar size={14} />
             Scheduled for {dayJS(post.scheduledAt).format("MMM DD, YYYY")}
+          </Badge>
+        )}
+
+        {post.variants.length >= 1 && (
+          <Badge variant={"tag-default"}>
+            {post.variants.length} Variants
           </Badge>
         )}
 
