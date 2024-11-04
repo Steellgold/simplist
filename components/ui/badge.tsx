@@ -18,6 +18,8 @@ const badgeVariants = cva(
           "flex gap-1 text-xs px-2 py-1 font-medium",
         "tag-default":
           "flex gap-1 text-xs px-2 py-1 font-medium border-transparent bg-primary text-primary-foreground shadow",
+        "tag-outline":
+          "flex gap-1 text-xs px-2 py-1 font-medium text-foreground",
         outline: "text-foreground",
       },
     },

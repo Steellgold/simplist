@@ -62,3 +62,15 @@ export const createPost = async(data: Prisma.PostCreateInput): Promise<GetPostTy
     include: GetPost.include
   });
 };
+
+export const deletePost = async(id: string): Promise<GetPostType> => {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  // TODO: Delete Redis cache, analytics, etc.
+
+  return prisma.post.delete({
+    where: { id },
+    include: GetPost.include
+  });
+};

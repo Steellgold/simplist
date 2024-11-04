@@ -1,6 +1,6 @@
 import type { UseQueryOptions } from "@tanstack/react-query";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createPost, getPost, getPostBySlug, getPosts, updatePost } from "./post.action";
+import { createPost, deletePost, getPost, getPostBySlug, getPosts, updatePost } from "./post.action";
 import type { UseMutationResult } from "@tanstack/react-query";
 import type { GetPostType } from "./post.types";
 import type { Prisma } from "@prisma/client";
@@ -41,6 +41,15 @@ export const useCreatePost = (): UseMutationResult<unknown, unknown, Prisma.Post
 
   return useMutation({
     mutationFn: (data: Prisma.PostCreateInput) => createPost(data),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["getPosts"] })
+  });
+};
+
+export const useDeletePost = (): UseMutationResult<unknown, unknown, string, unknown> => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (postId: string) => deletePost(postId),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["getPosts"] })
   });
 };

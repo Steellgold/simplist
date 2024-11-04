@@ -8,20 +8,21 @@ import {
   CardHeader,
   CardTitle
 } from "../ui/card";
-import { useCreatePost, useUpdatePost } from "@/lib/actions/post/post.hook";
+import { useCreatePost, useDeletePost, useUpdatePost } from "@/lib/actions/post/post.hook";
 import type { Component } from "../component";
 import type { EditorSaveProps } from "./editor.types";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
-import { format, startOfToday } from "date-fns";
+import { startOfToday } from "date-fns";
 import {
   BookDashed,
   CalendarIcon,
   CalendarOff,
   FilePen,
   FilePenLine,
-  Loader2
+  Loader2,
+  Trash2
 } from "lucide-react";
 import { toast } from "sonner";
 import { nanoid } from "nanoid";
@@ -38,6 +39,12 @@ import {
   SelectValue
 } from "../ui/select";
 import type { Prisma } from "@prisma/client";
+import {
+  AlertDialog, AlertDialogTrigger, AlertDialogAction,
+  AlertDialogContent, AlertDialogHeader, AlertDialogFooter,
+  AlertDialogTitle, AlertDialogDescription, AlertDialogCancel
+} from "../ui/alert-dialog";
+import { dayJS } from "@/lib/day-js";
 
 export const EditorSave: Component<EditorSaveProps> = ({ isNew, postInfo, postId }) => {
   const [isSaving, setIsSaving] = useState(false);
@@ -47,6 +54,8 @@ export const EditorSave: Component<EditorSaveProps> = ({ isNew, postInfo, postId
 
   const update = useUpdatePost();
   const create = useCreatePost();
+  const deletePost = useDeletePost();
+
   const { data: organization, isPending } = useActiveOrganization();
   const { data: session, isPending: isSessionPending } = useSession();
 
@@ -61,6 +70,14 @@ export const EditorSave: Component<EditorSaveProps> = ({ isNew, postInfo, postId
     if (!postInfo[0].title || !postInfo[0].excerpt || !postInfo[0].content) {
       toast.error("Title, excerpt, and content are required.");
       return;
+    }
+
+    if (postInfo.slice(1).length > 0) {
+      const hasEmptyVariant = postInfo.slice(1).some((variant) => !variant.title || !variant.excerpt || !variant.content);
+      if (hasEmptyVariant) {
+        toast.error("Title, excerpt, and content are required for all variants.");
+        return;
+      }
     }
 
     if (!organization || !session) {
@@ -206,7 +223,7 @@ export const EditorSave: Component<EditorSaveProps> = ({ isNew, postInfo, postId
               <PopoverTrigger asChild>
                 <Button id="date" variant="outline" className={cn("w-full justify-start text-left font-normal", !date && "text-muted-foreground")}>
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "PPP") : <span>Select a date</span>}
+                  {date ? dayJS(date).format("MMM DD, YYYY") : "Select a date"}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
@@ -214,7 +231,10 @@ export const EditorSave: Component<EditorSaveProps> = ({ isNew, postInfo, postId
               </PopoverContent>
             </Popover>
             <Select onValueChange={setTime} defaultValue={time} disabled={!date}>
-              <SelectTrigger id="time"><SelectValue placeholder="Select a time" /></SelectTrigger>
+              <SelectTrigger id="time">
+                <SelectValue placeholder="Select a time" />
+              </SelectTrigger>
+
               <SelectContent>
                 {Array.from({ length: 96 }, (_, i) => {
                   const hours = String(Math.floor(i / 4)).padStart(2, "0");
@@ -235,15 +255,57 @@ export const EditorSave: Component<EditorSaveProps> = ({ isNew, postInfo, postId
         </CardContent>
       )}
       {organization && !isPending && session && !isSessionPending ? (
-        <CardFooter className="flex justify-end gap-2">
-          {isNew && (
-            <Button variant="outline" size="sm" onClick={() => createOrUpdatePost(false)}>
-              <BookDashed size={16} /> Save as Draft
-            </Button>
+        <CardFooter className="flex flex-wrap md:justify-end gap-2">
+          <Button variant="outline" size="sm" onClick={() => createOrUpdatePost(false)}>
+            <BookDashed size={16} /> {isNew ? "Save as Draft" : "Unpublish"}
+          </Button>
+
+          {!isNew && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" size="sm">
+                  <Trash2 size={16} /> Delete
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete Post</AlertDialogTitle>
+                </AlertDialogHeader>
+                <AlertDialogDescription>
+                  Are you sure you want to delete this post? All of your data associated with this post will be permanently removed.
+                  &nbsp;This action cannot be undone.
+                </AlertDialogDescription>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    variant="destructive"
+                    onClick={() => {
+                      deletePost.mutate(postId, {
+                        onSuccess: () => {
+                          toast.success("Post deleted successfully.");
+                          router.push("/app/posts");
+                        },
+                        onError: () => {
+                          toast.error("Failed to delete post.");
+                        }
+                      });
+                    }}
+                  >
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           )}
+
           <Button variant="default" size="sm" onClick={() => createOrUpdatePost(true)} disabled={isSaving}>
             {isSaving ? <Loader2 size={16} className="animate-spin" /> : (isNew ? <FilePenLine size={16} /> : <FilePen size={16} />)}
-            {isNew && !combinedDateTime ? "Save Post" : "Schedule Post"}
+            {isNew
+              ? combinedDateTime
+                ? "Schedule"
+                : "Publish"
+              : "Update"
+            }
           </Button>
         </CardFooter>
       ) : (

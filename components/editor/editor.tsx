@@ -63,7 +63,7 @@ export const Editor: Component<EditorProps> = ({ isNew = false, posts = [], dbId
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
-      <div className="col-span-6 md:col-span-4 space-y-3">
+      <div className="col-span-6 lg:col-span-4 space-y-3">
         <EditorHeader
           activeIndex={activeIndex}
           postInfo={postsData}
@@ -150,7 +150,7 @@ export const Editor: Component<EditorProps> = ({ isNew = false, posts = [], dbId
         )}
       </div>
 
-      <div className="col-span-6 md:col-span-2 space-y-3">
+      <div className="col-span-6 lg:col-span-2 space-y-3">
         <EditorBanner
           isNew={isNew}
           postId={newPostID}

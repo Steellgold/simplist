@@ -10,6 +10,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { SparkAreaChart } from "@/components/ui/tremor/spark-chart";
 import { useBreadcrumbStore } from "@/hooks/use-breadcrumb";
 import { useGetPosts } from "@/lib/actions/post/post.hook";
@@ -17,7 +18,9 @@ import type { GetPostType } from "@/lib/actions/post/post.types";
 import { useActiveOrganization } from "@/lib/auth/client";
 import type { Organization  } from "@/lib/ba.types";
 import { dayJS } from "@/lib/day-js";
-import { Archive, BookDashed, Calendar, Copy, Edit } from "lucide-react";
+import { LANGUAGES } from "@/lib/lang";
+import { cn } from "@/lib/utils";
+import { Archive, Calendar, Copy, Edit } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactElement } from "react";
@@ -45,7 +48,7 @@ const Page = (): ReactElement => {
 
   return (
     <div className="flex flex-col gap-1.5 mb-4">
-      {postsPending ? <SkeletonHeader /> : <Header postsData={postsData as GetPostType[]} isRefetching={isRefetching} />}
+      {postsPending ? <SkeletonHeader /> : <Header postsData={postsData as GetPostType[]} />}
       <ClientOnly fallback={<SkeletonPlaceholder />}>
         <PostContent
           postsData={postsData as GetPostType[]}
@@ -58,7 +61,7 @@ const Page = (): ReactElement => {
   );
 };
 
-const Header: Component<{ postsData: GetPostType[]; isRefetching: boolean }> = ({ postsData, isRefetching }) => (
+const Header: Component<{ postsData: GetPostType[] }> = ({ postsData }) => (
   <div className="flex flex-col sm:flex-row sm:items-center justify-between">
     <div>
       <h1 className="text-2xl font-bold">Posts</h1>
@@ -66,11 +69,12 @@ const Header: Component<{ postsData: GetPostType[]; isRefetching: boolean }> = (
     </div>
     <div className="flex flex-col md:flex-row gap-2 sm:gap-1 mt-2 md:mt-0">
       <Input type="search" placeholder="Search posts" className="w-full md:w-72" />
-      {postsData && postsData.length >= 1 && !isRefetching && (
-        <Link className={buttonVariants({ variant: "default" })} href="posts/new">
+
+      <Button asChild>
+        <Link href="/app/posts/new" className={buttonVariants({ variant: "default" })}>
           Create Post
         </Link>
-      )}
+      </Button>
     </div>
   </div>
 );
@@ -107,9 +111,9 @@ const PostContent: Component<{
 
 const PostCard: Component<{ post: GetPostType; organization: Organization }> = ({ post }) => (
   <Card className="relative overflow-hidden">
-    <div className="absolute inset-0 z-0 hidden dark:block">
+    <div className="absolute inset-0 z-0 hidden dark:block bg-black/40">
       <Image
-        src={post.banner?.url || "/_static/placeholder.png"}
+        src={post.banner?.url || "/"}
         alt=""
         fill
         className="object-cover scale-110 blur-3xl opacity-40"
@@ -142,6 +146,8 @@ const PostCard: Component<{ post: GetPostType; organization: Organization }> = (
 
         <Separator orientation="vertical" className="h-8" />
 
+        {!post.published && <Badge variant={"tag-default"}>Draft</Badge>}
+
         {post.scheduledAt && !post.published && (
           <Badge variant={"tag-default"}>
             <Calendar size={14} />
@@ -151,7 +157,7 @@ const PostCard: Component<{ post: GetPostType; organization: Organization }> = (
 
         {post.variants.length >= 1 && (
           <Badge variant={"tag-default"}>
-            {post.variants.length} Variants
+            {post.variants.length} Variant{post.variants.length > 1 ? "s" : ""}
           </Badge>
         )}
 
@@ -170,14 +176,14 @@ const PostCard: Component<{ post: GetPostType; organization: Organization }> = (
 const PostDetails: Component<{ post: GetPostType }> = ({ post }) => (
   <div className="flex flex-col gap-3 md:ml-4">
     <div className="flex flex-col gap-1">
-      <CardTitle className="line-clamp-1">
-        {!post.published && <BookDashed size={16} className="inline-block mr-1 text-blue-500" />}
-        {post.title}
-      </CardTitle>
+      <CardTitle className="line-clamp-1">{post.title}</CardTitle>
       <CardDescription className="line-clamp-1">{post.excerpt}</CardDescription>
     </div>
 
-    <div className="relative w-full h-16 bg-primary/15 dark:bg-black/15 rounded-lg md:w-48 md:h-20">
+    <div className={cn("relative w-full h-16 rounded-lg md:w-48 md:h-20", {
+      "bg-primary/15 dark:bg-black/15": true,
+      "dark:bg-primary/15": !post.banner?.url
+    })}>
       <SparkAreaChart
         data={generateChartData()}
         categories={["Performance"]}
