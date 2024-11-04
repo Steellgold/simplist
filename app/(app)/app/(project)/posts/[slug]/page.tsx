@@ -44,6 +44,10 @@ const Page: AsyncComponent<PageProps> = async({ params }) => {
         { href: "/app/posts", label: "Posts" }
       ]} title={slug} />
 
+      {/* <pre>
+        {JSON.stringify(post, null, 2)}
+      </pre> */}
+
       <Editor
         isNew={false}
         posts={[
@@ -60,7 +64,13 @@ const Page: AsyncComponent<PageProps> = async({ params }) => {
               uploadedBy: post.banner.memberId
             } : null,
             excerpt: post.excerpt,
-            lang: post.lang as Lang
+            lang: post.lang as Lang,
+            metadatas: post.meta.map(metadata => ({
+              id: metadata.id,
+              key: metadata.key,
+              value: metadata.value,
+              type: metadata.type
+            }))
           },
           ...post.variants.map(variant => ({
             title: variant.title,
@@ -76,7 +86,8 @@ const Page: AsyncComponent<PageProps> = async({ params }) => {
               type: variant.banner.mimeType,
               uploadedAt: variant.banner.createdAt,
               uploadedBy: variant.banner.memberId
-            } : null
+            } : null,
+            metadatas: []
           }))
         ]}
         dbId={post.id}

@@ -2,12 +2,15 @@
 
 import type { Component } from "@/components/component";
 import { CategoryTag, PostTag } from "@/components/post-tag";
+import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ClientOnly } from "@/components/ui/client-only";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SparkAreaChart } from "@/components/ui/tremor/spark-chart";
 import { useBreadcrumbStore } from "@/hooks/use-breadcrumb";
 import { useGetPosts } from "@/lib/actions/post/post.hook";
 import type { GetPostType } from "@/lib/actions/post/post.types";
@@ -15,16 +18,16 @@ import { useActiveOrganization } from "@/lib/auth/client";
 import type { Organization  } from "@/lib/ba.types";
 import { dayJS } from "@/lib/day-js";
 import { cn } from "@/lib/utils";
-import { Archive, Copy, Edit } from "lucide-react";
+import { Archive, BookDashed, Calendar, Copy, Edit } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactElement } from "react";
 import { useEffect } from "react";
 
-// const generateChartData = (): { month: string; Performance: number }[] => Array.from({ length: 18 }, (_, index) => ({
-//   month: dayJS().subtract(17 - index, "months").format("MMM YY"),
-//   Performance: Math.floor(Math.random() * 100)
-// }));
+const generateChartData = (): { month: string; Performance: number }[] => Array.from({ length: 18 }, (_, index) => ({
+  month: dayJS().subtract(17 - index, "months").format("MMM YY"),
+  Performance: Math.floor(Math.random() * 100)
+}));
 
 const Page = (): ReactElement => {
   const setBreadcrumb = useBreadcrumbStore((state) => state.setBreadcrumb);
@@ -62,8 +65,8 @@ const Header: Component<{ postsData: GetPostType[]; isRefetching: boolean }> = (
       <h1 className="text-2xl font-bold">Posts</h1>
       <p className="text-sm text-muted-foreground">{postsData?.length} post(s) found</p>
     </div>
-    <div className="flex flex-row gap-2 sm:gap-1">
-      <Input type="search" placeholder="Search posts" className="w-72" />
+    <div className="flex flex-col md:flex-row gap-2 sm:gap-1 mt-2 md:mt-0">
+      <Input type="search" placeholder="Search posts" className="w-full md:w-72" />
       {postsData && postsData.length >= 1 && !isRefetching && (
         <Link className={buttonVariants({ variant: "default" })} href="posts/new">
           Create Post
@@ -103,74 +106,81 @@ const PostContent: Component<{
   );
 };
 
-const PostCard: Component<{ post: GetPostType; organization: Organization }> = ({ post, organization }) => (
-  <Card className={cn("flex flex-col md:flex-row justify-between")}>
-    <div className="flex flex-col md:flex-row">
-      <div className="p-5 -mb-6 md:mb-0">
-        <div className="relative w-full h-52 md:w-56 md:h-full">
-          <Image
-            src={post.banner?.url || "/_static/placeholder.png"}
-            alt={post.title}
-            fill
-            className="rounded-lg object-cover"
-          />
-        </div>
-      </div>
-      <CardHeader className="flex flex-col md:flex-row">
-        <PostDetails post={post} organization={organization} />
-      </CardHeader>
+const PostCard: Component<{ post: GetPostType; organization: Organization }> = ({ post }) => (
+  <Card className="relative overflow-hidden">
+    <div className="absolute inset-0 z-0 hidden dark:block">
+      <Image
+        src={post.banner?.url || "/_static/placeholder.png"}
+        alt=""
+        fill
+        className="object-cover scale-110 blur-3xl opacity-40"
+      />
     </div>
-    <CardFooter className="flex justify-between p-5 gap-2 justify-end">
-      <PostChart />
-      <PostActions postSlug={post.slug} />
-    </CardFooter>
+
+    <div className="relative z-10">
+      <div className="flex flex-col md:flex-row justify-between">
+        <CardHeader className="flex flex-col md:flex-row gap-3 md:gap-0">
+          <div className="relative w-full h-52 md:w-[300px] md:h-[10rem]">
+            <Image src={post.banner?.url || "/_static/placeholder.png"} alt={post.title} fill className="rounded-lg object-cover" />
+          </div>
+
+          <PostDetails post={post} />
+        </CardHeader>
+      </div>
+
+      <CardFooter className="flex gap-1.5 overflow-x-auto">
+        <div className="flex flex-row gap-1 md:gap-0.5">
+          <Link className={buttonVariants({ variant: "outline", size: "icon" })} href={`/app/posts/${post.slug}`}>
+            <Edit size={16} />
+          </Link>
+          <Button variant="outline" size="icon">
+            <Copy size={16} />
+          </Button>
+          <Button variant="outline" size="icon">
+            <Archive size={16} />
+          </Button>
+        </div>
+
+        <Separator orientation="vertical" className="h-8" />
+
+        {post.scheduledAt && (
+          <Badge className={cn("flex gap-1 text-xs px-2 py-1", "font-medium hover:bg-primary")}>
+            <Calendar size={14} />
+            Scheduled for {dayJS(post.scheduledAt).format("MMM DD, YYYY")}
+          </Badge>
+        )}
+
+        {post.categories.map((category) => (
+          <CategoryTag key={category.id} content={category.name} />
+        ))}
+
+        {post.tags.map((tag) => (
+          <PostTag key={tag.id} color={tag.color} content={tag.name} />
+        ))}
+      </CardFooter>
+    </div>
   </Card>
 );
 
-const PostDetails: Component<{ post: GetPostType; organization: Organization }> = ({ post, organization }) => (
-  <div className="flex flex-col justify-between gap-1">
+const PostDetails: Component<{ post: GetPostType }> = ({ post }) => (
+  <div className="flex flex-col gap-3 md:ml-4">
     <div className="flex flex-col gap-1">
-      <CardTitle className="line-clamp-1">{post.title}</CardTitle>
+      <CardTitle className="line-clamp-1">
+        {!post.published && <BookDashed size={16} className="inline-block mr-1 text-blue-500" />}
+        {post.title}
+      </CardTitle>
       <CardDescription className="line-clamp-1">{post.excerpt}</CardDescription>
-      <CardDescription className="text-sm text-muted-foreground">
-        Published on {dayJS(post.createdAt).format("DD MMM YYYY")}
-        &nbsp;by {organization?.members.find((member) => member.id === post.author.id)?.user.name}
-      </CardDescription>
     </div>
-    <div className="flex gap-1">
-      {post.categories.map((category) => (
-        <CategoryTag key={category.id} content={category.name} />
-      ))}
-      {post.tags.map((tag) => (
-        <PostTag key={tag.id} color={tag.color} content={tag.name} />
-      ))}
+
+    <div className="relative w-full h-16 bg-primary/15 dark:bg-black/15 rounded-lg md:w-48 md:h-20">
+      <SparkAreaChart
+        data={generateChartData()}
+        categories={["Performance"]}
+        index="month"
+        colors={["yellow"]}
+        className="w-full h-full"
+      />
     </div>
-  </div>
-);
-
-const PostChart = (): ReactElement => (
-  <div className="bg-primary/5 rounded-lg w-full h-full hidden md:block">
-    {/* <SparkAreaChart
-      data={generateChartData()}
-      categories={["Performance"]}
-      index="month"
-      colors={["yellow"]}
-      className="md:h-full md:w-36 lg:w-48 xl:w-60 2xl:w-72"
-    /> */}
-  </div>
-);
-
-const PostActions = ({ postSlug }: { postSlug: string }): ReactElement => (
-  <div className="flex flex-row md:flex-col gap-1 md:gap-0.5">
-    <Link className={buttonVariants({ variant: "outline", size: "icon" })} href={`/app/posts/${postSlug}`} passHref prefetch>
-      <Edit size={16} />
-    </Link>
-    <Button variant="outline" size="icon">
-      <Copy size={16} />
-    </Button>
-    <Button variant="outline" size="icon">
-      <Archive size={16} />
-    </Button>
   </div>
 );
 
