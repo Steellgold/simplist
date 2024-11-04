@@ -17,6 +17,7 @@ import { Trash } from "lucide-react";
 import { EditorBanner } from "./editor.banner";
 import { EditorSave } from "./editor.save";
 import { nanoid } from "nanoid";
+import { EditorMeta } from "./editor.meta";
 
 export const Editor: Component<EditorProps> = ({ isNew = false, posts = [], dbId = "" }) => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -37,7 +38,7 @@ export const Editor: Component<EditorProps> = ({ isNew = false, posts = [], dbId
   }, [isNew, dbId]);
 
   const [postsData, setPostsData] = useState<PostInfo>(
-    posts.length ? posts : [{ title: "", excerpt: "", content: "", lang: Lang.EN, banner: null }]
+    posts.length ? posts : [{ title: "", excerpt: "", content: "", lang: Lang.EN, banner: null, metadatas: [] }]
   );
 
   const handleLanguageChange = (lang: Lang): void => {
@@ -51,6 +52,7 @@ export const Editor: Component<EditorProps> = ({ isNew = false, posts = [], dbId
         content: "",
         lang,
         banner: null,
+        metadatas: [],
         persist: true
       }];
       setPostsData(newPostInfo);
@@ -97,6 +99,12 @@ export const Editor: Component<EditorProps> = ({ isNew = false, posts = [], dbId
           activeIndex={activeIndex}
           postInfo={postsData}
         />
+
+        <EditorMeta setValues={(values) => {
+          const newPostInfo = [...postsData];
+          newPostInfo[activeIndex].metadatas = values;
+          setPostsData(newPostInfo);
+        }} activeIndex={activeIndex} postInfo={postsData} />
 
         {postsData[activeIndex].lang !== Lang.EN && (
           <Card variant="destructive">

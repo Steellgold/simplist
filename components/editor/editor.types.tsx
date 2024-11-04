@@ -1,4 +1,5 @@
 import type { Lang } from "@/lib/lang";
+import type { MetaType } from "@prisma/client";
 
 export type Banner = {
   name: string;
@@ -19,6 +20,7 @@ export type PostInfo = {
   banner?: Banner | null;
   lang: Lang;
   variantId?: string;
+  metadatas: Metadata[];
 }[];
 
 export type EditorProps = {
@@ -34,6 +36,28 @@ export type EditorElementProps = {
 
   setValue: (value: string) => void;
 };
+
+export type EditorSelectProps = {
+  activeIndex: number;
+  postInfo: PostInfo;
+
+  setValues: (values: string[]) => void;
+};
+
+export type EditorMetadataProps = {
+  activeIndex: number;
+  postInfo: PostInfo;
+
+  setValues: (values: Metadata[]) => void;
+};
+
+export type Metadata = {
+  id: string;
+  key: string;
+  type: MetaType;
+  value: string | number | boolean;
+};
+
 
 export type EditorHeaderProps = {
   activeIndex: number;

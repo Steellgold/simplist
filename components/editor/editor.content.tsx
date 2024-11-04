@@ -16,7 +16,7 @@ export const EditorContent: Component<EditorElementProps> = ({ setValue, activeI
         placeholder="Once upon a time, there was a cat named Whiskers..."
         value={postInfo[activeIndex].content}
         onChange={(event) => setValue(event.target.value)}
-        style={{ resize: "vertical", minHeight: "200px" }}
+        style={{ resize: "vertical", minHeight: "150px" }}
       />
     </CardContent>
   </Card>
