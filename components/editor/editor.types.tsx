@@ -21,6 +21,7 @@ export type PostInfo = {
   lang: Lang;
   variantId?: string;
   metadatas: Metadata[];
+  tags: string[];
 }[];
 
 export type EditorProps = {

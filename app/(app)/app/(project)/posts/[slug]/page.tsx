@@ -61,6 +61,7 @@ const Page: AsyncComponent<PageProps> = async({ params }) => {
             } : null,
             excerpt: post.excerpt,
             lang: post.lang as Lang,
+            tags: post.tags.map(tag => tag.id),
             metadatas: post.meta.map(metadata => ({
               id: metadata.id,
               key: metadata.key,
@@ -74,6 +75,7 @@ const Page: AsyncComponent<PageProps> = async({ params }) => {
             excerpt: variant.excerpt,
             lang: variant.lang as Lang,
             variantId: variant.id,
+            tags: [],
             banner: variant.banner ? {
               id: variant.banner.id,
               url: variant.banner.url,

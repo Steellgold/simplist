@@ -18,6 +18,8 @@ import { EditorBanner } from "./editor.banner";
 import { EditorSave } from "./editor.save";
 import { nanoid } from "nanoid";
 import { EditorMeta } from "./editor.meta";
+import { EditorUploads } from "./editor.uploads";
+import { EditorTags } from "./editor.tags";
 
 export const Editor: Component<EditorProps> = ({ isNew = false, posts = [], dbId = "" }) => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -38,7 +40,7 @@ export const Editor: Component<EditorProps> = ({ isNew = false, posts = [], dbId
   }, [isNew, dbId]);
 
   const [postsData, setPostsData] = useState<PostInfo>(
-    posts.length ? posts : [{ title: "", excerpt: "", content: "", lang: Lang.EN, banner: null, metadatas: [] }]
+    posts.length ? posts : [{ title: "", excerpt: "", content: "", lang: Lang.EN, banner: null, metadatas: [], tags: [] }]
   );
 
   const handleLanguageChange = (lang: Lang): void => {
@@ -53,6 +55,7 @@ export const Editor: Component<EditorProps> = ({ isNew = false, posts = [], dbId
         lang,
         banner: null,
         metadatas: [],
+        tags: [],
         variantId: nanoid(20),
         persist: true
       }];
@@ -106,6 +109,16 @@ export const Editor: Component<EditorProps> = ({ isNew = false, posts = [], dbId
           newPostInfo[activeIndex].metadatas = values;
           setPostsData(newPostInfo);
         }} activeIndex={activeIndex} postInfo={postsData} />
+
+        <EditorTags
+          activeIndex={activeIndex}
+          postInfo={postsData}
+          setValues={(values) => {
+            const newPostInfo = [...postsData];
+            newPostInfo[activeIndex].tags = values;
+            setPostsData(newPostInfo);
+          }}
+        />
 
         {postsData[activeIndex].lang !== Lang.EN && (
           <Card variant="destructive">
@@ -162,6 +175,8 @@ export const Editor: Component<EditorProps> = ({ isNew = false, posts = [], dbId
           }}
           activeIndex={activeIndex}
         />
+
+        <EditorUploads />
 
         <EditorSave isNew={isNew} postInfo={postsData} postId={isNew ? newPostID : dbId} toDelete={toDelete} />
       </div>
