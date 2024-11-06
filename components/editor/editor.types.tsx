@@ -22,6 +22,9 @@ export type PostInfo = {
   variantId?: string;
   metadatas: Metadata[];
   tags: string[];
+
+  scheduledAt?: Date | null;
+  isScheduled?: boolean;
 }[];
 
 export type EditorProps = {
@@ -69,6 +72,8 @@ export type EditorHeaderProps = {
 };
 
 export type EditorSaveProps = {
+  activeIndex: number;
+
   isNew: boolean;
   postInfo: PostInfo;
   postId: string;

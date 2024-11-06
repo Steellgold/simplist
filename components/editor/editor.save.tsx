@@ -2,7 +2,6 @@
 
 import {
   Card,
-  CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
@@ -18,8 +17,7 @@ import { startOfToday } from "date-fns";
 import {
   BookDashed,
   CalendarIcon,
-  CalendarOff,
-  FilePen,
+  ChevronDown,
   FilePenLine,
   Loader2,
   Trash2
@@ -29,7 +27,7 @@ import { nanoid } from "nanoid";
 import { useActiveOrganization, useSession } from "@/lib/auth/client";
 import { Skeleton } from "../ui/skeleton";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { cn, metaStringify, slugify } from "@/lib/utils";
+import { metaStringify, slugify } from "@/lib/utils";
 import { Calendar } from "../ui/calendar";
 import {
   Select,
@@ -45,11 +43,17 @@ import {
   AlertDialogTitle, AlertDialogDescription, AlertDialogCancel
 } from "../ui/alert-dialog";
 import { dayJS } from "@/lib/day-js";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
-export const EditorSave: Component<EditorSaveProps> = ({ isNew, postInfo, postId }) => {
+export const EditorSave: Component<EditorSaveProps> = ({ isNew, postInfo, postId, activeIndex }) => {
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [time, setTime] = useState<string | undefined>(undefined);
+
+  const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
+
   const router = useRouter();
 
   const update = useUpdatePost();
@@ -66,7 +70,7 @@ export const EditorSave: Component<EditorSaveProps> = ({ isNew, postInfo, postId
     return new Date(date.setHours(hours, minutes));
   }, [date, time]);
 
-  const createOrUpdatePost = (published: boolean): void => {
+  const CoU = (published: boolean): void => {
     if (!postInfo[0].title || !postInfo[0].excerpt || !postInfo[0].content) {
       toast.error("Title, excerpt, and content are required.");
       return;
@@ -152,6 +156,8 @@ export const EditorSave: Component<EditorSaveProps> = ({ isNew, postInfo, postId
         content: postInfo[0].content,
         lang: postInfo[0].lang,
         bannerId: postInfo[0].banner ? postInfo[0].banner.id : undefined,
+        scheduledAt: combinedDateTime || undefined,
+        published: published,
         meta: {
           upsert: postInfo[0].metadatas.length > 0 ? postInfo[0].metadatas.map((metadata) => ({
             where: {
@@ -216,61 +222,37 @@ export const EditorSave: Component<EditorSaveProps> = ({ isNew, postInfo, postId
     });
   };
 
+  const deletePostHandler = (): void => {
+    setIsDeleting(true);
+    deletePost.mutate(postId, {
+      onSuccess: () => {
+        toast.success("Post deleted successfully.");
+        router.push("/app/posts");
+        setIsDeleting(false);
+      },
+      onError: () => {
+        toast.error("Failed to delete post.");
+        setIsDeleting(false);
+      }
+    });
+  };
+
+  if (activeIndex !== 0) return <></>;
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>{isNew ? "Save Post" : "Update Post"}</CardTitle>
         <CardDescription>Save or update the post to the API endpoint.</CardDescription>
       </CardHeader>
-      {isNew && (
-        <CardContent>
-          <div className="flex flex-row gap-2">
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button id="date" variant="outline" className={cn("w-full justify-start text-left font-normal", !date && "text-muted-foreground")}>
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? dayJS(date).format("MMM DD, YYYY") : "Select a date"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar mode="single" selected={date} onSelect={setDate} initialFocus fromDate={startOfToday()} />
-              </PopoverContent>
-            </Popover>
-            <Select onValueChange={setTime} defaultValue={time} disabled={!date}>
-              <SelectTrigger id="time">
-                <SelectValue placeholder="Select a time" />
-              </SelectTrigger>
 
-              <SelectContent>
-                {Array.from({ length: 96 }, (_, i) => {
-                  const hours = String(Math.floor(i / 4)).padStart(2, "0");
-                  const minutes = String((i % 4) * 15).padStart(2, "0");
-                  return <SelectItem key={i} value={`${hours}:${minutes}`}>{`${hours}:${minutes}`}</SelectItem>;
-                })}
-              </SelectContent>
-            </Select>
-            <div>
-              <Button variant="outline" onClick={() => {
-                setDate(undefined);
-                setTime(undefined);
-              }} disabled={!date} size="icon">
-                <CalendarOff />
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      )}
       {organization && !isPending && session && !isSessionPending ? (
         <CardFooter className="flex flex-wrap md:justify-end gap-2">
-          <Button variant="outline" size="sm" onClick={() => createOrUpdatePost(false)}>
-            <BookDashed size={16} /> {isNew ? "Save as Draft" : "Unpublish"}
-          </Button>
-
           {!isNew && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="destructive" size="sm">
-                  <Trash2 size={16} /> Delete
+                <Button variant="destructive" size="sm" disabled={isSaving || isDeleting}>
+                  {isDeleting ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}Delete
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
@@ -283,36 +265,39 @@ export const EditorSave: Component<EditorSaveProps> = ({ isNew, postInfo, postId
                 </AlertDialogDescription>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    variant="destructive"
-                    onClick={() => {
-                      deletePost.mutate(postId, {
-                        onSuccess: () => {
-                          toast.success("Post deleted successfully.");
-                          router.push("/app/posts");
-                        },
-                        onError: () => {
-                          toast.error("Failed to delete post.");
-                        }
-                      });
-                    }}
-                  >
-                    Delete
+                  <AlertDialogAction variant="destructive" onClick={deletePostHandler}>
+                    {isDeleting ? "Deleting..." : "Delete Post"}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
           )}
 
-          <Button variant="default" size="sm" onClick={() => createOrUpdatePost(true)} disabled={isSaving}>
-            {isSaving ? <Loader2 size={16} className="animate-spin" /> : (isNew ? <FilePenLine size={16} /> : <FilePen size={16} />)}
-            {isNew
-              ? combinedDateTime
-                ? "Schedule"
-                : "Publish"
-              : "Update"
-            }
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="default" size="sm" disabled={isSaving || isDeleting}>
+                {isSaving ? <Loader2 size={16} className="animate-spin" /> : null}
+                {isNew ? "Save" : "Update"}
+                <ChevronDown size={16} />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => setScheduleDialogOpen(true)}>
+                <CalendarIcon size={16} />
+                {isNew ? "Schedule Post" : "Update Schedule"}
+              </DropdownMenuItem>
+
+              <DropdownMenuItem onClick={() => CoU(true)}>
+                <FilePenLine size={16} />
+                {isNew ? "Publish" : "Update"}
+              </DropdownMenuItem>
+
+              <DropdownMenuItem onClick={() => CoU(false)}>
+                <BookDashed size={16} />
+                Save as Draft
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </CardFooter>
       ) : (
         <CardFooter className="flex justify-end gap-2">
@@ -320,6 +305,60 @@ export const EditorSave: Component<EditorSaveProps> = ({ isNew, postInfo, postId
           <Skeleton className="w-20 h-8" />
         </CardFooter>
       )}
+
+      <AlertDialog open={scheduleDialogOpen} onOpenChange={setScheduleDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Schedule Post</AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogDescription>
+            Choose a date and time to schedule the post.
+          </AlertDialogDescription>
+
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="w-full justify-start text-left font-normal">
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {date ? dayJS(date).format("MMM DD, YYYY") : "Select a date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar mode="single" selected={date} onSelect={setDate} initialFocus fromDate={startOfToday()} />
+            </PopoverContent>
+          </Popover>
+
+          <Select onValueChange={setTime} defaultValue={time}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select a time" />
+            </SelectTrigger>
+
+            <SelectContent>
+              {Array.from({ length: 96 }, (_, i) => {
+                const hours = String(Math.floor(i / 4)).padStart(2, "0");
+                const minutes = String((i % 4) * 15).padStart(2, "0");
+                return <SelectItem key={i} value={`${hours}:${minutes}`}>{`${hours}:${minutes}`}</SelectItem>;
+              })}
+            </SelectContent>
+          </Select>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (!combinedDateTime) {
+                  toast.error("Please select a date and time to schedule the post.");
+                  return;
+                }
+
+                CoU(false);
+                setScheduleDialogOpen(false);
+              }}
+            >
+              Schedule Post
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 };

@@ -67,7 +67,10 @@ const Page: AsyncComponent<PageProps> = async({ params }) => {
               key: metadata.key,
               value: metadata.value,
               type: metadata.type
-            }))
+            })),
+
+            isScheduled: post.scheduledAt ? true : false,
+            scheduledAt: post.scheduledAt ? post.scheduledAt : null
           },
           ...post.variants.map(variant => ({
             title: variant.title,

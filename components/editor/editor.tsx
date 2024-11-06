@@ -108,16 +108,22 @@ export const Editor: Component<EditorProps> = ({ isNew = false, posts = [], dbId
           newPostInfo[activeIndex].metadatas = values;
           setPostsData(newPostInfo);
         }} activeIndex={activeIndex} postInfo={postsData} />
+      </div>
 
-        <EditorTags
-          activeIndex={activeIndex}
+      <div className="col-span-6 lg:col-span-2 space-y-3">
+        <EditorBanner
+          isNew={isNew}
+          postId={newPostID}
           postInfo={postsData}
-          setValues={(values) => {
+          setBanner={(banner) => {
             const newPostInfo = [...postsData];
-            newPostInfo[activeIndex].tags = values;
+            newPostInfo[activeIndex].banner = banner;
             setPostsData(newPostInfo);
           }}
+          activeIndex={activeIndex}
         />
+
+        {/* <EditorUploads /> */}
 
         {postsData[activeIndex].lang !== Lang.EN && (
           <Card variant="destructive">
@@ -160,24 +166,27 @@ export const Editor: Component<EditorProps> = ({ isNew = false, posts = [], dbId
             </CardHeader>
           </Card>
         )}
-      </div>
 
-      <div className="col-span-6 lg:col-span-2 space-y-3">
-        <EditorBanner
-          isNew={isNew}
-          postId={newPostID}
-          postInfo={postsData}
-          setBanner={(banner) => {
-            const newPostInfo = [...postsData];
-            newPostInfo[activeIndex].banner = banner;
-            setPostsData(newPostInfo);
-          }}
+        {activeIndex === 0 && (
+          <EditorTags
+            activeIndex={activeIndex}
+            postInfo={postsData}
+            setValues={(values) => {
+              const newPostInfo = [...postsData];
+              newPostInfo[activeIndex].tags = values;
+              setPostsData(newPostInfo);
+            }}
+          />
+        )}
+
+        <EditorSave
           activeIndex={activeIndex}
+
+          isNew={isNew}
+          postInfo={postsData}
+          postId={isNew ? newPostID : dbId}
+          toDelete={toDelete}
         />
-
-        {/* <EditorUploads /> */}
-
-        <EditorSave isNew={isNew} postInfo={postsData} postId={isNew ? newPostID : dbId} toDelete={toDelete} />
       </div>
     </div>
   );
