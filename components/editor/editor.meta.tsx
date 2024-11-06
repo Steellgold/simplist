@@ -1,13 +1,14 @@
 import { CirclePlus, XCircle, CaseSensitive, Binary, ToggleLeft, CalendarIcon, Clock, CalendarClock, Edit } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
-import type { EditorMetadataProps, MetaType } from "./editor.types";
+import type { EditorMetadataProps } from "./editor.types";
 import type { Component } from "../component";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { dayJS } from "@/lib/day-js";
 import { MetadataDeleteAlertDialog } from "./meta/editor.meta.delete";
 import { MetadataDialogModal } from "./meta/editor.meta.dialog";
+import type { MetaType } from "@prisma/client";
 
 const TypeIcon: Component<{ type: MetaType }> = ({ type }) => (
   <>

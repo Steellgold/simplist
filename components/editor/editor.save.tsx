@@ -110,6 +110,9 @@ export const EditorSave: Component<EditorSaveProps> = ({ isNew, postInfo, postId
           id: postInfo[0].banner.id
         }
       } : undefined,
+      tags: {
+        connect: postInfo[0].tags.map((tag) => ({ id: tag }))
+      },
       variants: {
         createMany: postInfo.slice(1).length > 0 ? {
           data: postInfo.slice(1).map((variant) => ({
@@ -166,6 +169,9 @@ export const EditorSave: Component<EditorSaveProps> = ({ isNew, postInfo, postId
               type: metadata.type
             }
           })) : undefined
+        },
+        tags: {
+          set: postInfo[0].tags.map((tag) => ({ id: tag }))
         },
         variants: {
           upsert: postInfo.slice(1).length > 0 ? postInfo.slice(1).map((variant) => ({

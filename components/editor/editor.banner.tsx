@@ -13,6 +13,7 @@ import { Skeleton } from "../ui/skeleton";
 import { z } from "zod";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { EditorFilesModal } from "./modals/editor.files.modal";
+import { Lang } from "@/lib/lang";
 
 export const EditorBanner: Component<EditorBannerProps> = ({ postInfo, setBanner, postId, activeIndex }) => {
   const [isUploading, setIsUploading] = useState(false);
@@ -25,8 +26,8 @@ export const EditorBanner: Component<EditorBannerProps> = ({ postInfo, setBanner
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Post Editor</CardTitle>
-        <CardDescription>Write a new post, and publish it to the API endpoint.</CardDescription>
+        <CardTitle>{postInfo[activeIndex].lang == Lang.EN ? "Post Banner" : "Variant Banner"}</CardTitle>
+        <CardDescription>Upload a banner for your {postInfo[activeIndex].lang == Lang.EN ? "post" : "variant"} here.</CardDescription>
       </CardHeader>
 
       <div className="p-6 w-full h-52 -mt-6">
