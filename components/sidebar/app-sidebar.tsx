@@ -24,9 +24,8 @@ const data: {
       icon: LayoutGrid,
       items: [
         { title: "Posts", url: "/app/posts" },
-        { title: "Categories", url: "/app/categories" },
         { title: "Tags", url: "/app/tags" },
-        { title: "Files Library", url: "/app/files" }
+        { title: "Files", url: "/app/files" }
       ]
     },
     {

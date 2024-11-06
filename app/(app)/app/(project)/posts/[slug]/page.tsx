@@ -38,7 +38,7 @@ const Page: AsyncComponent<PageProps> = async({ params }) => {
   );
 
   return (
-    <>
+    <div className="p-5">
       <BreadcrumbUpdater links={[
         { href: "/app", label: "Overview" },
         { href: "/app/posts", label: "Posts" }
@@ -90,7 +90,7 @@ const Page: AsyncComponent<PageProps> = async({ params }) => {
         ]}
         dbId={post.id}
       />
-    </>
+    </div>
   );
 };
 

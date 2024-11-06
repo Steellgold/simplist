@@ -18,7 +18,6 @@ import { EditorBanner } from "./editor.banner";
 import { EditorSave } from "./editor.save";
 import { nanoid } from "nanoid";
 import { EditorMeta } from "./editor.meta";
-import { EditorUploads } from "./editor.uploads";
 import { EditorTags } from "./editor.tags";
 
 export const Editor: Component<EditorProps> = ({ isNew = false, posts = [], dbId = "" }) => {
@@ -176,7 +175,7 @@ export const Editor: Component<EditorProps> = ({ isNew = false, posts = [], dbId
           activeIndex={activeIndex}
         />
 
-        <EditorUploads />
+        {/* <EditorUploads /> */}
 
         <EditorSave isNew={isNew} postInfo={postsData} postId={isNew ? newPostID : dbId} toDelete={toDelete} />
       </div>
