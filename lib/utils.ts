@@ -16,6 +16,17 @@ export const slugify = (text: string = ""): string => {
     .replace(/-+/g, "-"); // remove consecutive hyphens
 };
 
+export const apiKey = (length: number = 32): string => {
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+
+  // Exemple: apiKey(32) => "aBcDeFgHiJkLmNoPqRsTuVwXyZ0123456789"
+  return result;
+};
+
 export const metaStringify = (value: number | string | boolean): string => {
   return value.toString();
 };
