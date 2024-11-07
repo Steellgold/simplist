@@ -69,6 +69,9 @@ const Page: AsyncComponent<PageProps> = async({ params }) => {
               type: metadata.type
             })),
 
+
+            published: post.published,
+
             isScheduled: post.scheduledAt ? true : false,
             scheduledAt: post.scheduledAt ? post.scheduledAt : null
           },
@@ -79,6 +82,7 @@ const Page: AsyncComponent<PageProps> = async({ params }) => {
             lang: variant.lang as Lang,
             variantId: variant.id,
             tags: [],
+            published: post.published,
             banner: variant.banner ? {
               id: variant.banner.id,
               url: variant.banner.url,

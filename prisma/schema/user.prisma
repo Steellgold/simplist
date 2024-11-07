@@ -13,6 +13,7 @@ model User {
   Passkey          Passkey[]
   TwoFactor        TwoFactor[]
   Invitation       Invitation[]
+  defaultOrgId     String?
 
   @@unique([email])
   @@map("user")

@@ -10,13 +10,15 @@ import {
 import { useCreatePost, useDeletePost, useUpdatePost } from "@/lib/actions/post/post.hook";
 import type { Component } from "../component";
 import type { EditorSaveProps } from "./editor.types";
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import { startOfToday } from "date-fns";
 import {
-  BookDashed,
+  CalendarClock,
+  CalendarCog,
   CalendarIcon,
+  CalendarOff,
   ChevronDown,
   FilePenLine,
   Loader2,
@@ -43,7 +45,7 @@ import {
   AlertDialogTitle, AlertDialogDescription, AlertDialogCancel
 } from "../ui/alert-dialog";
 import { dayJS } from "@/lib/day-js";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 export const EditorSave: Component<EditorSaveProps> = ({ isNew, postInfo, postId, activeIndex }) => {
   const [isSaving, setIsSaving] = useState(false);
@@ -51,8 +53,18 @@ export const EditorSave: Component<EditorSaveProps> = ({ isNew, postInfo, postId
 
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [time, setTime] = useState<string | undefined>(undefined);
+  const [combinedDateTime, setCombinedDateTime] = useState<Date | null>(null);
+
+  useEffect(() => {
+    if (date && time) {
+      const [hours, minutes] = time.split(":");
+      const combined = dayJS(date).set("hours", Number(hours)).set("minutes", Number(minutes)).toDate();
+      setCombinedDateTime(combined);
+    }
+  }, [date, time]);
 
   const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
+  const [nowPDialogOpen, setNowPDialogOpen] = useState(false);
 
   const router = useRouter();
 
@@ -63,14 +75,7 @@ export const EditorSave: Component<EditorSaveProps> = ({ isNew, postInfo, postId
   const { data: organization, isPending } = useActiveOrganization();
   const { data: session, isPending: isSessionPending } = useSession();
 
-  const combinedDateTime = useMemo(() => {
-    if (!date) return null;
-    if (!time) return date;
-    const [hours, minutes] = time.split(":").map(Number);
-    return new Date(date.setHours(hours, minutes));
-  }, [date, time]);
-
-  const CoU = (published: boolean): void => {
+  const CoU = (published: boolean, clearSchedule = false, addPublishedAt = false): void => {
     if (!postInfo[0].title || !postInfo[0].excerpt || !postInfo[0].content) {
       toast.error("Title, excerpt, and content are required.");
       return;
@@ -98,7 +103,8 @@ export const EditorSave: Component<EditorSaveProps> = ({ isNew, postInfo, postId
       content: postInfo[0].content,
       lang: postInfo[0].lang,
       published,
-      scheduledAt: combinedDateTime || undefined,
+      scheduledAt: addPublishedAt || clearSchedule ? null : (combinedDateTime || undefined),
+      publishedAt: new Date(),
       author: {
         connect: {
           id: organization.members.find((member) => member.userId === session.user.id)?.id
@@ -156,7 +162,8 @@ export const EditorSave: Component<EditorSaveProps> = ({ isNew, postInfo, postId
         content: postInfo[0].content,
         lang: postInfo[0].lang,
         bannerId: postInfo[0].banner ? postInfo[0].banner.id : undefined,
-        scheduledAt: combinedDateTime || undefined,
+        scheduledAt: addPublishedAt || clearSchedule ? null : (combinedDateTime || undefined),
+        publishedAt: addPublishedAt ? new Date() : undefined,
         published: published,
         meta: {
           upsert: postInfo[0].metadatas.length > 0 ? postInfo[0].metadatas.map((metadata) => ({
@@ -211,7 +218,7 @@ export const EditorSave: Component<EditorSaveProps> = ({ isNew, postInfo, postId
     // @ts-expect-error - This is a hack, TypeScript please ignore this
     mutation(isNew ? createPostPayload : updatePostPayload, {
       onSuccess: () => {
-        toast.success(isNew ? "Post created successfully." : "Post updated successfully.");
+        toast.success(`Post ${isNew ? "created" : "updated"} successfully.`);
         router.push("/app/posts");
         setIsSaving(false);
       },
@@ -282,20 +289,30 @@ export const EditorSave: Component<EditorSaveProps> = ({ isNew, postInfo, postId
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => setScheduleDialogOpen(true)}>
-                <CalendarIcon size={16} />
-                {isNew ? "Schedule Post" : "Update Schedule"}
-              </DropdownMenuItem>
-
-              <DropdownMenuItem onClick={() => CoU(true)}>
+              <DropdownMenuItem onClick={() => CoU(isNew ? true : false)}>
                 <FilePenLine size={16} />
                 {isNew ? "Publish" : "Update"}
               </DropdownMenuItem>
 
-              <DropdownMenuItem onClick={() => CoU(false)}>
-                <BookDashed size={16} />
-                Save as Draft
-              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+
+              {!postInfo[0].published && (
+                <DropdownMenuItem onClick={() => setScheduleDialogOpen(true)}>
+                  {isNew ? <CalendarClock size={16} /> : <CalendarCog size={16} />}
+                  {isNew ? "Schedule Post" : postInfo[0].scheduledAt ? "Reschedule Post" : "Schedule Post"}
+                </DropdownMenuItem>
+              )}
+
+              {((!isNew && postInfo[0].scheduledAt) || (!isNew && !postInfo[0].published)) && (
+                <>
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuItem onClick={() => setNowPDialogOpen(true)}>
+                    <CalendarOff size={16} />
+                    Publish Now
+                  </DropdownMenuItem>
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </CardFooter>
@@ -355,6 +372,31 @@ export const EditorSave: Component<EditorSaveProps> = ({ isNew, postInfo, postId
               }}
             >
               Schedule Post
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={nowPDialogOpen} onOpenChange={setNowPDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Publish the Post Now</AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogDescription>
+            Are you sure you want to publish the post now?
+            You always can after publishing the post &apos;unpublish&apos; it with the button &apos;Save as Draft&apos;.
+          </AlertDialogDescription>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                CoU(true, true, true);
+                setIsSaving(true);
+                setNowPDialogOpen(false);
+              }}
+            >
+              Publish Now
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -23,6 +23,8 @@ export type PostInfo = {
   metadatas: Metadata[];
   tags: string[];
 
+  published: boolean;
+
   scheduledAt?: Date | null;
   isScheduled?: boolean;
 }[];

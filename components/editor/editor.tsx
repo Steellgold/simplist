@@ -39,7 +39,7 @@ export const Editor: Component<EditorProps> = ({ isNew = false, posts = [], dbId
   }, [isNew, dbId]);
 
   const [postsData, setPostsData] = useState<PostInfo>(
-    posts.length ? posts : [{ title: "", excerpt: "", content: "", lang: Lang.EN, banner: null, metadatas: [], tags: [] }]
+    posts.length ? posts : [{ title: "", excerpt: "", content: "", lang: Lang.EN, banner: null, metadatas: [], tags: [], published: false }]
   );
 
   const handleLanguageChange = (lang: Lang): void => {
@@ -56,6 +56,7 @@ export const Editor: Component<EditorProps> = ({ isNew = false, posts = [], dbId
         metadatas: [],
         tags: [],
         variantId: nanoid(20),
+        published: false,
         persist: true
       }];
       setPostsData(newPostInfo);

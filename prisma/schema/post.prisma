@@ -40,6 +40,7 @@ model Post {
   // 
   published      Boolean      @default(false)
   scheduledAt    DateTime?
+  publishedAt    DateTime?
   //
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
