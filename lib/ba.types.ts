@@ -30,6 +30,22 @@ export type Member = {
   };
 };
 
+export type OrganizationMember = {
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    image: string | undefined;
+  };
+
+  id: string;
+  userId: string;
+  email: string;
+  createdAt: Date;
+  organizationId: string;
+  role: "member" | "admin" | "owner";
+}
+
 export type Invitation = {
   id: string;
   email: string;

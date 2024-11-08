@@ -14,6 +14,10 @@ const badgeVariants = cva(
           "border-transparent bg-secondary text-secondary-foreground", // hover:bg-secondary/80
         destructive:
           "border-transparent bg-destructive text-destructive-foreground shadow", // hover:bg-destructive/80
+        
+        "apikey-active": "border-green-900 bg-green-900 text-green-100",
+        "apikey-inactive": "border-red-900 bg-red-900 text-red-100",
+
         "tag-neutral":
           "flex gap-1 text-xs px-2 py-1 font-medium",
         "tag-default":

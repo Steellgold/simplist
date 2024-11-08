@@ -1,7 +1,7 @@
 import type { UseMutationResult } from "@tanstack/react-query";
 import { useMutation, useQuery, useQueryClient, type UseQueryOptions } from "@tanstack/react-query";
-import type { GetKeyType } from "./key.types";
-import { createKey, getKeys } from "./key.action";
+import type { CreateKeyType, GetKeyType, InvalidateKeyType } from "./key.types";
+import { createKey, getKeys, invalidateKey } from "./key.action";
 
 // Queries
 
@@ -18,11 +18,20 @@ export const useGetKeys = (): ReturnType<typeof useQuery<GetKeyType[]>> => {
 
 // Mutations
 
-export const useCreateKey = (): UseMutationResult<unknown, unknown, unknown, unknown> => {
+export const useCreateKey = (): UseMutationResult<GetKeyType, unknown, CreateKeyType, unknown> => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => createKey(),
+    mutationFn: (data: CreateKeyType) => createKey(data),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["getKeys"] })
+  });
+};
+
+export const useInvalidateKey = (): UseMutationResult<void, unknown, InvalidateKeyType, unknown> => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: InvalidateKeyType) => invalidateKey(data.key, data.secuValue),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["getKeys"] })
   });
 };
