@@ -37,7 +37,7 @@ const Page = (): ReactElement => {
   }, [setBreadcrumb]);
 
   return (
-    <div>
+    <>
       <Header keys={keys ?? []} />
       <div className="mt-4">
         <div className="mt-4 border border border-muted rounded-md">
@@ -196,7 +196,7 @@ const Page = (): ReactElement => {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
