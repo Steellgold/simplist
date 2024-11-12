@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen, ChevronsUpDown, LayoutGrid, LifeBuoy, Plus, Send, Settings2 } from "lucide-react";
+import { /** BookOpen, **/ ChevronsUpDown, LayoutGrid, LifeBuoy, Plus, Send, Settings2 } from "lucide-react";
 import { NavProject } from "@/components/sidebar/nav-project";
 import { NavSecondary } from "@/components/sidebar/nav-secondary";
 import { NavUser } from "@/components/nav-user";
@@ -39,18 +39,18 @@ const data: {
         { title: "Integrations", url: "/app/settings/integrations" },
         { title: "API", url: "/app/settings/api" }
       ]
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        { title: "Introduction", url: "#" },
-        { title: "Get Started", url: "#" },
-        { title: "Tutorials", url: "#" },
-        { title: "Changelog", url: "#" }
-      ]
     }
+    // {
+    //   title: "Documentation",
+    //   url: "#",
+    //   icon: BookOpen,
+    //   items: [
+    //     { title: "Introduction", url: "#" },
+    //     { title: "Get Started", url: "#" },
+    //     { title: "Tutorials", url: "#" },
+    //     { title: "Changelog", url: "#" }
+    //   ]
+    // }
   ],
   navSecondary: [
     {

@@ -8,7 +8,7 @@ export const Providers: Component<PropsWithChildren> = ({ children }): ReactElem
   return (
     <TanStackQuery>
       <HydrationBoundary queries={[]}>
-        <Toaster />
+        <Toaster richColors={true} />
 
         {children}
       </HydrationBoundary>
