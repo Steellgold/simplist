@@ -29,6 +29,8 @@ model Post {
   slug           String       @default(cuid())
   lang           Lang         @default(EN)
   // 
+  si_url         String?
+  // 
   banner         File?        @relation(fields: [bannerId], references: [id], onDelete: SetNull)
   bannerId       String?
   // 

@@ -1,0 +1,61 @@
+enum PlanType {
+  FREE
+  PRO
+  BUSINESS
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  PAST_DUE
+}
+
+model Subscription {
+  id                   String             @id @default(cuid())
+  // 
+  organization         Organization[]
+  //
+  planType             PlanType           @default(FREE)
+  status               SubscriptionStatus @default(ACTIVE)
+  // 
+  startDate            DateTime           @default(now())
+  endDate              DateTime
+  nextBillingDate      DateTime
+  //
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @default(now()) @updatedAt
+  // 
+  stripeCustomerId     String
+  stripeSubscriptionId String
+  stripePriceId        String
+  // 
+  invoices             Invoice[]
+
+  // 
+  @@unique([stripeCustomerId, stripeSubscriptionId])
+}
+
+enum InvoiceStatus {
+  PAID
+  UNPAID
+  REFUNDED
+}
+
+model Invoice {
+  id             String        @id @default(cuid())
+  // 
+  subscription   Subscription  @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  subscriptionId String
+  // 
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId String
+  // 
+  url            String
+  amount         Decimal
+  status         InvoiceStatus @default(UNPAID)
+  //
+  createdAt      DateTime      @default(now())
+
+  // 
+  @@unique([subscriptionId, url])
+}

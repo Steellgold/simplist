@@ -1,18 +1,27 @@
 model Organization {
-  id         String       @id
-  name       String
-  slug       String?
-  logo       String?
-  createdAt  DateTime
-  metadata   String?
-  Member     Member[]
-  Invitation Invitation[]
+  id             String        @id
+  name           String
+  slug           String?
+  logo           String?
+  createdAt      DateTime
+  metadata       String?
+  Member         Member[]
+  Invitation     Invitation[]
+  // 
+  planType       PlanType      @default(FREE)
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
+  subscriptionId String?       @unique
+  // 
+  invoices       Invoice[]
+  // 
+  trustedDomains String[]
   //
-  posts      Post[]
-  tags       Tag[]
-  categories Category[]
-  variants   Variant[]
-  files      File[]
+  posts          Post[]
+  tags           Tag[]
+  categories     Category[]
+  variants       Variant[]
+  files          File[]
+  integrations   Integration[]
 
   @@unique([slug])
   @@map("organization")

@@ -1,0 +1,21 @@
+enum Type {
+  DISCORD_WEBHOOK
+}
+
+model Integration {
+  id             String       @id
+  // 
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  // 
+  type           Type
+  enabled        Boolean      @default(true)
+  // 
+  credentials    Json         @default("{}")
+  //
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  // 
+  @@unique([organizationId, type])
+}
