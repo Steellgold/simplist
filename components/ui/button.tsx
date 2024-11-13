@@ -21,6 +21,8 @@ const buttonVariants = cva(
           "border border-destructive bg-background shadow-sm hover:bg-destructive hover:text-destructive-foreground",
         secondary:
           "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
+        discord:
+          "bg-[#5865F2] text-white shadow-sm hover:bg-[#4054B2]",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
       },

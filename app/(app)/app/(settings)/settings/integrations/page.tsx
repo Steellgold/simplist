@@ -4,10 +4,7 @@ import { BreadcrumbUpdater } from "@/components/breadcrumbUpdater";
 import { IntegrationCard } from "@/components/integrations/integration-card";
 import { useGetIntegrations } from "@/lib/actions/integration/integration.hook";
 import { integrations } from "@/lib/integrations";
-import { useState, type ReactElement } from "react";
-import { ConfigureIntegration } from "./configure";
-import { PageCaca } from "./caca";
-import type { Integration } from "@prisma/client";
+import type { ReactElement } from "react";
 import { NoIntegrations } from "./empty";
 
 export const Page = (): ReactElement => {
