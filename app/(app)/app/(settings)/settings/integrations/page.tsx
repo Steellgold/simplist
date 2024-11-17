@@ -3,17 +3,28 @@
 import { BreadcrumbUpdater } from "@/components/breadcrumbUpdater";
 import { IntegrationCard } from "@/components/integrations/integration-card";
 import { useGetIntegrations } from "@/lib/actions/integration/integration.hook";
+import type { Integration } from "@/lib/integrations";
 import { integrations } from "@/lib/integrations";
-import type { ReactElement } from "react";
+import { useState, type ReactElement } from "react";
 import { NoIntegrations } from "./empty";
+import { Button } from "@/components/ui/button";
 
 export const Page = (): ReactElement => {
   const { data: activeIntegrations, isPending, isRefetching } = useGetIntegrations();
+  const [choosedIntegration, setChoosedIntegration] = useState<Integration | null>(null);
 
   if (isPending || isRefetching) return <div>Loading...</div>;
 
   if (activeIntegrations?.length === 0) {
     return <NoIntegrations />;
+  }
+
+  if (choosedIntegration) {
+    return (
+      <p>
+        Hello
+      </p>
+    );
   }
 
   return (
@@ -38,7 +49,9 @@ export const Page = (): ReactElement => {
           <IntegrationCard
             key={integration.id}
             integration={integrations.find((i) => i.type === integration.type) || integrations[0]}
-            showConfigureButton={false}
+            actionButton={
+              <Button variant={"outline"} onClick={() => setChoosedIntegration(integration)}>Configure</Button>
+            }
           />
         ))}
       </div>

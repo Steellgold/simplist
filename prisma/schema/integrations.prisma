@@ -12,6 +12,7 @@ model Integration {
   enabled        Boolean      @default(true)
   // 
   credentials    Json         @default("{}")
+  data           Json         @default("{}")
   //
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt

@@ -1,13 +1,6 @@
 /* eslint-disable camelcase */
 "use client";
 
-// ----------------------------
-//
-// Actually only Discord Webhook is present in the integrations list, but in the future there could be
-// more integrations. And this file needs to be refactored to support multiple integrations.
-//
-// ----------------------------
-
 import type { Component } from "@/components/component";
 import { DiscordTestingCard } from "@/components/integrations/discord-card";
 import { Badge } from "@/components/ui/badge";
@@ -20,36 +13,29 @@ import { Textarea } from "@/components/ui/textarea";
 import { useSendWebhookMessage } from "@/hooks/use-webhook-message";
 import { useCreateIntegration } from "@/lib/actions/integration/integration.hook";
 import { useActiveOrganization } from "@/lib/auth/client";
-import type { Integration } from "@/lib/integrations";
 import type { MessageEmbed } from "@/lib/wmd.types";
 import { Loader } from "lucide-react";
 import { nanoid } from "nanoid";
 import { useState } from "react";
 import { FaDiscord } from "react-icons/fa";
 import { toast } from "sonner";
+import type { ConfigurationProps } from "../type";
+import { IntegrationLabel } from "../its-label";
 
-type Props = {
-  integration: Integration;
-  isNew?: boolean;
+// const PARAMS: Record<string, string> = {
+//   "{{ post_title }}": "Post title of the published post",
+//   "{{ post_excerpt }}": "Excerpt of the published post",
+//   "{{ post_url }}": "URL of the published post with the blog domain configured in organization settings (Ex: https://blog.example.com/post-slug)",
+//   "{{ post_slug }}": "Slug of the published post",
+//   "{{ post_author }}": "Author name of the published post",
+//   "{{ post_date }}": "Date of the published post",
+//   "{{ post_tags }}": "Tags separated by comma of the published post",
+//   "{{ post_variants }}": "Languages available for the published post separated by comma",
+//   "{{ post_locale }}": "Locale of the published post (original language)"
+// };
 
-  onCanceled?: () => void;
-  onSaved?: () => void;
-};
-
-const PARAMS: Record<string, string> = {
-  "{{ post_title }}": "Post title of the published post",
-  "{{ post_excerpt }}": "Excerpt of the published post",
-  "{{ post_url }}": "URL of the published post with the blog domain configured in organization settings (Ex: https://blog.example.com/post-slug)",
-  "{{ post_slug }}": "Slug of the published post",
-  "{{ post_author }}": "Author name of the published post",
-  "{{ post_date }}": "Date of the published post",
-  "{{ post_tags }}": "Tags separated by comma of the published post",
-  "{{ post_variants }}": "Languages available for the published post separated by comma",
-  "{{ post_locale }}": "Locale of the published post (original language)"
-};
-
-export const ConfigureIntegration: Component<Props> = ({ integration, isNew, onCanceled, onSaved }) => {
-  const { data: organization, isPending } = useActiveOrganization();
+export const ConfigureDiscordIntegration: Component<ConfigurationProps> = ({ integration, isNew, onCanceled, onSaved }) => {
+  const { data: organization } = useActiveOrganization();
 
   const [ok, setOk] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -106,6 +92,7 @@ export const ConfigureIntegration: Component<Props> = ({ integration, isNew, onC
                 <Switch
                   id="use-embed"
                   checked={embed}
+                  variant="discord"
                   onCheckedChange={(checked) => {
                     setEmbed(checked);
                     if (!checked) setEmbedData(null);
@@ -124,7 +111,7 @@ export const ConfigureIntegration: Component<Props> = ({ integration, isNew, onC
               <div className="flex flex-col gap-2">
                 <div className="flex flex-row gap-2 border rounded-lg p-4">
                   <div className="flex flex-col gap-2 w-full">
-                    <LabelDescription label="Title" forItem="embed-title" />
+                    <IntegrationLabel label="Title" forItem="embed-title" />
                     <Input
                       id="embed-title" type="text" value={embedData?.title || ""}
                       placeholder="Rich Embed Title"
@@ -134,7 +121,7 @@ export const ConfigureIntegration: Component<Props> = ({ integration, isNew, onC
 
 
                   <div className="flex flex-col gap-2 w-full">
-                    <LabelDescription label="URL" forItem="embed-url" />
+                    <IntegrationLabel label="URL" forItem="embed-url" />
                     <Input
                       id="embed-title" type="url" value={embedData?.url || ""}
                       placeholder="https://example.com"
@@ -144,7 +131,7 @@ export const ConfigureIntegration: Component<Props> = ({ integration, isNew, onC
                 </div>
 
                 <div className="flex flex-col gap-2 w-full border rounded-lg p-4">
-                  <LabelDescription label="Description" forItem="embed-description" />
+                  <IntegrationLabel label="Description" forItem="embed-description" />
                   <Textarea
                     id="embed-description" value={embedData?.description || ""}
                     placeholder="Rich Embed Description (4096 characters max)"
@@ -154,22 +141,14 @@ export const ConfigureIntegration: Component<Props> = ({ integration, isNew, onC
 
                 <div className="flex flex-row gap-2 border rounded-lg p-4">
                   <div className="flex flex-col gap-2 w-full">
-                    <LabelDescription label="Color" forItem="embed-color" />
+                    <IntegrationLabel label="Color" forItem="embed-color" />
                     <Input id="embed-color" type="color" value={vanillaColor} onChange={(e) => updateColor(e.target.value)} />
-                  </div>
-
-                  <div className="flex flex-col gap-2 w-full">
-                    <LabelDescription label="Timestamp" forItem="embed-timestamp" />
-                    <Input
-                      id="embed-timestamp" type="datetime-local" value={embedData?.timestamp || ""}
-                      onChange={(e) => setEmbedData({ ...embedData, timestamp: e.target.value })}
-                    />
                   </div>
                 </div>
 
                 <div className="flex flex-row gap-2 border rounded-lg p-4">
                   <div className="flex flex-col gap-2 w-full">
-                    <LabelDescription label="Footer" forItem="embed-footer" />
+                    <IntegrationLabel label="Footer" forItem="embed-footer" />
                     <Input
                       id="embed-footer" type="text" value={embedData?.footer?.text || ""}
                       placeholder="Rich Embed Footer"
@@ -178,7 +157,7 @@ export const ConfigureIntegration: Component<Props> = ({ integration, isNew, onC
                   </div>
 
                   <div className="flex flex-col gap-2 w-full">
-                    <LabelDescription label="Footer Icon" forItem="embed-footer-icon" />
+                    <IntegrationLabel label="Footer Icon" forItem="embed-footer-icon" />
                     <Input
                       id="embed-footer-icon" type="url" value={embedData?.footer?.icon_url || ""}
                       placeholder="https://example.com/icon.png"
@@ -190,7 +169,7 @@ export const ConfigureIntegration: Component<Props> = ({ integration, isNew, onC
 
                 <div className="flex flex-row gap-2 border rounded-lg p-4">
                   <div className="flex flex-col gap-2 w-full">
-                    <LabelDescription label="Author" forItem="embed-author" />
+                    <IntegrationLabel label="Author" forItem="embed-author" />
                     <Input
                       id="embed-author" type="text" value={embedData?.author?.name || ""}
                       placeholder="John Doe"
@@ -199,7 +178,7 @@ export const ConfigureIntegration: Component<Props> = ({ integration, isNew, onC
                   </div>
 
                   <div className="flex flex-col gap-2 w-full">
-                    <LabelDescription label="Author URL" forItem="embed-author-url" />
+                    <IntegrationLabel label="Author URL" forItem="embed-author-url" />
                     <Input
                       id="embed-author-url" type="url" value={embedData?.author?.url || ""}
                       placeholder="https://example.com"
@@ -209,7 +188,7 @@ export const ConfigureIntegration: Component<Props> = ({ integration, isNew, onC
                   </div>
 
                   <div className="flex flex-col gap-2 w-full">
-                    <LabelDescription label="Author Icon" forItem="embed-author-icon" />
+                    <IntegrationLabel label="Author Icon" forItem="embed-author-icon" />
                     <Input
                       id="embed-author-icon" type="url" value={embedData?.author?.icon_url || ""}
                       placeholder="https://example.com/icon.png"
@@ -221,7 +200,7 @@ export const ConfigureIntegration: Component<Props> = ({ integration, isNew, onC
 
                 <div className="flex flex-row gap-2 border rounded-lg p-4">
                   <div className="flex flex-col gap-2 w-full">
-                    <LabelDescription label="Thumbnail" forItem="embed-thumbnail" />
+                    <IntegrationLabel label="Thumbnail" forItem="embed-thumbnail" />
                     <Input
                       id="embed-thumbnail" type="url" value={embedData?.thumbnail?.url || ""}
                       placeholder="https://example.com/thumbnail.png"
@@ -230,7 +209,7 @@ export const ConfigureIntegration: Component<Props> = ({ integration, isNew, onC
                   </div>
 
                   <div className="flex flex-col gap-2 w-full">
-                    <LabelDescription label="Image" forItem="embed-image" />
+                    <IntegrationLabel label="Image" forItem="embed-image" />
                     <Input
                       id="embed-image" type="url" value={embedData?.image?.url || ""}
                       placeholder="https://example.com/image.png"
@@ -269,6 +248,8 @@ export const ConfigureIntegration: Component<Props> = ({ integration, isNew, onC
       <CardFooter className="flex justify-end gap-2">
         <Button size={"sm"} variant={"outline"} onClick={onCanceled}>Cancel</Button>
         <Button size={"sm"} onClick={() => {
+          setLoading(true);
+
           if (isNew) {
             toast.promise(
               create.mutateAsync({
@@ -276,10 +257,8 @@ export const ConfigureIntegration: Component<Props> = ({ integration, isNew, onC
                 enabled: true,
                 id: nanoid(20),
                 organization: { connect: { id: organization?.id } },
-                credentials: { create: { data: {
-                  webhookUrl: webhookUrl,
-                  data: { isEmbed: embed, embedData: embedData, messageContent: messageContent  }
-                } } }
+                credentials: { webhookUrl },
+                data: { isEmbed: embed, embedData: embedData, messageContent }
               }, {
                 onSuccess: () => {
                   onSaved?.();
@@ -293,7 +272,7 @@ export const ConfigureIntegration: Component<Props> = ({ integration, isNew, onC
           } else {
             toast.message("Updating integration is not supported yet.");
           }
-        }} disabled={!ok || loading}>
+        }} disabled={!ok || loading} variant={"discord"}>
           {loading && <Loader className="animate-spin" />}
           {isNew ? "Enable" : "Update"}
         </Button>
@@ -301,14 +280,3 @@ export const ConfigureIntegration: Component<Props> = ({ integration, isNew, onC
     </Card>
   );
 };
-
-const LabelDescription: Component<{
-  label: string;
-  description?: string;
-  forItem: string;
-}> = ({ description, label, forItem }) => (
-  <div className="flex flex-col gap-0.5">
-    <Label htmlFor={forItem}>{label}</Label>
-    {description && <p className="text-sm text-muted-foreground">{description}</p>}
-  </div>
-);

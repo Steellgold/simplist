@@ -1,18 +1,22 @@
 "use client";
 
-import { useState, type ReactElement } from "react";
-import { ConfigureIntegration } from "./configure";
+import { cloneElement, useState, type ReactElement } from "react";
 import { integrations, type Integration } from "@/lib/integrations";
 import { IntegrationCard } from "@/components/integrations/integration-card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { ConfigureDiscordIntegration } from "./itgs/itg-discord";
+import type { ConfigurationProps } from "./type";
 
 export const NoIntegrations = (): ReactElement => {
   const [activeConfig, setActiveConfig] = useState<Integration | null>(null);
 
+  const CONFIGURATIONS: Record<Integration["type"], ReactElement<ConfigurationProps>> = {
+    "DISCORD_WEBHOOK": <ConfigureDiscordIntegration integration={integrations[0]} />
+  };
+
   return (
     <>
-
       {!activeConfig ? (
         <>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between">
@@ -46,12 +50,11 @@ export const NoIntegrations = (): ReactElement => {
             </div>
           </div>
 
-          <ConfigureIntegration
-            integration={activeConfig}
-            isNew
-            onCanceled={() => setActiveConfig(null)}
-            onSaved={() => setActiveConfig(null)}
-          />
+          {cloneElement(CONFIGURATIONS[activeConfig.type], {
+            isNew: true,
+            onCanceled: () => setActiveConfig(null),
+            onSaved: () => setActiveConfig(null)
+          })}
         </div>
       )}
     </>
