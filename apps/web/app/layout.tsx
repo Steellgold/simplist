@@ -3,6 +3,7 @@ import { Nunito, Nunito_Sans } from "next/font/google"
 import { Providers } from "@/components/providers"
 import { PropsWithChildren } from "react"
 import "@workspace/ui/globals.css"
+import { ToggleTheme } from "@/components/toggle-theme"
 
 const fontSans = Nunito_Sans({
   subsets: ["latin"],
@@ -18,9 +19,13 @@ const Layout: Component<PropsWithChildren> = ({ children }) => {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased `}
+        className={`${fontSans.variable} ${fontMono.variable} dark:bg-[#09090b] font-sans antialiased`}
       >
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+
+          <ToggleTheme />
+        </Providers>
       </body>
     </html>
   )
