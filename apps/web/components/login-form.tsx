@@ -10,6 +10,7 @@ import { Label } from "@workspace/ui/components/label"
 import { Component } from "@workspace/ui/components/utils/component"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
+import { PasswordInput } from "@workspace/ui/components/input-password"
 
 export const LoginForm: Component<React.ComponentPropsWithoutRef<"div">> = ({
   className,
@@ -73,7 +74,7 @@ export const LoginForm: Component<React.ComponentPropsWithoutRef<"div">> = ({
                       Forgot your password?
                     </a>
                   </div>
-                  <Input id="password" type="password" required />
+                  <PasswordInput />
                 </div>
                 <Button type="submit" className="w-full">
                   Login
