@@ -10,7 +10,6 @@ export const Providers: Component<PropsWithChildren> = ({ children }) => {
       attribute="class"
       defaultTheme="system"
       enableSystem
-      disableTransitionOnChange
       enableColorScheme
     >
       {children}
