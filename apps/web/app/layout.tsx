@@ -1,23 +1,20 @@
-import { Geist, Geist_Mono } from "next/font/google"
-
-import "@workspace/ui/globals.css"
+import { Component } from "@workspace/ui/components/utils/component"
+import { Nunito, Nunito_Sans } from "next/font/google"
 import { Providers } from "@/components/providers"
+import { PropsWithChildren } from "react"
+import "@workspace/ui/globals.css"
 
-const fontSans = Geist({
+const fontSans = Nunito_Sans({
   subsets: ["latin"],
   variable: "--font-sans",
 })
 
-const fontMono = Geist_Mono({
+const fontMono = Nunito({
   subsets: ["latin"],
   variable: "--font-mono",
 })
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+const Layout: Component<PropsWithChildren> = ({ children }) => {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -28,3 +25,5 @@ export default function RootLayout({
     </html>
   )
 }
+
+export default Layout;
