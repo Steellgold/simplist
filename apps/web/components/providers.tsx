@@ -1,9 +1,10 @@
 "use client"
 
-import * as React from "react"
+import { Component } from "@workspace/ui/components/utils/component"
 import { ThemeProvider as NextThemesProvider } from "next-themes"
+import { PropsWithChildren } from "react"
 
-export function Providers({ children }: { children: React.ReactNode }) {
+export const Providers: Component<PropsWithChildren> = ({ children }) => {
   return (
     <NextThemesProvider
       attribute="class"
