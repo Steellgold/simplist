@@ -4,17 +4,21 @@ import type { NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
   const session = await auth.api.getSession({ headers: request.headers });
-  
+
   const PUBLIC_PATHS = ["/auth"];
-  
-  if (request.nextUrl.pathname.startsWith("/api") || 
+  const PUBLIC_PREFIXES = ["/auth/"];
+
+  if (request.nextUrl.pathname.startsWith("/api") ||
       request.nextUrl.pathname.startsWith("/_next") ||
       request.nextUrl.pathname.startsWith("/public")) {
     return NextResponse.next();
   }
 
   if (!session?.user) {
-    if (!PUBLIC_PATHS.includes(request.nextUrl.pathname)) {
+    const isPublicPath = PUBLIC_PATHS.includes(request.nextUrl.pathname) ||
+                         PUBLIC_PREFIXES.some(prefix => request.nextUrl.pathname.startsWith(prefix));
+
+    if (!isPublicPath) {
       return NextResponse.redirect(new URL("/auth", request.url));
     }
 
