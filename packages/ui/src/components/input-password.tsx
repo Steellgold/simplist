@@ -1,7 +1,6 @@
 "use client";
 
 import { Input } from "@workspace/ui/components/input";
-import { Label } from "@workspace/ui/components/label";
 import { Eye, EyeOff } from "lucide-react";
 import { useId, useState } from "react";
 
@@ -13,7 +12,6 @@ export const PasswordInput = () => {
 
   return (
     <div className="space-y-2">
-      <Label htmlFor={id}>Show/hide password input</Label>
       <div className="relative">
         <Input
           id={id}
