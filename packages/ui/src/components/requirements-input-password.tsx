@@ -1,6 +1,7 @@
 "use client";
 
 import { Input } from "@workspace/ui/components/input";
+import { Label } from "@workspace/ui/components/label";
 import { Check, Eye, EyeOff, X } from "lucide-react";
 import { useId, useMemo, useState } from "react";
 
@@ -48,7 +49,9 @@ export const PasswordInputRequirements = () => {
   };
 
   return (
-    <div>
+    <div className="space-y-2">
+      <Label htmlFor={id}>Password</Label>
+
       {/* Password input */}
       <div className="relative">
         <Input
