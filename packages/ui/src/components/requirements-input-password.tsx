@@ -78,6 +78,7 @@ export const PasswordInputRequirements = () => {
           onChange={(e) => setPassword(e.target.value)}
           aria-invalid={strengthScore < 4}
           aria-describedby={`${id}-description`}
+          name="password"
         />
 
         <button
