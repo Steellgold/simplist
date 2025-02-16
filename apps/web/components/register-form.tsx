@@ -18,7 +18,7 @@ import { OAuthsButtons } from "./oauths-buttons"
 import { z } from "zod"
 import { ToastAction } from "@workspace/ui/components/toast";
 import { useState } from "react";
-import { Loader } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 
@@ -117,13 +117,9 @@ export const RegisterForm: Component<React.ComponentPropsWithoutRef<"div">> = ({
                 
                 <PasswordInputRequirements  />
                 
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={loading}
-                >
+                <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? (
-                    <Loader size={16} className="animate-spin" />
+                    <Loader2 size={16} className="animate-spin" />
                   ) : (
                     "Create an account"
                   )}
