@@ -19,7 +19,7 @@ const Layout: Component<PropsWithChildren> = ({ children }) => {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${fontSans.variable} ${fontMono.variable} dark:bg-[#09090b] font-sans antialiased`}
+        className={`${fontSans.variable} ${fontMono.variable} dark:bg-[#09090b] font-sans antialiased relative`}
       >
         <Providers>
           {children}
