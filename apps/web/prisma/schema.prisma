@@ -71,6 +71,12 @@ model Verification {
   updatedAt  DateTime?
 }
 
+enum Plan {
+  FREE
+  PRO
+  BUSINESS
+}
+
 model Organization {
   id          String       @id
   name        String
@@ -80,6 +86,7 @@ model Organization {
   metadata    String?
   members     Member[]
   invitations Invitation[]
+  plan        Plan         @default(FREE)
 
   @@unique([slug])
 }

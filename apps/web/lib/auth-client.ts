@@ -1,9 +1,7 @@
 import { usernameClient, organizationClient } from "better-auth/client/plugins"
 import { createAuthClient } from "better-auth/react"
 
-type BetterAuthOptions = ReturnType<typeof createAuthClient>
-
-export const authClient: BetterAuthOptions = createAuthClient({
+export const authClient = createAuthClient({
     plugins: [
         usernameClient(),
         organizationClient(),

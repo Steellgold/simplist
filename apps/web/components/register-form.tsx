@@ -36,8 +36,68 @@ export const RegisterForm: Component<React.ComponentPropsWithoutRef<"div">> = ({
 }) => {
   const { toast } = useToast();
 
+  const [form, setForm] = useState<"user" | "organization">("user");
+
 	const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  if (form === "organization") {
+    return (
+      <div className={cn("flex flex-col gap-6", className)} {...props}>
+        <Card>
+          <CardHeader className="text-center">
+            <CardTitle className="text-xl">Create an organization</CardTitle>
+            <CardDescription>Set up your organization</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={async(e: React.FormEvent<HTMLFormElement>) => {
+              e.preventDefault();
+
+              const formData = Object.fromEntries(new FormData(e.currentTarget).entries());
+              const result = schema.safeParse(formData);
+
+              if (!result.success) {
+                toast({
+                  title: "Data validation error",
+                  description: "Please check the form fields and try again",
+                  action: <ToastAction altText="Try again">Try again</ToastAction>,      
+                })
+                return;
+              }
+
+              router.push("/");
+            }}>
+              <div className="grid gap-6">
+                <div className="grid gap-3">
+                  <div className="grid gap-2">
+                    <Label htmlFor="name">Name</Label>
+                    <Input id="name" type="text" placeholder="My organization" required name="name" />
+                  </div>
+
+                  <div className="grid gap-2">
+                    <Label htmlFor="slug">Slug</Label>
+                    <Input id="slug" type="text" placeholder="my-organization" required name="slug" />
+                  </div>
+                </div>
+                
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? (
+                    <Loader2 size={16} className="animate-spin" />
+                  ) : (
+                    "Create organization"
+                  )}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+
+        <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary  ">
+          By clicking continue, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -84,11 +144,10 @@ export const RegisterForm: Component<React.ComponentPropsWithoutRef<"div">> = ({
                 onSuccess: async () => {
                   toast({
                     title: "Account created",
-                    description: "Your account has been created successfully 🎉",
-                    action: <ToastAction altText="Close">Close</ToastAction>,
-                  });
+                    description: "Now you can create your organization"
+                  })
 
-                  router.push("/");
+                  setForm("organization");
                 },
               },
             });
