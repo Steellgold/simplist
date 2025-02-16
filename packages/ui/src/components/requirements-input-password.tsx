@@ -2,8 +2,9 @@
 
 import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
-import { Check, Eye, EyeOff, X } from "lucide-react";
+import { Check, Dices, Eye, EyeOff, X } from "lucide-react";
 import { useId, useMemo, useState } from "react";
+import { generate } from "generate-password";
 
 export const PasswordInputRequirements = () => {
   const id = useId();
@@ -11,6 +12,20 @@ export const PasswordInputRequirements = () => {
   const [isVisible, setIsVisible] = useState<boolean>(false);
 
   const toggleVisibility = () => setIsVisible((prevState) => !prevState);
+  const togglePassword = () => {
+    setPassword(
+      generate({
+        length: 12,
+        numbers: true,
+        uppercase: true,
+        strict: true,
+        symbols: true,
+        exclude: " /\\[]{}()=<>|`",
+      })
+    );
+
+    setIsVisible(true)
+  }
 
   const checkStrength = (pass: string) => {
     const requirements = [
@@ -64,7 +79,19 @@ export const PasswordInputRequirements = () => {
           aria-invalid={strengthScore < 4}
           aria-describedby={`${id}-description`}
         />
-        
+
+        <button
+          className="absolute inset-y-0 end-6 flex h-full w-9 items-center justify-center rounded-e-lg text-muted-foreground/80 outline-offset-2 transition-colors hover:text-foreground focus:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+          type="button"
+          onClick={togglePassword}
+          aria-label={isVisible ? "Hide password" : "Show password"}
+          aria-pressed={isVisible}
+          aria-controls="password"
+        >
+          <Dices size={16} strokeWidth={2} aria-hidden="true" />
+        </button>
+
+
         <button
           className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg text-muted-foreground/80 outline-offset-2 transition-colors hover:text-foreground focus:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
           type="button"
