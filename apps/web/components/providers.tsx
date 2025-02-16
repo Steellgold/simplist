@@ -1,5 +1,6 @@
 "use client"
 
+import { SidebarProvider } from "@workspace/ui/components/sidebar"
 import { Toaster } from "@workspace/ui/components/toaster"
 import { Component } from "@workspace/ui/components/utils/component"
 import { ThemeProvider as NextThemesProvider } from "next-themes"
@@ -13,8 +14,11 @@ export const Providers: Component<PropsWithChildren> = ({ children }) => {
       enableSystem
       enableColorScheme
     >
-      <Toaster />
-      {children}
+      <SidebarProvider>
+        <Toaster />
+
+        {children}
+      </SidebarProvider>
     </NextThemesProvider>
   )
 }
