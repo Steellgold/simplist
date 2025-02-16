@@ -50,7 +50,7 @@ export const RegisterForm: Component<React.ComponentPropsWithoutRef<"div">> = ({
               <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
                 <span className="relative z-10 bg-background px-2 text-muted-foreground">Or sign up with email</span>
               </div>
-              <div className="grid gap-6">
+              <div className="grid gap-3">
                 <div className="grid gap-2">
                   <Label htmlFor="name">Full Name</Label>
                   <Input id="name" type="text" placeholder="John Doe" required />
@@ -59,22 +59,16 @@ export const RegisterForm: Component<React.ComponentPropsWithoutRef<"div">> = ({
                   <Label htmlFor="email">Email</Label>
                   <Input id="email" type="email" placeholder="m@example.com" required />
                 </div>
-                <div className="grid gap-2">
-                  <div className="flex items-center">
-                    <Label htmlFor="password">Password</Label>
-                    <a href="#" className="ml-auto text-sm underline-offset-4 hover:underline">
-                      Forgot your password?
-                    </a>
-                  </div>
-                  <PasswordInputRequirements />
-                </div>
+                
+                <PasswordInputRequirements  />
+                
                 <Button type="submit" className="w-full">
                   Create Account
                 </Button>
               </div>
               <div className="text-center text-sm">
                 Already have an account?{" "}
-                <a href="#" className="underline underline-offset-4">
+                <a href="/auth" className="underline underline-offset-4">
                   Log in
                 </a>
               </div>
