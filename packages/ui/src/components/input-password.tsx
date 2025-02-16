@@ -13,7 +13,18 @@ export const PasswordInput = () => {
 
   return (
     <div className="space-y-2">
-      <Label htmlFor={id}>Password</Label>
+
+      <div className="flex items-center">
+        <Label htmlFor={id}>Password</Label>
+        
+        <a
+          href="/auth/forgot-password"
+          className="ml-auto text-sm underline-offset-4 hover:underline"
+        >
+          Forgot your password?
+        </a>
+      </div>
+
       <div className="relative">
         <Input
           id={id}
