@@ -17,6 +17,7 @@ export const PasswordInputRequirements = () => {
       { regex: /[0-9]/, text: "At least 1 number" },
       { regex: /[a-z]/, text: "At least 1 lowercase letter" },
       { regex: /[A-Z]/, text: "At least 1 uppercase letter" },
+      { regex: /[^a-zA-Z0-9]/, text: "At least 1 special character" }
     ];
 
     return requirements.map((req) => ({
