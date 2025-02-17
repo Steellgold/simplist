@@ -1,9 +1,9 @@
-import { auth } from "@/lib/auth";
+import { getSessionCookie } from "better-auth";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  const session = await auth.api.getSession({ headers: request.headers });
+  const sessionCookie = getSessionCookie(request);
 
   const PUBLIC_PATHS = ["/auth"];
   const PUBLIC_PREFIXES = ["/auth/"];
@@ -14,7 +14,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (!session?.user) {
+  if (!sessionCookie) {
     const isPublicPath = PUBLIC_PATHS.includes(request.nextUrl.pathname) ||
                          PUBLIC_PREFIXES.some(prefix => request.nextUrl.pathname.startsWith(prefix));
 
