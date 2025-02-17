@@ -15,9 +15,9 @@ import { cn } from "@workspace/ui/lib/utils"
 import { PasswordInput } from "@workspace/ui/components/input-password"
 import { OAuthsButtons } from "./oauths-buttons"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useToast } from "@workspace/ui/hooks/use-toast"
-import { Loader2 } from "lucide-react";
+import { Fingerprint, Loader2 } from "lucide-react";
 import { z } from "zod";
 import { ToastAction } from "@workspace/ui/components/toast";
 import { authClient } from "@/lib/auth-client";
@@ -37,6 +37,16 @@ export const LoginForm: Component<React.ComponentPropsWithoutRef<"div">> = ({
 
 	const [loading, setLoading] = useState(false);
   const router = useRouter();
+  
+  useEffect(() => {
+    if (!PublicKeyCredential.isConditionalMediationAvailable || !PublicKeyCredential.isConditionalMediationAvailable()) {
+      console.log("WebAuthn is not supported in this browser");
+      return;
+    }
+    
+    console.log("WebAuthn is supported in this browser");
+    void authClient.signIn.passkey({ autoFill: true })
+ }, [])
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -131,14 +141,20 @@ export const LoginForm: Component<React.ComponentPropsWithoutRef<"div">> = ({
                   <Checkbox id="rememberme" defaultChecked name="rememberme" />
                   <Label htmlFor="rememberme">Remember me on this device</Label>
                 </div>
-                  
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? (
-                    <Loader2 size={16} className="animate-spin" />
-                  ) : (
-                    "Continue with email"
-                  )}
-                </Button>
+
+                <div className="grid gap-2 grid-cols-12">
+                  <Button
+                    type="submit"
+                    className="w-full col-span-10"
+                    disabled={loading}
+                  >
+                    {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : "Continue"}
+                  </Button>
+
+                  <Button type="button" variant="secondary" className="w-full col-span-2" onClick={() => authClient.signIn.passkey()}>
+                    <Fingerprint className="w-6 h-6" />
+                  </Button>
+                </div>
               </div>
               <div className="text-center text-sm">
                 Don&apos;t have an account?{" "}
