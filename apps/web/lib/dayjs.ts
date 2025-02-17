@@ -14,16 +14,5 @@ dayjs.extend(relativeTime);
 dayjs.tz.setDefault("UTC");
 dayjs.locale("en");
 
-export const calculateEndDate = (durationValue: string): Date => {
-  const value = parseFloat(durationValue)
-  const now = dayJS()
-  
-  if (durationValue.startsWith("0.")) {
-    return now.add(value * 10, "hour").toDate()
-  }
-  
-  return now.add(value, "day").toDate()
-}
-
 export const dayJS = dayjs;
 export { Dayjs } from "dayjs";
