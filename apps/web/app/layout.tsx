@@ -17,9 +17,7 @@ const fontMono = Nunito({
 const Layout: Component<PropsWithChildren> = ({ children }) => {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased`}
-      >
+      <body className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased`}>
         <Providers>
           {children}
         </Providers>
