@@ -1,10 +1,7 @@
 import { betterAuth } from "better-auth";
-import { prismaAdapter } from "better-auth/adapters/prisma";
-import { PrismaClient } from "@prisma/client/edge"
-import { withAccelerate } from "@prisma/extension-accelerate"
-import { organization, username } from "better-auth/plugins";
- 
-const prisma = new PrismaClient().$extends(withAccelerate())
+import { multiSession, organization, username } from "better-auth/plugins";
+import { passkey } from "better-auth/plugins/passkey";
+import { Pool } from "pg";
 
 export const auth = betterAuth({
   emailAndPassword: {
@@ -14,9 +11,11 @@ export const auth = betterAuth({
   },
   plugins: [
     username(),
-    organization()
+    organization(),
+    multiSession(),
+    passkey()
   ],
-  database: prismaAdapter(prisma, {
-    provider: "postgresql",
-  }),
+  database: new Pool({
+    connectionString: process.env.DATABASE_URL!
+  })
 });
