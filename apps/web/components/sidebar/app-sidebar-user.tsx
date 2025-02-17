@@ -59,7 +59,7 @@ export const AppSidebarUser = (): ReactElement => {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => router.push("/user")}>
+              <DropdownMenuItem onClick={() => router.push("/account/settings")}>
                 <Settings />
                 Account
               </DropdownMenuItem>
