@@ -25,10 +25,7 @@ export const AppSidebarTheme = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <SidebarMenuButton
-          size="lg"
-          className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-        >
+        <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
           <Avatar className="h-8 w-8 rounded-lg">
             <AvatarFallback className="rounded-lg">
               {theme === "light" && <Sun className="size-4" />}

@@ -6,11 +6,13 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem,
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@workspace/ui/components/sidebar";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { fl } from "@workspace/ui/lib/utils";
-import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut } from "lucide-react";
+import { ChevronsUpDown, LogOut, Settings } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { ReactElement } from "react";
 
 export const AppSidebarUser = (): ReactElement => {
   const { data: session, isPending } = authClient.useSession();
+  const router = useRouter();
 
   const { isMobile } = useSidebar();
 
@@ -25,10 +27,7 @@ export const AppSidebarUser = (): ReactElement => {
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-            >
+            <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={user.image ?? ""} alt={user.name} />
                 <AvatarFallback className="rounded-lg">{fl(user.name)}</AvatarFallback>
@@ -59,23 +58,17 @@ export const AppSidebarUser = (): ReactElement => {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
+              <DropdownMenuItem onClick={() => router.push("/user")}>
+                <Settings />
                 Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem destructive onClick={() => {
+              authClient.signOut();
+              router.push("/auth");
+            }}>
               <LogOut />
               Log out
             </DropdownMenuItem>
