@@ -14,6 +14,12 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  if (sessionCookie) {
+    if (request.nextUrl.pathname.startsWith("/auth")) {
+      return NextResponse.redirect(new URL("/account", request.url));
+    }
+  }
+
   if (!sessionCookie) {
     const isPublicPath = PUBLIC_PATHS.includes(request.nextUrl.pathname) ||
                          PUBLIC_PREFIXES.some(prefix => request.nextUrl.pathname.startsWith(prefix));
