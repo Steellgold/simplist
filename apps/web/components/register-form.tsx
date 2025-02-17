@@ -28,7 +28,11 @@ const schema = z.object({
 
   email: z.string().email(),
   password: z.string()
-})
+});
+
+const organizationSchema = z.object({
+  name: z.string()
+});
 
 export const RegisterForm: Component<React.ComponentPropsWithoutRef<"div">> = ({
   className,
@@ -41,64 +45,6 @@ export const RegisterForm: Component<React.ComponentPropsWithoutRef<"div">> = ({
 	const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  if (form === "organization") {
-    return (
-      <div className={cn("flex flex-col gap-6", className)} {...props}>
-        <Card>
-          <CardHeader className="text-center">
-            <CardTitle className="text-xl">Create an organization</CardTitle>
-            <CardDescription>Set up your organization</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={async(e: React.FormEvent<HTMLFormElement>) => {
-              e.preventDefault();
-
-              const formData = Object.fromEntries(new FormData(e.currentTarget).entries());
-              const result = schema.safeParse(formData);
-
-              if (!result.success) {
-                toast({
-                  title: "Data validation error",
-                  description: "Please check the form fields and try again",
-                  action: <ToastAction altText="Try again">Try again</ToastAction>,      
-                })
-                return;
-              }
-
-              router.push("/");
-            }}>
-              <div className="grid gap-6">
-                <div className="grid gap-3">
-                  <div className="grid gap-2">
-                    <Label htmlFor="name">Name</Label>
-                    <Input id="name" type="text" placeholder="My organization" required name="name" />
-                  </div>
-
-                  <div className="grid gap-2">
-                    <Label htmlFor="slug">Slug</Label>
-                    <Input id="slug" type="text" placeholder="my-organization" required name="slug" />
-                  </div>
-                </div>
-                
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? (
-                    <Loader2 size={16} className="animate-spin" />
-                  ) : (
-                    "Create organization"
-                  )}
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-
-        <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary  ">
-          By clicking continue, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -107,6 +53,12 @@ export const RegisterForm: Component<React.ComponentPropsWithoutRef<"div">> = ({
           <CardDescription>Sign up with your email or use a social account</CardDescription>
         </CardHeader>
         <CardContent>
+          <OAuthsButtons />
+
+          <div className="my-3 relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+            <span className="relative z-10 bg-background px-2 text-muted-foreground">Or sign up with email</span>
+          </div>
+
           <form onSubmit={async(e: React.FormEvent<HTMLFormElement>) => {
             e.preventDefault();
 
@@ -122,10 +74,13 @@ export const RegisterForm: Component<React.ComponentPropsWithoutRef<"div">> = ({
               return;
             }
 
+            console.log(result.data);
+
             await authClient.signUp.email({
               email: result.data.email,
               password: result.data.password,
               name: `${result.data.firstName} ${result.data.lastName}`,
+              username: result.data.email.split("@")[0],
               callbackURL: "/",
               fetchOptions: {
                 onResponse: () => {
@@ -142,21 +97,12 @@ export const RegisterForm: Component<React.ComponentPropsWithoutRef<"div">> = ({
                   })
                 },
                 onSuccess: async () => {
-                  toast({
-                    title: "Account created",
-                    description: "Now you can create your organization"
-                  })
-
-                  setForm("organization");
+                  router.push("/");
                 },
               },
             });
           }}>
             <div className="grid gap-6">
-              <OAuthsButtons />
-              <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
-                <span className="relative z-10 bg-background px-2 text-muted-foreground">Or sign up with email</span>
-              </div>
               <div className="grid gap-3">
                 <div className="flex gap-3">
                   <div className="grid gap-2">
