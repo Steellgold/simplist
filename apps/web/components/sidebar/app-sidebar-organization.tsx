@@ -1,8 +1,7 @@
 "use client"
 
 import { authClient } from "@/lib/auth-client";
-import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@workspace/ui/components/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@workspace/ui/components/dropdown-menu";
 import { Rendered } from "@workspace/ui/components/rendered";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@workspace/ui/components/sidebar";
 import { Skeleton } from "@workspace/ui/components/skeleton";
@@ -12,6 +11,7 @@ import { Building, ChevronsUpDown, Plus } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ReactElement } from "react";
+import { NewOrganization } from "../new-organization";
 
 export const AppSidebarOrganization = (): ReactElement => {
   const { data: session, isPending: isSessionPending } = authClient.useSession();
@@ -34,15 +34,17 @@ export const AppSidebarOrganization = (): ReactElement => {
       <Rendered>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
-              <div className="flex size-6 items-center justify-center rounded-md border bg-background/20">
-                <Plus className="size-4" />
-              </div>
+            <NewOrganization>
+              <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+                <div className="flex size-6 items-center justify-center rounded-md border bg-background/20">
+                  <Plus className="size-4" />
+                </div>
 
-              <div className="font-medium text-muted-foreground">
-                Add organization
-              </div>
-            </SidebarMenuButton>
+                <div className="font-medium text-muted-foreground">
+                  Add organization
+                </div>
+              </SidebarMenuButton>
+            </NewOrganization>
           </SidebarMenuItem>
         </SidebarMenu>
       </Rendered>
@@ -63,12 +65,20 @@ export const AppSidebarOrganization = (): ReactElement => {
                       <Building className="size-6" />
                   }
                 </div>
+
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">
                     {activeOrganization.name}
                   </span>
-                  {/* <span className="truncate text-xs">{activeOrganization.plan}</span> */}
+                  <span className="truncate text-xs">
+                    {
+                      activeOrganization.metadata
+                        ? JSON.parse(activeOrganization?.metadata).plan.charAt(0).toUpperCase() + JSON.parse(activeOrganization?.metadata).plan.slice(1)
+                        : "Hobby"
+                    }
+                  </span>
                 </div>
+
                 <ChevronsUpDown className="ml-auto" />
               </SidebarMenuButton>
             </DropdownMenuTrigger>
@@ -81,10 +91,14 @@ export const AppSidebarOrganization = (): ReactElement => {
               <DropdownMenuLabel className="text-xs text-muted-foreground">
                 Organizations
               </DropdownMenuLabel>
-              {organizations.map((org, index) => (
+              {organizations.map((org) => (
                 <DropdownMenuItem
                   key={org.name}
                   onClick={async() => {
+                    if (activeOrganization.id === org.id) {
+                      return;
+                    }
+
                     await authClient.organization.setActive({
                       organizationId: org.id,
                       fetchOptions: {
@@ -93,6 +107,12 @@ export const AppSidebarOrganization = (): ReactElement => {
                             title: "Error setting active organization",
                             description: error.error.message ?? "An error occurred",
                             variant: "destructive"
+                          });
+                        },
+                        onRequest: () => {
+                          toast({
+                            title: "Setting active organization",
+                            description: "Please wait while we set your active organization"
                           });
                         },
                         onSuccess: () => {
@@ -129,15 +149,17 @@ export const AppSidebarOrganization = (): ReactElement => {
 
               <DropdownMenuSeparator />
 
-              <DropdownMenuItem className="gap-2 p-2">
-                <div className="flex size-6 items-center justify-center rounded-md border bg-background">
-                  <Plus className="size-4" />
-                </div>
+              <NewOrganization>
+                <SidebarMenuButton className="gap-2 py-3 p-2">
+                  <div className="flex size-6 items-center justify-center rounded-md border bg-background/20">
+                    <Plus className="size-4" />
+                  </div>
 
-                <div className="font-medium text-muted-foreground">
-                  Add organization
-                </div>
-              </DropdownMenuItem>
+                  <div className="font-medium text-muted-foreground">
+                    Add organization
+                  </div>
+                </SidebarMenuButton>
+              </NewOrganization>
             </DropdownMenuContent>
           </DropdownMenu>
         </SidebarMenuItem>
