@@ -1,7 +1,6 @@
 "use client";
 
 import { Avatar, AvatarFallback } from "@workspace/ui/components/avatar";
-import { Button } from "@workspace/ui/components/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@workspace/ui/components/dialog"
 import { RadioGroup, RadioGroupItem } from "@workspace/ui/components/radio-group";
 import { Rendered } from "@workspace/ui/components/rendered";
@@ -9,7 +8,7 @@ import { SidebarMenuButton } from "@workspace/ui/components/sidebar";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { AppWindow, Check, Minus, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useEffect, useId, useState } from "react";
+import { useId } from "react";
 
 const items = [
   { value: "1", label: "Light", image: "/assets/ui-light.png" },
@@ -21,13 +20,7 @@ export const AppSidebarTheme = () => {
   const id = useId();
   const { theme, setTheme } = useTheme();
 
-  const [rendered, setRendered] = useState(false);
-
-  useEffect(() => {
-    setRendered(true);
-  }, []);
-
-  if (!rendered || !theme) return <Skeleton className="h-12 w-full" />;
+  if (!theme) return <Skeleton className="h-12 w-full" />;
 
   return (
     <Rendered>
