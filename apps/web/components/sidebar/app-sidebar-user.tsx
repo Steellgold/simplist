@@ -6,6 +6,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem,
 import { Rendered } from "@workspace/ui/components/rendered";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@workspace/ui/components/sidebar";
 import { Skeleton } from "@workspace/ui/components/skeleton";
+import { toast } from "@workspace/ui/hooks/use-toast";
 import { fl } from "@workspace/ui/lib/utils";
 import { ChevronsUpDown, LogOut, Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -13,6 +14,7 @@ import { ReactElement } from "react";
 
 export const AppSidebarUser = (): ReactElement => {
   const { data: session, isPending } = authClient.useSession();
+
   const router = useRouter();
 
   const { isMobile } = useSidebar();
@@ -68,8 +70,30 @@ export const AppSidebarUser = (): ReactElement => {
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem destructive onClick={() => {
-                authClient.signOut();
-                router.push("/auth");
+                authClient.signOut({
+                  fetchOptions: {
+                    onRequest: () => {
+                      toast({
+                        title: "Signing out...",
+                        description: "You are being signed out of your account."
+                      });
+                    },
+                    onError: (error) => {
+                      toast({
+                        title: "Error signing out",
+                        description: error.error.message ?? "An error occurred while signing out of your account."
+                      });
+                    },
+                    onSuccess: () => {
+                      toast({
+                        title: "Signed out",
+                        description: "You have been signed out of your account."
+                      });
+
+                      router.push("/auth");
+                    }
+                  }
+                });
               }}>
                 <LogOut />
                 Log out
