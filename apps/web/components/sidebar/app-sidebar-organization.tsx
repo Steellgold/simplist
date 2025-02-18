@@ -1,0 +1,147 @@
+"use client"
+
+import { authClient } from "@/lib/auth-client";
+import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@workspace/ui/components/dropdown-menu";
+import { Rendered } from "@workspace/ui/components/rendered";
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@workspace/ui/components/sidebar";
+import { Skeleton } from "@workspace/ui/components/skeleton";
+import { ToastAction } from "@workspace/ui/components/toast";
+import { toast } from "@workspace/ui/hooks/use-toast";
+import { Building, ChevronsUpDown, Plus } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { ReactElement } from "react";
+
+export const AppSidebarOrganization = (): ReactElement => {
+  const { data: session, isPending: isSessionPending } = authClient.useSession();
+  const { data: activeOrganization, isPending: isActiveOrganizationPending } = authClient.useActiveOrganization();
+  const { data: organizations, isPending: isOrganizationsPending } = authClient.useListOrganizations();
+
+  const router = useRouter();
+
+  const { isMobile } = useSidebar();
+
+  if (!session || isSessionPending || isActiveOrganizationPending || isOrganizationsPending) {
+    return <Skeleton className="h-12 w-full" />;
+  }
+
+  if (
+    !organizations || organizations.length === 0
+    || !activeOrganization || !activeOrganization.id
+  ) {
+    return (
+      <Rendered>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+              <div className="flex size-6 items-center justify-center rounded-md border bg-background/20">
+                <Plus className="size-4" />
+              </div>
+
+              <div className="font-medium text-muted-foreground">
+                Add organization
+              </div>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </Rendered>
+    )
+  }
+
+  return (
+    <Rendered>
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                  {
+                    activeOrganization.logo ?
+                      <Image src={activeOrganization.logo} alt={activeOrganization.name} className="size-6" /> :
+                      <Building className="size-6" />
+                  }
+                </div>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold">
+                    {activeOrganization.name}
+                  </span>
+                  {/* <span className="truncate text-xs">{activeOrganization.plan}</span> */}
+                </div>
+                <ChevronsUpDown className="ml-auto" />
+              </SidebarMenuButton>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+              align="start"
+              side={isMobile ? "bottom" : "right"}
+              sideOffset={4}
+            >
+              <DropdownMenuLabel className="text-xs text-muted-foreground">
+                Organizations
+              </DropdownMenuLabel>
+              {organizations.map((org, index) => (
+                <DropdownMenuItem
+                  key={org.name}
+                  onClick={async() => {
+                    await authClient.organization.setActive({
+                      organizationId: org.id,
+                      fetchOptions: {
+                        onError: (error) => {
+                          toast({
+                            title: "Error setting active organization",
+                            description: error.error.message ?? "An error occurred",
+                            variant: "destructive"
+                          });
+                        },
+                        onSuccess: () => {
+                          toast({
+                            title: "Active organization set",
+                            description: `You are now viewing ${org.name} organization`,
+                            variant: "default",
+                            action: (
+                              <ToastAction
+                                altText="Go to"
+                                onClick={() => router.push("/")}
+                              >
+                                Navigate to
+                              </ToastAction>
+                            )
+                          });
+                        }
+                        // TODO: On request waiting show loading state
+                      }
+                    });
+                  }}
+                  className="gap-2 p-2"
+                >
+                  <div className="flex size-6 items-center justify-center rounded-sm border">
+                    {
+                      org.logo ?
+                        <Image src={org.logo} alt={org.name} className="size-4" /> :
+                        <Building className="size-4" />
+                    }
+                  </div>
+                  {org.name}
+                </DropdownMenuItem>
+              ))}
+
+              <DropdownMenuSeparator />
+
+              <DropdownMenuItem className="gap-2 p-2">
+                <div className="flex size-6 items-center justify-center rounded-md border bg-background">
+                  <Plus className="size-4" />
+                </div>
+
+                <div className="font-medium text-muted-foreground">
+                  Add organization
+                </div>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </Rendered>
+  )
+}

@@ -8,6 +8,7 @@ import { AppSidebarTheme } from "./app-sidebar-theme";
 import { usePathname } from "next/navigation";
 import { AppSidebarLinks } from "./app-sidebar-links";
 import { Settings } from "lucide-react";
+import { AppSidebarOrganization } from "./app-sidebar-organization";
 
 export const AppSidebar: Component<React.ComponentProps<typeof Sidebar>> = (props) => {
   const path = usePathname();
@@ -15,7 +16,7 @@ export const AppSidebar: Component<React.ComponentProps<typeof Sidebar>> = (prop
   return (
     <Sidebar collapsible="icon" variant="inset" {...props}>
       <SidebarHeader>
-        {/* <TeamSwitcher teams={data.teams} /> */}
+        <AppSidebarOrganization />
       </SidebarHeader>
       <SidebarContent>
         {path.startsWith("/account") ? (
