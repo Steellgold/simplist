@@ -16,7 +16,7 @@ export const auth = betterAuth({
     }),
     passkey({
       rpName: "Simplist",
-      origin: "http://localhost:3000"
+      origin: process.env.BETTER_AUTH_URL!,
     }),
     twoFactor(),
     openAPI()
