@@ -2,6 +2,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@workspace/
 import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem } from "@workspace/ui/components/sidebar"
 import { Component } from "@workspace/ui/components/utils/component"
 import { ChevronRight, LucideIcon } from "lucide-react"
+import Link from "next/link"
 
 type SidebarLink = {
   title: string
@@ -42,9 +43,9 @@ export const AppSidebarLinks: Component<{
                   {item.items?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.title}>
                       <SidebarMenuSubButton asChild>
-                        <a href={subItem.url}>
+                        <Link href={subItem.url}>
                           <span>{subItem.title}</span>
-                        </a>
+                        </Link>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
                   ))}
