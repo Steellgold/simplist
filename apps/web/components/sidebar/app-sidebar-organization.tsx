@@ -9,9 +9,10 @@ import { ToastAction } from "@workspace/ui/components/toast";
 import { toast } from "@workspace/ui/hooks/use-toast";
 import { Building, ChevronsUpDown, Plus } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ReactElement } from "react";
 import { NewOrganization } from "../new-organization";
+import Link from "next/link";
 
 export const AppSidebarOrganization = (): ReactElement => {
   const { data: session, isPending: isSessionPending } = authClient.useSession();
@@ -19,8 +20,29 @@ export const AppSidebarOrganization = (): ReactElement => {
   const { data: organizations, isPending: isOrganizationsPending } = authClient.useListOrganizations();
 
   const router = useRouter();
+  const path = usePathname();
 
   const { isMobile } = useSidebar();
+
+  if (path.startsWith("/account")) {
+    return (
+      <Rendered>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground" asChild>
+              <Link href="/">
+                <div className="flex size-6 items-center justify-center rounded-md border bg-background/20">
+                  <Building className="size-4" />
+                </div>
+
+                <div className="font-medium">Go to dashboard</div>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </Rendered>
+    );
+  }
 
   if (!session || isSessionPending || isActiveOrganizationPending || isOrganizationsPending) {
     return <Skeleton className="h-12 w-full" />;
@@ -40,7 +62,7 @@ export const AppSidebarOrganization = (): ReactElement => {
                   <Plus className="size-4" />
                 </div>
 
-                <div className="font-medium text-muted-foreground">
+                <div className="font-medium">
                   Add organization
                 </div>
               </SidebarMenuButton>
