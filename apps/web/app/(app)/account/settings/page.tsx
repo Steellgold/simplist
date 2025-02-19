@@ -1,7 +1,188 @@
-import { ReactElement } from "react";
+"use client";
 
-const AccountSettingsPage = (): ReactElement => {
-  return <div>Account Settings Page</div>;
+import { PasswordConfirmationDialog } from "@/components/password-confirmation-dialog";
+import { authClient } from "@/lib/auth-client";
+import { Button } from "@workspace/ui/components/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@workspace/ui/components/card";
+import { Input } from "@workspace/ui/components/input";
+import { Label } from "@workspace/ui/components/label";
+import { Skeleton } from "@workspace/ui/components/skeleton";
+import { toast } from "@workspace/ui/hooks/use-toast";
+import { useEffect, useState } from "react";
+import { z } from "zod";
+
+const userSchema = z.object({
+  first_name: z.string()
+    .min(2, {
+      message: "The first name must be at least 2 characters long."
+    })
+    .max(75, {
+      message: "The first name must be at most 75 characters long."
+    })
+    .regex(/^[A-Za-zÀ-ÖØ-öø-ÿ' -]+$/, {
+      message: "The first name must only contain letters."
+    }),
+  last_name: z.string()
+    .min(2, {
+      message: "The last name must be at least 2 characters long."
+    })
+    .max(75, {
+      message: "The last name must be at most 75 characters long."
+    })
+    .regex(/^[A-Za-zÀ-ÖØ-öø-ÿ' -]+$/, {
+      message: "The last name must only contain letters."
+    })
+})
+
+
+const AccountSettingsPage = () => {
+  const { data: session, isPending } = authClient.useSession();
+
+  const [formData, setFormData] = useState<z.infer<typeof userSchema>>({
+    first_name: "",
+    last_name: "",
+  });
+
+  useEffect(() => {
+    if (!session) return;
+
+    setFormData({
+      first_name: session.user.name.split(' ')[0]!,
+      last_name: session.user.name.split(' ')[1]!,
+    });
+  }, [session]);
+
+  if (!session || isPending) {
+    return <Skeleton className="h-full w-full" />;
+  }
+
+  const user = session.user;
+
+  return (
+    <div className="flex-1 overflow-auto">
+      <div className="space-y-6 max-w-4xl mx-auto">
+        <Card>
+          <CardHeader>
+            <CardTitle>Account information</CardTitle>
+            <CardDescription className="mt-1 text-sm">
+              Update your account information.
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent className="space-y-6">
+            <div className="space-y-4">
+              <div className="flex space-x-4">
+                <div className="flex-1">
+                  <Label htmlFor="first-name">First name</Label>
+                  <Input
+                    id="first-name"
+                    name="ffirst-name"
+                    defaultValue={formData.first_name}
+                    onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                  />
+                </div>
+                <div className="flex-1">
+                  <Label htmlFor="last-name">Last name</Label>
+                  <Input
+                    id="last-name"
+                    name="last-name"
+                    defaultValue={formData.last_name}
+                    onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  defaultValue={user.email}
+                  disabled
+                />
+              </div>
+            </div>
+
+            {/* <div className="border-t pt-6">
+              <h3 className="text-lg font-medium mb-4">Préférences de notification</h3>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between ">
+                  <div className="space-y-0.5">
+                    <Label>Notifications par email</Label>
+                    <p className="text-sm text-gray-500">
+                      Recevez des notifications sur vos activités.
+                    </p>
+                  </div>
+                  <Switch
+                    checked={user.notifications}
+                    onCheckedChange={() => handleSwitchChange('notifications')}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between ">
+                  <div className="space-y-0.5">
+                    <Label>Newsletter</Label>
+                    <p className="text-sm text-gray-500">
+                      Recevez nos actualités et mises à jour.
+                    </p>
+                  </div>
+                  <Switch
+                    checked={formData.newsletter}
+                    onCheckedChange={() => handleSwitchChange('newsletter')}
+                  />
+                </div>
+              </div>
+            </div> */}
+          </CardContent>
+          
+          <CardFooter className="flex justify-end">
+            <PasswordConfirmationDialog action={() => {
+              const result = userSchema.safeParse(formData);
+              if (result.error) {
+                toast({
+                  title: "Oops!",
+                  description: result.error.errors[0]?.message ?? "An error occurred",
+                  variant: "destructive"
+                })
+                return;
+              }
+
+              authClient.updateUser({
+                name: `${formData.first_name} ${formData.last_name}`,
+                fetchOptions: {
+                  onError: (error) => {
+                    toast({
+                      title: "Error updating user",
+                      description: error.error.message ?? "An error occurred",
+                      variant: "destructive"
+                    });
+                  },
+                  onRequest: () => {
+                    toast({
+                      title: "Updating user",
+                      description: "Please wait while we update your user"
+                    });
+                  },
+                  onSuccess: () => {
+                    toast({
+                      title: "User updated",
+                      description: `You have successfully updated your user.`
+                    });
+                  }
+                }
+              });
+
+            }}>
+              <Button size="sm">
+                Confirm changes
+              </Button>
+            </PasswordConfirmationDialog>
+          </CardFooter>
+        </Card>
+      </div>
+    </div>
+  );
 };
 
 export default AccountSettingsPage;
