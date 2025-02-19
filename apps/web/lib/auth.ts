@@ -1,5 +1,5 @@
 import { betterAuth } from "better-auth";
-import { multiSession, organization } from "better-auth/plugins";
+import { multiSession, openAPI, organization } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { Pool } from "pg";
 
@@ -12,7 +12,8 @@ export const auth = betterAuth({
   plugins: [
     organization(),
     multiSession(),
-    passkey()
+    passkey(),
+    openAPI()
   ],
   database: new Pool({
     connectionString: process.env.DATABASE_URL!
