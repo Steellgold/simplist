@@ -80,7 +80,6 @@ export const RegisterForm: Component<React.ComponentPropsWithoutRef<"div">> = ({
               email: result.data.email,
               password: result.data.password,
               name: `${result.data.firstName} ${result.data.lastName}`,
-              username: result.data.email.split("@")[0],
               callbackURL: "/",
               fetchOptions: {
                 onResponse: () => {
