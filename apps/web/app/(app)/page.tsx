@@ -9,6 +9,10 @@ const Home = (): ReactElement => {
     return <div>Loading...</div>;
   }
 
+  if (!activeOrganization) {
+    return <div>No active organization</div>;
+  }
+
   return (
     <pre>
       {JSON.stringify(JSON.parse(activeOrganization?.metadata), null, 2)}
