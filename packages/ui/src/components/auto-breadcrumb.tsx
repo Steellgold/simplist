@@ -3,6 +3,7 @@
 import React, { useContext } from "react";
 import { BreadcrumbContext } from "../contexts/breadcrumb-context.js";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "./breadcrumb.js";
+import { Skeleton } from "./skeleton.js";
 
 interface BreadcrumbProps {
   className?: string;
@@ -17,7 +18,13 @@ export const AutoBreadcrumb: React.FC<BreadcrumbProps> = ({ className }) => {
 
   const { items } = context;
 
-  if (!items || items.length === 0) return null;
+  if (!items || items.length === 0) return (
+    <>
+      <Skeleton className="w-[70px] h-6" />
+      <Skeleton className="w-[20px] h-5" />
+      <Skeleton className="w-[70px] h-6" />
+    </>
+  );
 
   return (
     <Breadcrumb className={className}>
