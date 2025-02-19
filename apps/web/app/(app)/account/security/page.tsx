@@ -6,44 +6,14 @@ import { Rendered } from "@workspace/ui/components/rendered";
 import { BreadcrumbSetter } from "@workspace/ui/components/setter-breadcrumb";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { Check, Minus, X } from "lucide-react";
-import { useEffect, useState } from "react";
-import { Session } from "better-auth";
-import { toast } from "@workspace/ui/hooks/use-toast";
 import { SectionPasskeysCard } from "./sections/passkeys.card";
+import { useSessions } from "@/hooks/use-sessions";
 
 const AccountSecurityPage = () => {
   const { data: session, isPending: isSessionPending } = authClient.useSession();
   const { data: passkeys, isPending: isPasskeysPending } = authClient.useListPasskeys();
 
-  const [sessions, setSessions] = useState<{
-    pending: boolean;
-    list: Session[];
-  }>({ pending: true, list: [] });
-
-  useEffect(() => {
-    const fetchSessions = async () => {
-      setSessions({ pending: true, list: [] });
-
-      await authClient.listSessions({
-        fetchOptions: {
-          onError: (error) => {
-            toast({
-              title: "Error while fetching sessions",
-              description: error.error.message || "An error occurred while fetching your sessions.",
-              variant: "destructive"
-            })
-
-            setSessions({ pending: false, list: [] });
-          },
-          onSuccess: (data) => {
-            setSessions({ pending: false, list: data.data });
-          }
-        }
-      });
-    };
-
-    fetchSessions();
-  }, []);
+  const sessions = useSessions();
 
   if (isSessionPending || isPasskeysPending || sessions.pending) {
     return (
