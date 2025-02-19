@@ -8,6 +8,7 @@ import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { toast } from "@workspace/ui/hooks/use-toast";
+import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
@@ -36,7 +37,8 @@ const userSchema = z.object({
 
 
 const AccountSettingsPage = () => {
-  const { data: session, isPending } = authClient.useSession();
+  const { data: session, isPending: isSessionPending } = authClient.useSession();
+  const [isPending, setPending] = useState(false);
 
   const [formData, setFormData] = useState<z.infer<typeof userSchema>>({
     first_name: "",
@@ -52,7 +54,7 @@ const AccountSettingsPage = () => {
     });
   }, [session]);
 
-  if (!session || isPending) {
+  if (!session || isSessionPending) {
     return <Skeleton className="h-full w-full" />;
   }
 
@@ -103,37 +105,6 @@ const AccountSettingsPage = () => {
                 />
               </div>
             </div>
-
-            {/* <div className="border-t pt-6">
-              <h3 className="text-lg font-medium mb-4">Préférences de notification</h3>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between ">
-                  <div className="space-y-0.5">
-                    <Label>Notifications par email</Label>
-                    <p className="text-sm text-gray-500">
-                      Recevez des notifications sur vos activités.
-                    </p>
-                  </div>
-                  <Switch
-                    checked={user.notifications}
-                    onCheckedChange={() => handleSwitchChange('notifications')}
-                  />
-                </div>
-
-                <div className="flex items-center justify-between ">
-                  <div className="space-y-0.5">
-                    <Label>Newsletter</Label>
-                    <p className="text-sm text-gray-500">
-                      Recevez nos actualités et mises à jour.
-                    </p>
-                  </div>
-                  <Switch
-                    checked={formData.newsletter}
-                    onCheckedChange={() => handleSwitchChange('newsletter')}
-                  />
-                </div>
-              </div>
-            </div> */}
           </CardContent>
           
           <CardFooter className="flex justify-end">
@@ -152,6 +123,7 @@ const AccountSettingsPage = () => {
                 name: `${formData.first_name} ${formData.last_name}`,
                 fetchOptions: {
                   onError: (error) => {
+                    setPending(false);
                     toast({
                       title: "Error updating user",
                       description: error.error.message ?? "An error occurred",
@@ -159,12 +131,14 @@ const AccountSettingsPage = () => {
                     });
                   },
                   onRequest: () => {
+                    setPending(true);
                     toast({
                       title: "Updating user",
                       description: "Please wait while we update your user"
                     });
                   },
                   onSuccess: () => {
+                    setPending(false);
                     toast({
                       title: "User updated",
                       description: `You have successfully updated your user.`
@@ -174,8 +148,18 @@ const AccountSettingsPage = () => {
               });
 
             }}>
-              <Button size="sm">
-                Confirm changes
+              <Button size="sm" disabled={
+                isPending
+                || (
+                  formData.first_name === session.user.name.split(' ')[0]
+                  && formData.last_name === session.user.name.split(' ')[1]
+                )
+              }>
+                {
+                  isPending
+                  ? <Loader2 className="animate-spin" />
+                  : "Save changes"
+                }
               </Button>
             </PasswordConfirmationDialog>
           </CardFooter>
