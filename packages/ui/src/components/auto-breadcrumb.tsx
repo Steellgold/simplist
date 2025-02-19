@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useContext } from "react";
-import { BreadcrumbContext } from "../contexts/breadcrumb-context.js";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "./breadcrumb.js";
-import { Skeleton } from "./skeleton.js";
+import { BreadcrumbContext } from "@workspace/ui/contexts/breadcrumb-context";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@workspace/ui/components/breadcrumb";
+import { Skeleton } from "@workspace/ui/components/skeleton";
 
 interface BreadcrumbProps {
   className?: string;

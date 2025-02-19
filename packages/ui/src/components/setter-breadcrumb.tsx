@@ -1,8 +1,8 @@
 "use client";
 
 import { ReactElement } from "react";
-import { BreadcrumbItem } from "../types/breadcrumb.types.js";
-import { useBreadcrumb } from "../hooks/use-breadcrumb.js";
+import { BreadcrumbItem } from "@workspace/ui/types/breadcrumb.types";
+import { useBreadcrumb } from "@workspace/ui/hooks/use-breadcrumb";
 
 type BreadcrumbSetterProps = {
   items: (string | BreadcrumbItem)[];
