@@ -5,7 +5,12 @@ import { Label } from "@workspace/ui/components/label";
 import { Eye, EyeOff } from "lucide-react";
 import { useId, useState } from "react";
 
-export const PasswordInput = () => {
+type PasswordInputProps = {
+  label?: string;
+  showForgotPassword?: boolean;
+};
+
+export const PasswordInput: React.FC<PasswordInputProps> = ({ label, showForgotPassword = true }) => {
   const id = useId();
   const [isVisible, setIsVisible] = useState<boolean>(false);
 
@@ -15,14 +20,18 @@ export const PasswordInput = () => {
     <div className="space-y-2">
 
       <div className="flex items-center">
-        <Label htmlFor={id}>Password</Label>
-        
-        <a
-          href="/auth/forgot-password"
-          className="ml-auto text-sm underline-offset-4 hover:underline"
-        >
-          Forgot your password?
-        </a>
+        <Label htmlFor={id}>
+          {label || "Password"}
+        </Label>
+
+        {showForgotPassword && (
+          <a
+            href="/auth/forgot-password"
+            className="ml-auto text-sm underline-offset-4 hover:underline"
+          >
+            Forgot your password?
+          </a>
+        )}
       </div>
 
       <div className="relative">
