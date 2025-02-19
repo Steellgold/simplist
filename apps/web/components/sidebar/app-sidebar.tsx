@@ -30,9 +30,7 @@ export const AppSidebar: Component<React.ComponentProps<typeof Sidebar>> = (prop
                 icon: Settings,
                 items: [
                   { title: "General", url: "/account/settings" },
-                  { title: "Authentication", url: "/account/settings/authentication" },
-                  { title: "Notifications", url: "/account/settings/notifications" },
-                  { title: "Billing", url: "/account/settings/billing" },
+                  { title: "Security", url: "/account/settings/security" }
                 ],
               }
             ]}
