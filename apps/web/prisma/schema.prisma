@@ -88,18 +88,20 @@ model session {
 }
 
 model user {
-  id            String       @id
-  name          String
-  email         String       @unique
-  emailVerified Boolean
-  image         String?
-  createdAt     DateTime
-  updatedAt     DateTime
-  account       account[]
-  invitation    invitation[]
-  member        member[]
-  passkey       passkey[]
-  session       session[]
+  id               String       @id
+  name             String
+  email            String       @unique
+  emailVerified    Boolean
+  image            String?
+  createdAt        DateTime
+  updatedAt        DateTime
+  twoFactorEnabled Boolean?
+  account          account[]
+  invitation       invitation[]
+  member           member[]
+  passkey          passkey[]
+  session          session[]
+  twoFactor        twoFactor[]
 }
 
 model verification {
@@ -109,6 +111,14 @@ model verification {
   expiresAt  DateTime
   createdAt  DateTime?
   updatedAt  DateTime?
+}
+
+model twoFactor {
+  id          String @id
+  secret      String
+  backupCodes String
+  userId      String
+  user        user   @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 enum Plan {
