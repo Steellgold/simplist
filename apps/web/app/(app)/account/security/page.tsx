@@ -8,6 +8,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton";
 import { Check, Minus, X } from "lucide-react";
 import { SectionPasskeysCard } from "./sections/passkeys.card";
 import { useSessions } from "@/hooks/use-sessions";
+import { SectionSessionsCard } from "./sections/sessions.card";
 
 const AccountSecurityPage = () => {
   const { data: session, isPending: isSessionPending } = authClient.useSession();
@@ -82,6 +83,7 @@ const AccountSecurityPage = () => {
             </Card>
 
             <SectionPasskeysCard />
+            <SectionSessionsCard />
           </div>
         </div>
       </Rendered>
