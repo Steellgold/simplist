@@ -12,12 +12,13 @@ import { Separator } from "@workspace/ui/components/separator";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@workspace/ui/components/dialog";
 import { Label } from "@workspace/ui/components/label";
 import { Input } from "@workspace/ui/components/input";
+import { z } from "zod";
 
 export const SectionPasskeysCard = () => {
   const { data: passkeys, refetch, isPending, isRefetching } = authClient.useListPasskeys();
 
-  const [isLoading, setLoading] = useState<false | "update" | "delete">(false);
-  const [isOpen, setOpen] = useState(false);
+  const [isLoading, setLoading] = useState<false | "update" | "delete" | "create">(false);
+  const [isOpen, setOpen] = useState<"create" | "update" | false>(false);
 
   return (
     <Card>
@@ -29,19 +30,108 @@ export const SectionPasskeysCard = () => {
           </CardDescription>
         </div>
 
-        <Button
-          variant={"outline"}
-          size="sm"
-          onClick={async () => {
-            const data = await authClient.passkey.addPasskey({
-              useAutoRegister: true
-            })
-            console.log(data)
-          }}
-        >
-          <Fingerprint size={16} />
-          Add Passkey
-        </Button>
+        <Dialog onOpenChange={() => {
+          setOpen(isOpen === "create" ? false : "create")
+        }} open={isOpen === "create"}>
+          <DialogTrigger asChild>
+            <Button variant={"outline"} size="sm" disabled={isLoading === "create"} onClick={() => setOpen("create")}>
+              {isLoading === "create" ? <Loader2 className="w-6 h-6 animate-spin" /> : (
+                <>
+                  <Fingerprint size={16} />
+                  Add Passkey
+                </>
+              )}
+            </Button>
+          </DialogTrigger>
+
+          <DialogContent>
+            <div className="flex flex-col items-center gap-2">
+              <div className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border" aria-hidden="true">
+                <Fingerprint className="opacity-80" size={16} strokeWidth={2} />
+              </div>
+              <DialogHeader>
+                <DialogTitle className="sm:text-center">Create a new passkey</DialogTitle>
+                <DialogDescription className="sm:text-center">To create a new passkey, please enter the name of the passkey.</DialogDescription>
+              </DialogHeader>
+            </div>
+
+            <form
+              className="space-y-5"
+              onSubmit={async (event) => {
+                event.preventDefault();
+                const name = event.currentTarget["passkey-name"].value;
+
+                const schema = z.object({
+                  passkeyName: z.string().min(3, "The name must be at least 3 characters long.").max(32, "The name must be at most 32 characters long.")
+                });
+
+                const result = schema.safeParse({ passkeyName: name });
+                if (result.error) {
+                  toast({
+                    title: "Error while creating passkey",
+                    description: result.error.message || "An error occurred while creating the passkey.",
+                    variant: "destructive"
+                  });
+
+                  return;
+                }
+
+                setLoading("create");
+                await authClient.passkey.addPasskey({
+                  name: result.data.passkeyName,
+                  fetchOptions: {
+                    onSuccess: () => {
+                      refetch();
+                      setLoading(false);
+                      setOpen(false);
+                      toast({
+                        title: "Passkey added",
+                        description: "The passkey has been successfully added to your account."
+                      });
+                    },
+                    onRequest: () => {
+                      setLoading("create");
+                      toast({
+                        title: "Adding passkey",
+                        description: "Please wait while we add the passkey to your account."
+                      });
+                    },
+                    onError: (error) => {
+                      setLoading(false);
+                      toast({
+                        title: "Error while adding passkey",
+                        description: error.error.message || "An error occurred while adding the passkey.",
+                        variant: "destructive"
+                      });
+                    }
+                  }
+                });
+              }}
+            >
+              <div className="space-y-2">
+                <Label htmlFor={"passkey-name"}>Project name</Label>
+                <Input
+                  id={"passkey-name"}
+                  type="text"
+                  placeholder="Desktop at home"
+                  name="passkey-name"
+                />
+              </div>
+
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button type="button" variant="outline" className="flex-1">
+                    Cancel
+                  </Button>
+                </DialogClose>
+
+                <Button type="button" className="flex-1" disabled={isLoading === "create"}>
+                  {isLoading === "create" ? <Loader2 className="w-6 h-6 animate-spin" /> : "Create"}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       </CardHeader>
 
       <CardContent>
@@ -63,7 +153,11 @@ export const SectionPasskeysCard = () => {
                     </div>
 
                     <div className="flex flex-row items-center space-x-2">
-                      <Dialog onOpenChange={() => setOpen(!isOpen)} open={isOpen}>
+                      <Dialog onOpenChange={() => {
+                        setOpen(
+                          isOpen === "update" ? false : "update"
+                        )
+                      }} open={isOpen === "update"}>
                         <DialogTrigger asChild>
                           <Button variant="outline" size="sm" disabled={isLoading === "update"}>
                             {isLoading === "update" ? <Loader2 className="w-6 h-6 animate-spin" /> : "Update"}
@@ -115,8 +209,6 @@ export const SectionPasskeysCard = () => {
                                 }
                               }
                             });
-
-                            console.log(newName);
                           }}>
                             <div className="space-y-1">
                               <Label htmlFor={"new-name"}>New name</Label>
