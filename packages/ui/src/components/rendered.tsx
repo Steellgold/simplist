@@ -1,8 +1,7 @@
 import { Skeleton } from "@workspace/ui/components/skeleton";
-import { Component } from "@workspace/ui/components/utils/component";
-import { PropsWithChildren, useEffect, useState } from "react";
+import React, { PropsWithChildren, useEffect, useState } from "react";
 
-export const Rendered: Component<PropsWithChildren & { loadingComponent?: React.ReactNode, delay?: number }> = ({
+export const Rendered: React.FC<PropsWithChildren & { loadingComponent?: React.ReactNode, delay?: number }> = ({
   children,
   loadingComponent = <Skeleton className="h-12 w-full" />,
   delay = 0

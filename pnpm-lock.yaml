@@ -191,6 +191,9 @@ importers:
       lucide-react:
         specifier: 0.456.0
         version: 0.456.0(react@19.0.0)
+      next:
+        specifier: ^15.1.0
+        version: 15.1.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       next-themes:
         specifier: ^0.4.3
         version: 0.4.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)

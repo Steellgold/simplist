@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "display": "Default",
   "compilerOptions": {
-    "declaration": true,
+    "declaration": false,
     "declarationMap": true,
     "esModuleInterop": true,
     "incremental": false,
