@@ -6,6 +6,7 @@ import { Button } from "@workspace/ui/components/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@workspace/ui/components/card";
 import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
+import { BreadcrumbSetter } from "@workspace/ui/components/setter-breadcrumb";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { toast } from "@workspace/ui/hooks/use-toast";
 import { Loader2 } from "lucide-react";
@@ -55,117 +56,129 @@ const AccountSettingsPage = () => {
   }, [session]);
 
   if (!session || isSessionPending) {
-    return <Skeleton className="h-full w-full" />;
+    return (
+      <div className="flex-1 overflow-auto">
+        <div className="max-w-4xl mx-auto">
+          <Skeleton className="h-96" />
+        </div>
+      </div>
+    );
   }
 
   const user = session.user;
 
   return (
-    <div className="flex-1 overflow-auto">
-      <div className="space-y-6 max-w-4xl mx-auto">
-        <Card>
-          <CardHeader>
-            <CardTitle>Account information</CardTitle>
-            <CardDescription className="mt-1 text-sm">
-              Update your account information.
-            </CardDescription>
-          </CardHeader>
+    <>
+      <BreadcrumbSetter items={[ { label: "Account" }, { label: "Settings" } ]} />
 
-          <CardContent className="space-y-6">
-            <div className="space-y-4">
-              <div className="flex space-x-4">
-                <div className="flex-1">
-                  <Label htmlFor="first-name">First name</Label>
-                  <Input
-                    id="first-name"
-                    name="ffirst-name"
-                    defaultValue={formData.first_name}
-                    onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
-                  />
+      <div className="flex-1 overflow-auto">
+        <div className="space-y-6 max-w-4xl mx-auto">
+          <Card>
+            <CardHeader>
+              <CardTitle>Account information</CardTitle>
+              <CardDescription className="mt-1 text-sm">
+                Update your account information.
+              </CardDescription>
+            </CardHeader>
+
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <div className="flex space-x-4">
+                  <div className="flex-1">
+                    <Label htmlFor="first-name">First name</Label>
+                    <Input
+                      id="first-name"
+                      name="ffirst-name"
+                      defaultValue={formData.first_name}
+                      onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <Label htmlFor="last-name">Last name</Label>
+                    <Input
+                      id="last-name"
+                      name="last-name"
+                      defaultValue={formData.last_name}
+                      onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                    />
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <Label htmlFor="last-name">Last name</Label>
+
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
                   <Input
-                    id="last-name"
-                    name="last-name"
-                    defaultValue={formData.last_name}
-                    onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                    id="email"
+                    name="email"
+                    type="email"
+                    defaultValue={user.email}
+                    disabled
                   />
                 </div>
               </div>
+            </CardContent>
+            
+            <CardFooter className="flex justify-end">
+              <PasswordConfirmationDialog action={() => {
+                const result = userSchema.safeParse(formData);
+                if (result.error) {
+                  toast({
+                    title: "Oops!",
+                    description: result.error.errors[0]?.message ?? "An error occurred",
+                    variant: "destructive"
+                  })
+                  return;
+                }
 
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  defaultValue={user.email}
-                  disabled
-                />
-              </div>
-            </div>
-          </CardContent>
-          
-          <CardFooter className="flex justify-end">
-            <PasswordConfirmationDialog action={() => {
-              const result = userSchema.safeParse(formData);
-              if (result.error) {
-                toast({
-                  title: "Oops!",
-                  description: result.error.errors[0]?.message ?? "An error occurred",
-                  variant: "destructive"
-                })
-                return;
-              }
-
-              authClient.updateUser({
-                name: `${formData.first_name} ${formData.last_name}`,
-                fetchOptions: {
-                  onError: (error) => {
-                    setPending(false);
-                    toast({
-                      title: "Error updating user",
-                      description: error.error.message ?? "An error occurred",
-                      variant: "destructive"
-                    });
-                  },
-                  onRequest: () => {
-                    setPending(true);
-                    toast({
-                      title: "Updating user",
-                      description: "Please wait while we update your user"
-                    });
-                  },
-                  onSuccess: () => {
-                    setPending(false);
-                    toast({
-                      title: "User updated",
-                      description: `You have successfully updated your user.`
-                    });
+                authClient.updateUser({
+                  name: `${formData.first_name} ${formData.last_name}`,
+                  fetchOptions: {
+                    onError: (error) => {
+                      setPending(false);
+                      toast({
+                        title: "Error updating user",
+                        description: error.error.message ?? "An error occurred",
+                        variant: "destructive"
+                      });
+                    },
+                    onRequest: () => {
+                      setPending(true);
+                      toast({
+                        title: "Updating user",
+                        description: "Please wait while we update your user"
+                      });
+                    },
+                    onSuccess: () => {
+                      setPending(false);
+                      toast({
+                        title: "User updated",
+                        description: `You have successfully updated your user.`
+                      });
+                    }
                   }
-                }
-              });
+                });
 
-            }}>
-              <Button size="sm" disabled={
-                isPending
-                || (
-                  formData.first_name === session.user.name.split(' ')[0]
-                  && formData.last_name === session.user.name.split(' ')[1]
-                )
-              }>
-                {
+              }}>
+                <Button size="sm" disabled={
                   isPending
-                  ? <Loader2 className="animate-spin" />
-                  : "Save changes"
-                }
-              </Button>
-            </PasswordConfirmationDialog>
-          </CardFooter>
-        </Card>
+                  || (
+                    formData.first_name === session.user.name.split(' ')[0]
+                    && formData.last_name === session.user.name.split(' ')[1]
+                  )
+                }>
+                  {
+                    isPending
+                    ? <Loader2 className="animate-spin" />
+                    : "Save changes"
+                  }
+                </Button>
+              </PasswordConfirmationDialog>
+            </CardFooter>
+          </Card>
+
+          {/* TODO: Avatar settings */}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
