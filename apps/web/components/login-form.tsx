@@ -118,13 +118,7 @@ export const LoginForm: Component<React.ComponentPropsWithoutRef<"div">> = ({
               <div className="grid gap-4">
                 <div className="grid gap-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="m@example.com"
-                    name="email"
-                    required
-                  />
+                  <Input id="email" type="email" placeholder="m@example.com" name="email" required />
                 </div>
 
                 <div className="grid gap-2">
@@ -145,15 +139,24 @@ export const LoginForm: Component<React.ComponentPropsWithoutRef<"div">> = ({
                 </div>
 
                 <div className="grid gap-2 grid-cols-12">
-                  <Button
-                    type="submit"
-                    className="w-full col-span-10"
-                    disabled={loading}
-                  >
+                  <Button type="submit" className="w-full col-span-10" disabled={loading}>
                     {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : "Continue"}
                   </Button>
 
-                  <Button type="button" variant="secondary" className="w-full col-span-2" onClick={() => authClient.signIn.passkey()}>
+                  <Button type="button" variant="secondary" className="w-full col-span-2" onClick={async() => {
+                    await authClient.signIn.passkey({
+                      fetchOptions: {
+                        onSuccess: () => {
+                          console.log("Successfully signed in using Passkey");
+                          router.push("/");
+                          toast({
+                            title: "Welcome back",
+                            description: "You have successfully signed in to your account using Passkey"
+                          });
+                        }
+                      }
+                    })
+                  }}>
                     <Fingerprint className="w-6 h-6" />
                   </Button>
                 </div>
