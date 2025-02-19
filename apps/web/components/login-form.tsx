@@ -39,13 +39,15 @@ export const LoginForm: Component<React.ComponentPropsWithoutRef<"div">> = ({
   const router = useRouter();
   
   useEffect(() => {
-    if (!PublicKeyCredential.isConditionalMediationAvailable || !PublicKeyCredential.isConditionalMediationAvailable()) {
-      console.log("WebAuthn is not supported in this browser");
-      return;
+    if (typeof(PublicKeyCredential) != "undefined") {
+      if (!PublicKeyCredential.isConditionalMediationAvailable || !PublicKeyCredential.isConditionalMediationAvailable()) {
+        console.log("WebAuthn is not supported in this browser");
+        return;
+      }
+      
+      console.log("WebAuthn is supported in this browser");
+      void authClient.signIn.passkey({ autoFill: true })
     }
-    
-    console.log("WebAuthn is supported in this browser");
-    void authClient.signIn.passkey({ autoFill: true })
  }, [])
 
   return (
