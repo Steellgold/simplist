@@ -49,7 +49,6 @@ export const NewOrganization: Component<PropsWithChildren> = ({ children }) => {
         <form className="space-y-5" onSubmit={async (event) => {
           event.preventDefault();
 
-          const formData = new FormData(event.currentTarget);
           const organizationName = event.currentTarget["organization-name"].value;
 
           await authClient.organization.create({
