@@ -5,66 +5,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@work
 import { Rendered } from "@workspace/ui/components/rendered";
 import { BreadcrumbSetter } from "@workspace/ui/components/setter-breadcrumb";
 import { Skeleton } from "@workspace/ui/components/skeleton";
-import { Check, Fingerprint, Loader2, Plus, X } from "lucide-react";
+import { Check, Minus, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Session } from "better-auth";
 import { toast } from "@workspace/ui/hooks/use-toast";
-import { Button } from "@workspace/ui/components/button";
-
-const PasskeysCard = () => {
-  const { data: passkeys, isPending } = authClient.useListPasskeys();
-
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <div className="flex flex-col">
-          <CardTitle>Passkeys</CardTitle>
-          <CardDescription className="mt-1 text-sm">
-            Passkeys are used to authenticate with the API.
-          </CardDescription>
-        </div>
-
-        <Button
-          variant={"outline"}
-          size="sm"
-          onClick={async () => {
-            const data = await authClient.passkey.addPasskey({
-              useAutoRegister: true
-            })
-            console.log(data)
-          }}
-        >
-          <Fingerprint size={16} />
-          Add Passkey
-        </Button>
-      </CardHeader>
-
-      <CardContent>
-        {isPending ? (
-          <Loader2 className="animate-spin" />
-        ) : (
-          <>
-            {passkeys && passkeys.length > 0 ? (
-              <div className="space-y-2">
-                <>TODO</>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center p-4 space-y-2">
-                <div className="flex size-11 shrink-0 items-center justify-center rounded-full border border-border" aria-hidden="true">
-                  <X className="h-5 w-5 text-destructive" />
-                </div>
-
-                <p className="text-sm text-center">
-                  No passkeys are configured.
-                </p>
-              </div>
-            )}
-          </>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
+import { SectionPasskeysCard } from "./sections/passkeys.card";
 
 const AccountSecurityPage = () => {
   const { data: session, isPending: isSessionPending } = authClient.useSession();
@@ -158,20 +103,15 @@ const AccountSecurityPage = () => {
                 <div className="flex flex-col space-y-2">
                   {sessions.list.length > 1 ? (
                     <div className="flex items-center space-x-2">
-                      <Check className="text-green-500" size={16} />
+                      <Minus className="text-gray-500" size={16} />
                       <span>Multiple sessions are active (<kbd>{sessions.list.length}</kbd> total).</span>
                     </div>
-                  ) : (
-                    <div className="flex items-center space-x-2">
-                      <X className="text-red-500" size={16} />
-                      <span>No other sessions are active.</span>
-                    </div>
-                  )}
+                  ) : <></>}
                 </div>
               </CardContent>
             </Card>
 
-            <PasskeysCard />
+            <SectionPasskeysCard />
           </div>
         </div>
       </Rendered>
