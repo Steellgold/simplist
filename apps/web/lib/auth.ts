@@ -14,11 +14,17 @@ export const auth = betterAuth({
     multiSession({
       maximumSessions: 1 // testing
     }),
-    passkey(),
+    passkey({
+      rpName: "Simplist",
+      origin: "http://localhost:3000"
+    }),
     twoFactor(),
     openAPI()
   ],
   database: new Pool({
     connectionString: process.env.DATABASE_URL!
-  })
+  }),
+  trustedOrigins: [
+    "http://192.168.1.132:3000",
+  ]
 });
