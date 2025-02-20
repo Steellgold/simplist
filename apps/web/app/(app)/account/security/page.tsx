@@ -9,6 +9,7 @@ import { Check, Minus, X } from "lucide-react";
 import { SectionPasskeysCard } from "./sections/passkeys.card";
 import { useSessions } from "@/hooks/use-sessions";
 import { SectionSessionsCard } from "./sections/sessions.card";
+import { SectionA2FCard } from "./sections/twofactor.card";
 
 const AccountSecurityPage = () => {
   const { data: session, isPending: isSessionPending } = authClient.useSession();
@@ -33,7 +34,7 @@ const AccountSecurityPage = () => {
 
       <Rendered>
         <div className="flex-1 overflow-auto">
-          <div className="space-y-6 max-w-4xl mx-auto">
+          <div className="space-y-5 max-w-4xl mx-auto">
             <Card>
               <CardHeader>
                 <CardTitle>Account Overview</CardTitle>
@@ -82,7 +83,11 @@ const AccountSecurityPage = () => {
               </CardContent>
             </Card>
 
-            <SectionPasskeysCard />
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+              <SectionPasskeysCard />
+              <SectionA2FCard />
+            </div>
+
             <SectionSessionsCard />
           </div>
         </div>
