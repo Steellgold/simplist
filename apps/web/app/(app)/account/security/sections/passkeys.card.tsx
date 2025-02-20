@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@work
 import { PasswordConfirmationDialog } from "@/components/password-confirmation-dialog";
 import { Button } from "@workspace/ui/components/button";
 import { toast } from "@workspace/ui/hooks/use-toast";
-import { Fingerprint, Loader2, Pen, X } from "lucide-react";
+import { Fingerprint, Loader2, Pen, Trash, X } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { dayJS } from "@/lib/dayjs";
 import { useState } from "react";
@@ -29,7 +29,7 @@ export const SectionPasskeysCard = () => {
         <div className="flex flex-col">
           <CardTitle>Passkeys</CardTitle>
           <CardDescription className="mt-1 text-sm">
-            Passkeys are used to authenticate with the API.
+            Secure your account with passkeys
           </CardDescription>
         </div>
 
@@ -41,7 +41,7 @@ export const SectionPasskeysCard = () => {
               {isLoading === "create" ? <Loader2 className="w-6 h-6 animate-spin" /> : (
                 <>
                   <Fingerprint size={16} />
-                  Add Passkey
+                  Add
                 </>
               )}
             </Button>
@@ -115,12 +115,7 @@ export const SectionPasskeysCard = () => {
             >
               <div className="space-y-2">
                 <Label htmlFor={"passkey-name"}>Passkey name</Label>
-                <Input
-                  id={"passkey-name"}
-                  type="text"
-                  placeholder="Desktop at home"
-                  name="passkey-name"
-                />
+                <Input id={"passkey-name"} type="text" placeholder="Desktop at home" name="passkey-name" />
               </div>
 
               <DialogFooter>
@@ -147,15 +142,8 @@ export const SectionPasskeysCard = () => {
             {passkeys && passkeys.length > 0 ? (
               <div className="space-y-2">
                 {passkeys.map((passkey) => (
-                  <div key={passkey.id} className="flex flex-row items-center justify-between p-4 space-x-4 bg-bg-secondary rounded-lg border border-border">
-                    <div className="flex flex-col space-y-1">
-                      <p className="text-base font-medium">{passkey.name ?? "Unnamed Passkey"}</p>
-                      <div className="flex flex-row items-center text-sm text-gray-300">
-                        Created on {dayJS(passkey.createdAt).format("MMMM D, YYYY")}
-                        <Separator orientation="vertical" className="h-3 mx-2 bg-gray-300" />
-                        Used&nbsp;<strong>{passkey.counter}</strong>&nbsp;times
-                      </div>
-                    </div>
+                  <div key={passkey.id} className="flex flex-row items-center justify-between p-2 space-x-4 bg-bg-secondary rounded-lg border border-border">
+                    <p className="ml-2 text-base font-medium line-clamp-1">{passkey.name ?? "Unnamed Passkey"}</p>
 
                     <div className="flex flex-row items-center space-x-2">
                       <Dialog onOpenChange={() => {
@@ -165,7 +153,7 @@ export const SectionPasskeysCard = () => {
                       }} open={isOpen === "update"}>
                         <DialogTrigger asChild>
                           <Button variant="outline" size="sm" disabled={isLoading === "update"}>
-                            {isLoading === "update" ? <Loader2 className="w-6 h-6 animate-spin" /> : "Update"}
+                            {isLoading === "update" ? <Loader2 className="w-6 h-6 animate-spin" /> : <Pen />}
                           </Button>
                         </DialogTrigger>
                         <DialogContent>
@@ -269,8 +257,8 @@ export const SectionPasskeysCard = () => {
                           })
                         }}
                       >
-                        <Button variant="outline" size="sm" disabled={isLoading === "delete"}>
-                          {isLoading === "delete" ? <Loader2 className="w-6 h-6 animate-spin" /> : "Revoke"}
+                        <Button variant="outline" size="icon" disabled={isLoading === "delete"}>
+                          {isLoading === "delete" ? <Loader2 className="animate-spin" /> : <Trash />}
                         </Button>
                       </PasswordConfirmationDialog>
                     </div>
