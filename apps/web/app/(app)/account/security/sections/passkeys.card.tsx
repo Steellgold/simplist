@@ -13,12 +13,15 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { Label } from "@workspace/ui/components/label";
 import { Input } from "@workspace/ui/components/input";
 import { z } from "zod";
+import { useIsPasskeyAvailable } from "@/hooks/use-passkey-avaible";
 
 export const SectionPasskeysCard = () => {
   const { data: passkeys, refetch, isPending, isRefetching } = authClient.useListPasskeys();
 
   const [isLoading, setLoading] = useState<false | "update" | "delete" | "create">(false);
   const [isOpen, setOpen] = useState<"create" | "update" | false>(false);
+  
+  const passkeyAvaible = useIsPasskeyAvailable();
 
   return (
     <Card>
@@ -34,7 +37,7 @@ export const SectionPasskeysCard = () => {
           setOpen(isOpen === "create" ? false : "create")
         }} open={isOpen === "create"}>
           <DialogTrigger asChild>
-            <Button variant={"outline"} size="sm" disabled={isLoading === "create"} onClick={() => setOpen("create")}>
+            <Button variant={"outline"} size="sm" disabled={!passkeyAvaible || isLoading === "create"} onClick={() => setOpen("create")}>
               {isLoading === "create" ? <Loader2 className="w-6 h-6 animate-spin" /> : (
                 <>
                   <Fingerprint size={16} />
@@ -62,7 +65,9 @@ export const SectionPasskeysCard = () => {
                 const name = event.currentTarget["passkey-name"].value;
 
                 const schema = z.object({
-                  passkeyName: z.string().min(3, "The name must be at least 3 characters long.").max(32, "The name must be at most 32 characters long.")
+                  passkeyName: z.string()
+                    .min(3, "The name must be at least 3 characters long.")
+                    .max(32, "The name must be at most 32 characters long.")
                 });
 
                 const result = schema.safeParse({ passkeyName: name });
@@ -109,7 +114,7 @@ export const SectionPasskeysCard = () => {
               }}
             >
               <div className="space-y-2">
-                <Label htmlFor={"passkey-name"}>Project name</Label>
+                <Label htmlFor={"passkey-name"}>Passkey name</Label>
                 <Input
                   id={"passkey-name"}
                   type="text"

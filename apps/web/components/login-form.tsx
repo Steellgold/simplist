@@ -22,6 +22,7 @@ import { z } from "zod";
 import { ToastAction } from "@workspace/ui/components/toast";
 import { authClient } from "@/lib/auth-client";
 import { Checkbox } from "@workspace/ui/components/checkbox";
+import { useIsPasskeyAvailable } from "@/hooks/use-passkey-avaible";
 
 const schema = z.object({
   email: z.string().email(),
@@ -36,19 +37,12 @@ export const LoginForm: Component<React.ComponentPropsWithoutRef<"div">> = ({
   const { toast } = useToast();
 
 	const [loading, setLoading] = useState(false);
-  const router = useRouter();
   
-  useEffect(() => {
-    if (typeof(PublicKeyCredential) != "undefined") {
-      if (!PublicKeyCredential.isConditionalMediationAvailable || !PublicKeyCredential.isConditionalMediationAvailable()) {
-        console.log("WebAuthn is not supported in this browser");
-        return;
-      }
-      
-      console.log("WebAuthn is supported in this browser");
-      void authClient.signIn.passkey({ autoFill: true })
-    }
- }, [])
+  const [pkLoading, setPkLoading] = useState(false);
+
+  const pkAvaible = useIsPasskeyAvailable();
+
+  const router = useRouter();
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -139,26 +133,53 @@ export const LoginForm: Component<React.ComponentPropsWithoutRef<"div">> = ({
                 </div>
 
                 <div className="grid gap-2 grid-cols-12">
-                  <Button type="submit" className="w-full col-span-10" disabled={loading}>
+                  <Button type="submit" className={cn({
+                    "w-full col-span-10": pkAvaible,
+                    "w-full col-span-12": !pkAvaible
+                  })} disabled={loading}>
                     {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : "Continue"}
                   </Button>
 
-                  <Button type="button" variant="secondary" className="w-full col-span-2" onClick={async() => {
-                    await authClient.signIn.passkey({
-                      fetchOptions: {
-                        onSuccess: () => {
-                          console.log("Successfully signed in using Passkey");
-                          router.push("/");
-                          toast({
-                            title: "Welcome back",
-                            description: "You have successfully signed in to your account using Passkey"
-                          });
+                  {pkAvaible && (
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      className="col-span-2"
+                      disabled={pkLoading}
+                      onClick={
+                        async() => {
+                          await authClient.signIn.passkey({
+                            fetchOptions: {
+                              onSuccess: () => {
+                                console.log("Successfully signed in using Passkey");
+                                router.push("/");
+                                toast({
+                                  title: "Welcome back",
+                                  description: "You have successfully signed in to your account using Passkey"
+                                });
+                              },
+                              onError: (ctx) => {
+                                toast({
+                                  title: "Error signing in",
+                                  description: ctx.error.message,
+                                  action: <ToastAction altText="Close">Close</ToastAction>,
+                                })
+
+                                setPkLoading(false);
+                              },
+                              onRequest: () => {
+                                setPkLoading(true);
+                              },
+                            }
+                          })
                         }
                       }
-                    })
-                  }}>
-                    <Fingerprint className="w-6 h-6" />
-                  </Button>
+                    >
+                      {
+                        pkLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Fingerprint className="w-6 h-6" />
+                      }
+                    </Button>
+                  )}
                 </div>
               </div>
               <div className="text-center text-sm">
