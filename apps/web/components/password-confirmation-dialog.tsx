@@ -19,7 +19,7 @@ import { CircleAlert, Loader2 } from "lucide-react";
 import { PropsWithChildren, useState } from "react";
 
 type PasswordConfirmationDialogProps = PropsWithChildren & {
-  action: () => void;
+  action: (password: string) => void | Promise<void>;
 
   actionType?: "delete" | "update";
 }
@@ -59,6 +59,7 @@ export const PasswordConfirmationDialog: Component<PasswordConfirmationDialogPro
           className="space-y-5"
           onSubmit={async(e) => {
             e.preventDefault();
+            const formData = new FormData(e.currentTarget);
 
             await authClient.changePassword({
               currentPassword: e.currentTarget.password.value,
@@ -79,14 +80,14 @@ export const PasswordConfirmationDialog: Component<PasswordConfirmationDialogPro
                     description: "Please wait while we verify your identity.",
                   })
                 },
-                onSuccess: () => {
+                onSuccess: async() => {
                   toast({
                     title: "Identity confirmed",
                     description: "You have successfully confirmed your identity.",
                   })
 
                   setOpen(false);
-                  action();
+                  await action(formData.get("password") as string);
                 }
               }
             })
