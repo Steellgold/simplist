@@ -18,7 +18,12 @@ export const auth = betterAuth({
       rpName: "Simplist",
       origin: process.env.BETTER_AUTH_URL!,
     }),
-    twoFactor(),
+    twoFactor({
+      issuer: "simplist",
+      totpOptions: {
+        digits: 6,
+      }
+    }),
     openAPI()
   ],
   database: new Pool({
