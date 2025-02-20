@@ -12,17 +12,14 @@ export const auth = betterAuth({
   plugins: [
     organization(),
     multiSession({
-      maximumSessions: 1 // testing
+      maximumSessions: 1 // testing purposes
     }),
     passkey({
       rpName: "Simplist",
       origin: process.env.BETTER_AUTH_URL!,
     }),
     twoFactor({
-      issuer: "simplist",
-      totpOptions: {
-        digits: 6,
-      }
+      issuer: "simplist"
     }),
     openAPI()
   ],
@@ -30,6 +27,6 @@ export const auth = betterAuth({
     connectionString: process.env.DATABASE_URL!
   }),
   trustedOrigins: [
-    "http://192.168.1.132:3000",
+    "http://192.168.1.132:3000" // Desktop at home - Remove when branch merged
   ]
 });
