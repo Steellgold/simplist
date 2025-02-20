@@ -50,7 +50,7 @@ export const SectionSessionsCard = () => {
                   });
 
                   refetch();
-                  router.refresh();
+                  router.push("/auth");
                 },
                 onRequest: () => {
                   toast({

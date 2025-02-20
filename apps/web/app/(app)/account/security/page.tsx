@@ -61,7 +61,7 @@ const AccountSecurityPage = () => {
                   {passkeys && passkeys.length > 0 ? (
                     <div className="flex items-center space-x-2">
                       <Check className="text-green-500" size={16} />
-                      <span>Passkeys are enabled.</span>
+                      <span>{passkeys.length} passkey{passkeys.length > 1 ? "s" : ""} are configured.</span>
                     </div>
                   ) : (
                     <div className="flex items-center space-x-2">
