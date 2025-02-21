@@ -40,6 +40,10 @@ export const SectionA2FCard = () => {
     setVerified(session.user.twoFactorEnabled ?? false);
   }, [session]);
 
+  if (isSessionPending) {
+    return <></>
+  }
+
   return (
     <>
       <AlertDialog open={isOpen} onOpenChange={() => setOpen(!isOpen)}>
