@@ -2,15 +2,17 @@
 
 import { authClient } from "@/lib/auth-client";
 import { ReactElement } from "react";
+import { NoOrganizations } from "./_lib/no-organizations";
 
 const Home = (): ReactElement => {
   const { data: activeOrganization, isPending: isActiveOrganizationPending } = authClient.useActiveOrganization();
-  if (isActiveOrganizationPending) {
-    return <div>Loading...</div>;
+  
+  if (!activeOrganization) {
+    return <NoOrganizations />;
   }
 
-  if (!activeOrganization) {
-    return <div>No active organization</div>;
+  if (isActiveOrganizationPending) {
+    return <div>Loading...</div>;
   }
 
   return (
