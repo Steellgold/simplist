@@ -56,13 +56,7 @@ const AccountSettingsPage = () => {
   }, [session]);
 
   if (!session || isSessionPending) {
-    return (
-      <div className="flex-1 overflow-auto">
-        <div className="max-w-4xl mx-auto">
-          <Skeleton className="h-96" />
-        </div>
-      </div>
-    );
+    return <Skeleton className="h-96" />;
   }
 
   const user = session.user;
@@ -70,114 +64,108 @@ const AccountSettingsPage = () => {
   return (
     <>
       <BreadcrumbSetter items={[ { label: "Account" }, { label: "Settings" } ]} />
+      
+      <Card>
+        <CardHeader>
+          <CardTitle>Account information</CardTitle>
+          <CardDescription className="mt-1 text-sm">
+            Update your account information.
+          </CardDescription>
+        </CardHeader>
 
-      <div className="flex-1 overflow-auto">
-        <div className="space-y-6 max-w-4xl mx-auto">
-          <Card>
-            <CardHeader>
-              <CardTitle>Account information</CardTitle>
-              <CardDescription className="mt-1 text-sm">
-                Update your account information.
-              </CardDescription>
-            </CardHeader>
-
-            <CardContent className="space-y-6">
-              <div className="space-y-4">
-                <div className="flex space-x-4">
-                  <div className="flex-1">
-                    <Label htmlFor="first-name">First name</Label>
-                    <Input
-                      id="first-name"
-                      name="ffirst-name"
-                      defaultValue={formData.first_name}
-                      onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <Label htmlFor="last-name">Last name</Label>
-                    <Input
-                      id="last-name"
-                      name="last-name"
-                      defaultValue={formData.last_name}
-                      onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    defaultValue={user.email}
-                    disabled
-                  />
-                </div>
+        <CardContent className="space-y-6">
+          <div className="space-y-4">
+            <div className="flex space-x-4">
+              <div className="flex-1">
+                <Label htmlFor="first-name">First name</Label>
+                <Input
+                  id="first-name"
+                  name="ffirst-name"
+                  defaultValue={formData.first_name}
+                  onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                />
               </div>
-            </CardContent>
+              
+              <div className="flex-1">
+                <Label htmlFor="last-name">Last name</Label>
+                <Input
+                  id="last-name"
+                  name="last-name"
+                  defaultValue={formData.last_name}
+                  onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                defaultValue={user.email}
+                disabled
+              />
+            </div>
+          </div>
+        </CardContent>
             
-            <CardFooter className="flex justify-end">
-              <PasswordConfirmationDialog action={() => {
-                const result = userSchema.safeParse(formData);
-                if (result.error) {
-                  toast({
-                    title: "Oops!",
-                    description: result.error.errors[0]?.message ?? "An error occurred",
-                    variant: "destructive"
-                  })
-                  return;
+        <CardFooter className="flex justify-end">
+          <PasswordConfirmationDialog action={() => {
+            const result = userSchema.safeParse(formData);
+              if (result.error) {
+                toast({
+                  title: "Oops!",
+                  description: result.error.errors[0]?.message ?? "An error occurred",
+                  variant: "destructive"
+                })
+                return;
+              }
+
+              authClient.updateUser({
+                name: `${formData.first_name} ${formData.last_name}`,
+                fetchOptions: {
+                  onError: (error) => {
+                    setPending(false);
+                    toast({
+                      title: "Error updating user",
+                      description: error.error.message ?? "An error occurred",
+                      variant: "destructive"
+                    });
+                  },
+                  onRequest: () => {
+                    setPending(true);
+                    toast({
+                      title: "Updating user",
+                      description: "Please wait while we update your user"
+                    });
+                  },
+                  onSuccess: () => {
+                    setPending(false);
+                    toast({
+                      title: "User updated",
+                      description: `You have successfully updated your user.`
+                    });
+                  }
                 }
+              });
+            }}>
+              <Button size="sm" disabled={
+                isPending
+                || (
+                  formData.first_name === session.user.name.split(' ')[0] && formData.last_name === session.user.name.split(' ')[1]
+                )
+              }>
+                {isPending
+                  ? <Loader2 className="animate-spin" />
+                  : "Save changes"
+                }
+              </Button>
+            </PasswordConfirmationDialog>
+          </CardFooter>
+        </Card>
 
-                authClient.updateUser({
-                  name: `${formData.first_name} ${formData.last_name}`,
-                  fetchOptions: {
-                    onError: (error) => {
-                      setPending(false);
-                      toast({
-                        title: "Error updating user",
-                        description: error.error.message ?? "An error occurred",
-                        variant: "destructive"
-                      });
-                    },
-                    onRequest: () => {
-                      setPending(true);
-                      toast({
-                        title: "Updating user",
-                        description: "Please wait while we update your user"
-                      });
-                    },
-                    onSuccess: () => {
-                      setPending(false);
-                      toast({
-                        title: "User updated",
-                        description: `You have successfully updated your user.`
-                      });
-                    }
-                  }
-                });
-
-              }}>
-                <Button size="sm" disabled={
-                  isPending
-                  || (
-                    formData.first_name === session.user.name.split(' ')[0]
-                    && formData.last_name === session.user.name.split(' ')[1]
-                  )
-                }>
-                  {
-                    isPending
-                    ? <Loader2 className="animate-spin" />
-                    : "Save changes"
-                  }
-                </Button>
-              </PasswordConfirmationDialog>
-            </CardFooter>
-          </Card>
-
-          {/* TODO: Avatar settings */}
-        </div>
-      </div>
+        {/* TODO: Avatar settings */}
     </>
   );
 };

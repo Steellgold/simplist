@@ -33,64 +33,60 @@ const AccountSecurityPage = () => {
       <BreadcrumbSetter items={[ { label: "Account" }, { label: "Security" } ]} />
 
       <Rendered>
-        <div className="flex-1 overflow-auto">
-          <div className="space-y-5 max-w-4xl mx-auto">
-            <Card>
-              <CardHeader>
-                <CardTitle>Account Overview</CardTitle>
-                <CardDescription className="mt-1 text-sm">
-                  Review your account security settings.
-                </CardDescription>
-              </CardHeader>
+        <Card>
+          <CardHeader>
+            <CardTitle>Account Overview</CardTitle>
+            <CardDescription className="mt-1 text-sm">
+              Review your account security settings.
+            </CardDescription>
+          </CardHeader>
 
-              <CardContent className="space-y-2">
-                <div className="flex flex-col space-y-2">
-                  {session?.user.twoFactorEnabled ? (
-                    <div className="flex items-center space-x-2">
-                      <Check className="text-green-500" size={16} />
-                      <span>Two-factor authentication is enabled.</span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center space-x-2">
-                      <X className="text-red-500" size={16} />
-                      <span>Two-factor authentication is not enabled.</span>
-                    </div>
-                  )}
+          <CardContent className="space-y-2">
+            <div className="flex flex-col space-y-2">
+              {session?.user.twoFactorEnabled ? (
+                <div className="flex items-center space-x-2">
+                  <Check className="text-green-500" size={16} />
+                  <span>Two-factor authentication is enabled.</span>
                 </div>
-
-                <div className="flex flex-col space-y-2">
-                  {passkeys && passkeys.length > 0 ? (
-                    <div className="flex items-center space-x-2">
-                      <Check className="text-green-500" size={16} />
-                      <span>{passkeys.length} passkey{passkeys.length > 1 ? "s" : ""} are configured.</span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center space-x-2">
-                      <X className="text-red-500" size={16} />
-                      <span>No passkeys are configured.</span>
-                    </div>
-                  )}
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <X className="text-red-500" size={16} />
+                  <span>Two-factor authentication is not enabled.</span>
                 </div>
-
-                <div className="flex flex-col space-y-2">
-                  {sessions.list.length > 1 ? (
-                    <div className="flex items-center space-x-2">
-                      <Minus className="text-gray-500" size={16} />
-                      <span>Multiple sessions are active (<kbd>{sessions.list.length}</kbd> total).</span>
-                    </div>
-                  ) : <></>}
-                </div>
-              </CardContent>
-            </Card>
-
-            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-              <SectionPasskeysCard />
-              <SectionA2FCard />
+              )}
             </div>
 
-            <SectionSessionsCard />
-          </div>
+            <div className="flex flex-col space-y-2">
+              {passkeys && passkeys.length > 0 ? (
+                <div className="flex items-center space-x-2">
+                  <Check className="text-green-500" size={16} />
+                  <span>{passkeys.length} passkey{passkeys.length > 1 ? "s" : ""} are configured.</span>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <X className="text-red-500" size={16} />
+                  <span>No passkeys are configured.</span>
+                </div>
+              )}
+            </div>
+
+            <div className="flex flex-col space-y-2">
+              {sessions.list.length > 1 ? (
+                <div className="flex items-center space-x-2">
+                  <Minus className="text-gray-500" size={16} />
+                  <span>Multiple sessions are active (<kbd>{sessions.list.length}</kbd> total).</span>
+                </div>
+              ) : <></>}
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <SectionPasskeysCard />
+          <SectionA2FCard />
         </div>
+
+        <SectionSessionsCard />
       </Rendered>
     </>
   );
