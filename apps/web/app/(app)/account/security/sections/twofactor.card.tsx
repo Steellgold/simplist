@@ -7,12 +7,14 @@ import { Button } from "@workspace/ui/components/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@workspace/ui/components/card";
 import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@workspace/ui/components/alert-dialog";
 import { toast } from "@workspace/ui/hooks/use-toast";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import QRCode from "react-qr-code";
 import { Check, FileWarning, Loader2, RectangleEllipsis, X } from "lucide-react";
 
 export const SectionA2FCard = () => {
+  const { data: session, isPending: isSessionPending } = authClient.useSession();
+
   const [isOpen, setOpen] = useState(false);
 
   const [isPending, setPending] = useState(false);
@@ -31,6 +33,12 @@ export const SectionA2FCard = () => {
     document.body.appendChild(element); // #FireFox
     element.click();
   }
+
+  useEffect(() => {
+    if (!session) return;
+
+    setVerified(session.user.twoFactorEnabled ?? false);
+  }, [session]);
 
   return (
     <>
