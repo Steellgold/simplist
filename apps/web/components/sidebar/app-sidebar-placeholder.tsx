@@ -1,3 +1,4 @@
+import { Rendered } from "@workspace/ui/components/rendered"
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -11,7 +12,7 @@ import { ReactElement } from "react"
 
 export const AppSidebarPlaceholder = (): ReactElement => {
   return (
-    <>
+    <Rendered>
       <SidebarGroup>
         <SidebarGroupLabel>
           <Skeleton animated={false} className="h-4 w-1/2 rounded-md" />
@@ -43,6 +44,6 @@ export const AppSidebarPlaceholder = (): ReactElement => {
           </SidebarMenu>
         </SidebarGroupContent>
       </SidebarGroup>
-    </>
+    </Rendered>
   )
 }
