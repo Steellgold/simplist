@@ -9,9 +9,12 @@ import { usePathname } from "next/navigation";
 import { AppSidebarLinks } from "./app-sidebar-links";
 import { Settings } from "lucide-react";
 import { AppSidebarOrganization } from "./app-sidebar-organization";
+import { AppSidebarPlaceholder } from "./app-sidebar-placeholder";
+import { authClient } from "@/lib/auth-client";
 
 export const AppSidebar: Component<React.ComponentProps<typeof Sidebar>> = (props) => {
   const path = usePathname();
+  const { data, isPending, isRefetching } = authClient.useListOrganizations();
 
   return (
     <Sidebar collapsible="icon" variant="inset" {...props}>
@@ -39,7 +42,14 @@ export const AppSidebar: Component<React.ComponentProps<typeof Sidebar>> = (prop
           // <NavLinks links={data.links} />
           <></>
         )}
+
         {/* <NavProjects projects={data.projects} /> */}
+        
+        {(!data || data.length === 0 || isPending || isRefetching) ? (
+          <AppSidebarPlaceholder />
+        ) : (
+          <></>
+        )}
       </SidebarContent>
       <SidebarFooter>
         <AppSidebarTheme />
