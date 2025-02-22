@@ -32,7 +32,7 @@ const Home = (): ReactElement => {
       <BreadcrumbSetter items={[{ label: "Organization" }]} />
 
       <pre>
-        {JSON.stringify(JSON.parse(activeOrganization?.metadata), null, 2)}
+        {JSON.stringify(activeOrganization, null, 2)}
       </pre>
     </>
   );
