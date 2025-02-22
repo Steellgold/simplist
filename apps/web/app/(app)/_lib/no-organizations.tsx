@@ -40,10 +40,11 @@ export const NoOrganizations: Component<PropsWithChildren> = ({ children }) => {
             event.preventDefault();
 
             const organizationName = event.currentTarget["organization-name"].value;
+            const organizationSlug = organizationName.toLowerCase().replace(/\s/g, "-") + "-" + randomChars();
 
             await authClient.organization.create({
               name: organizationName,
-              slug: organizationName.toLowerCase().replace(/\s/g, "-") + "-" + randomChars(),
+              slug: organizationSlug,
               metadata: {
                 plan
               },
@@ -71,7 +72,7 @@ export const NoOrganizations: Component<PropsWithChildren> = ({ children }) => {
 
                   if (plan === "hobby") {
                     await authClient.organization.setActive({
-                      organizationSlug: organizationName.toLowerCase().replace(/\s/g, "-"),
+                      organizationSlug,
                       fetchOptions: {
                         onError: (error) => {
                           setPending(false);
