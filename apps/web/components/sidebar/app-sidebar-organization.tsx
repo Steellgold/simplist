@@ -13,8 +13,13 @@ import { usePathname, useRouter } from "next/navigation";
 import { ReactElement } from "react";
 import { NewOrganization } from "../new-organization";
 import Link from "next/link";
+import { Component } from "@workspace/ui/components/utils/component";
 
-export const AppSidebarOrganization = (): ReactElement => {
+type AppSidebarOrganizationProps = {
+  side?: "bottom" | "right" | "top" | "left" | undefined;
+}
+
+export const AppSidebarOrganization: Component<AppSidebarOrganizationProps> = ({ side }) => {
   const { data: session, isPending: isSessionPending } = authClient.useSession();
   const { data: activeOrganization, isPending: isActiveOrganizationPending } = authClient.useActiveOrganization();
   const { data: organizations, isPending: isOrganizationsPending } = authClient.useListOrganizations();
@@ -91,6 +96,7 @@ export const AppSidebarOrganization = (): ReactElement => {
                       <span className="truncate font-semibold">
                         {activeOrganization.name}
                       </span>
+
                       <span className="truncate text-xs">
                         {
                           activeOrganization.metadata
@@ -114,7 +120,9 @@ export const AppSidebarOrganization = (): ReactElement => {
             <DropdownMenuContent
               className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
               align="start"
-              side={isMobile ? "bottom" : "right"}
+              side={
+                side ?? (isMobile ? "bottom" : "right")
+              }
               sideOffset={4}
             >
               <DropdownMenuLabel className="text-xs text-muted-foreground">
