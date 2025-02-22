@@ -1,15 +1,18 @@
 import { cn } from "@workspace/ui/lib/utils"
 
-function Skeleton({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
+type SkeletonProps = React.HTMLAttributes<HTMLDivElement> & {
+  animated?: boolean
+}
+
+export const Skeleton: React.FC<SkeletonProps> = ({ className, animated, ...props }) => {
   return (
     <div
-      className={cn("animate-pulse rounded-md bg-skeleton/10", className)}
+      className={cn(
+        animated ? "animate-pulse" : "",
+        "rounded-md bg-skeleton/10",
+        className
+      )}
       {...props}
     />
   )
 }
-
-export { Skeleton }
