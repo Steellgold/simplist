@@ -48,29 +48,25 @@ export const AppSidebarOrganization = (): ReactElement => {
     return <Skeleton className="h-12 w-full" />;
   }
 
-  if (
-    !organizations || organizations.length === 0
-    || !activeOrganization || !activeOrganization.id
-  ) {
+  if (!organizations || organizations.length === 0) {
     return (
-      <></>
-      // <Rendered>
-      //   <SidebarMenu>
-      //     <SidebarMenuItem>
-      //       <NewOrganization>
-      //         <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
-      //           <div className="flex size-6 items-center justify-center rounded-md border bg-background/20">
-      //             <Plus className="size-4" />
-      //           </div>
+      <Rendered>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <NewOrganization>
+              <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+                <div className="flex size-6 items-center justify-center rounded-md border bg-background/20">
+                  <Plus className="size-4" />
+                </div>
 
-      //           <div className="font-medium">
-      //             Add organization
-      //           </div>
-      //         </SidebarMenuButton>
-      //       </NewOrganization>
-      //     </SidebarMenuItem>
-      //   </SidebarMenu>
-      // </Rendered>
+                <div className="font-medium">
+                  Add organization
+                </div>
+              </SidebarMenuButton>
+            </NewOrganization>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </Rendered>
     )
   }
 
@@ -81,26 +77,36 @@ export const AppSidebarOrganization = (): ReactElement => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  {
-                    activeOrganization.logo ?
-                      <Image src={activeOrganization.logo} alt={activeOrganization.name} className="size-6" /> :
-                      <Building className="size-6" />
-                  }
-                </div>
+                {activeOrganization ? (
+                  <>
+                    <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                      {
+                        activeOrganization.logo ?
+                          <Image src={activeOrganization.logo} alt={activeOrganization.name} className="size-6" /> :
+                          <Building className="size-5" />
+                      }
+                    </div>
 
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">
-                    {activeOrganization.name}
-                  </span>
-                  <span className="truncate text-xs">
-                    {
-                      activeOrganization.metadata
-                        ? JSON.parse(activeOrganization?.metadata).plan.charAt(0).toUpperCase() + JSON.parse(activeOrganization?.metadata).plan.slice(1)
-                        : "Hobby"
-                    }
-                  </span>
-                </div>
+                    <div className="grid flex-1 text-left text-sm leading-tight">
+                      <span className="truncate font-semibold">
+                        {activeOrganization.name}
+                      </span>
+                      <span className="truncate text-xs">
+                        {
+                          activeOrganization.metadata
+                            ? JSON.parse(activeOrganization?.metadata).plan.charAt(0).toUpperCase() + JSON.parse(activeOrganization?.metadata).plan.slice(1)
+                            : "Hobby"
+                        }
+                      </span>
+                    </div>
+                    </>
+                ) : (
+                  // Show "Select organization"
+                  <div className="flex flex-col flex-1">
+                    <div className="font-medium">Select organization</div>
+                    <div className="text-xs text-muted-foreground">No organization selected</div>
+                  </div>
+                )}
 
                 <ChevronsUpDown className="ml-auto" />
               </SidebarMenuButton>
@@ -116,8 +122,30 @@ export const AppSidebarOrganization = (): ReactElement => {
               </DropdownMenuLabel>
               {organizations.map((org) => (
                 <DropdownMenuItem
-                  key={org.name}
+                  key={org.id}
                   onClick={async() => {
+                    if (!activeOrganization) {
+                      await authClient.organization.setActive({
+                        organizationId: org.id,
+                        fetchOptions: {
+                          onError: (error) => {
+                            toast({
+                              title: "Error setting active organization",
+                              description: error.error.message ?? "An error occurred",
+                              variant: "destructive"
+                            });
+                          },
+                          onRequest: () => {
+                            toast({
+                              title: "Setting active organization",
+                              description: "Please wait while we set your active organization"
+                            });
+                          }
+                        }
+                      });
+                      return;
+                    }
+
                     if (activeOrganization.id === org.id) {
                       return;
                     }
