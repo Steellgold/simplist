@@ -5,13 +5,12 @@ import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
 import { RadioPlanSelector } from "@workspace/ui/components/radio-plan-selector";
 import { BreadcrumbSetter } from "@workspace/ui/components/setter-breadcrumb";
-import { Component } from "@workspace/ui/components/utils/component";
 import { toast } from "@workspace/ui/hooks/use-toast";
 import { Building, Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation";
-import { PropsWithChildren, useState } from "react";
+import { ReactElement, useState } from "react";
 
-export const NoOrganizations: Component<PropsWithChildren> = ({ children }) => {
+export const NoOrganizations = (): ReactElement => {
   const [plan, setPlan] = useState<"hobby" | "pro" | "business">("hobby");
   const [isPending, setPending] = useState(false);
   const router = useRouter();
