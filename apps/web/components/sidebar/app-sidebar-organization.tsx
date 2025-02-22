@@ -99,7 +99,7 @@ export const AppSidebarOrganization = (): ReactElement => {
                         }
                       </span>
                     </div>
-                    </>
+                  </>
                 ) : (
                   // Show "Select organization"
                   <div className="flex flex-col flex-1">
