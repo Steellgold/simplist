@@ -15,7 +15,7 @@
     "@prisma/client": "^6.4.0",
     "@tanstack/react-query": "^5.66.7",
     "@workspace/ui": "workspace:*",
-    "better-auth": "1.1.18",
+    "better-auth": "1.1.19",
     "dayjs": "^1.11.13",
     "lucide-react": "0.456.0",
     "next": "^15.1.0",
