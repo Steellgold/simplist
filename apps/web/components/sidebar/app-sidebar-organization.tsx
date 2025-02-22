@@ -53,23 +53,24 @@ export const AppSidebarOrganization = (): ReactElement => {
     || !activeOrganization || !activeOrganization.id
   ) {
     return (
-      <Rendered>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <NewOrganization>
-              <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
-                <div className="flex size-6 items-center justify-center rounded-md border bg-background/20">
-                  <Plus className="size-4" />
-                </div>
+      <></>
+      // <Rendered>
+      //   <SidebarMenu>
+      //     <SidebarMenuItem>
+      //       <NewOrganization>
+      //         <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+      //           <div className="flex size-6 items-center justify-center rounded-md border bg-background/20">
+      //             <Plus className="size-4" />
+      //           </div>
 
-                <div className="font-medium">
-                  Add organization
-                </div>
-              </SidebarMenuButton>
-            </NewOrganization>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </Rendered>
+      //           <div className="font-medium">
+      //             Add organization
+      //           </div>
+      //         </SidebarMenuButton>
+      //       </NewOrganization>
+      //     </SidebarMenuItem>
+      //   </SidebarMenu>
+      // </Rendered>
     )
   }
 
