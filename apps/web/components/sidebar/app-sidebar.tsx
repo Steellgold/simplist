@@ -14,6 +14,13 @@ import { authClient } from "@/lib/auth-client";
 
 export const AppSidebar: Component<React.ComponentProps<typeof Sidebar>> = (props) => {
   const { data, isPending, isRefetching } = authClient.useListOrganizations();
+
+  const {
+    data: activeOrganization,
+    isPending: isActiveOrganizationPending,
+    isRefetching: isActiveOrganizationRefetching
+  } = authClient.useActiveOrganization();
+
   const path = usePathname();
 
   return (
@@ -40,42 +47,53 @@ export const AppSidebar: Component<React.ComponentProps<typeof Sidebar>> = (prop
           />
         ) : (
           <>
-          {/* Context: This is a project of publishing posts and users retrieve with an API */}
-            <AppSidebarLinks
-              name="Organization"
-              links={[
-                {
-                  title: "Dashboard",
-                  url: "/",
-                  isActive: path.startsWith("/"),
-                  icon: LayoutDashboard,
-                  items: [
-                    { title: "Overview", url: "/" },
-                    { title: "Posts", url: "/posts" },
-                    { title: "Analytics", url: "/analytics" }
-                  ]
-                }
-              ]}
-            />
+            {
+              activeOrganization &&
+              !isActiveOrganizationPending &&
+              !isActiveOrganizationRefetching &&
+              path.startsWith("/") ? (
+              <>
+                <AppSidebarLinks
+                  name="Organization"
+                  links={[
+                    {
+                      title: "Dashboard",
+                      url: "/",
+                      isActive: path.startsWith("/"),
+                      icon: LayoutDashboard,
+                      items: [
+                        { title: "Overview", url: "/" },
+                        { title: "Posts", url: "/posts" },
+                        { title: "Analytics", url: "/analytics" }
+                      ]
+                    }
+                  ]}
+                />
 
-            <AppSidebarLinks
-              name="Settings"
-              links={[
-                {
-                  title: "Settings",
-                  url: "/settings",
-                  isActive: path.startsWith("/settings"),
-                  icon: Settings,
-                  items: [
-                    { title: "General", url: "/settings" },
-                    { title: "Security", url: "/settings/security" },
-                    { title: "Members", url: "/members" },
-                    { title: "API", url: "/api" },
-                    { title: "Billing", url: "/billing" }
-                  ]
-                }
-              ]}
-            />
+                <AppSidebarLinks
+                  name="Settings"
+                  links={[
+                    {
+                      title: "Settings",
+                      url: "/settings",
+                      isActive: path.startsWith("/settings"),
+                      icon: Settings,
+                      items: [
+                        { title: "General", url: "/settings" },
+                        { title: "Security", url: "/settings/security" },
+                        { title: "Members", url: "/members" },
+                        { title: "API", url: "/api" },
+                        { title: "Billing", url: "/billing" }
+                      ]
+                    }
+                  ]}
+                />
+              </>
+            ) : (
+              <>
+                {data && data.length < 1 ? <></> : <AppSidebarPlaceholder />}
+              </>
+            )}
           </>
         )}
 
