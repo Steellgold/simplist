@@ -13,8 +13,8 @@ import { AppSidebarPlaceholder } from "./app-sidebar-placeholder";
 import { authClient } from "@/lib/auth-client";
 
 export const AppSidebar: Component<React.ComponentProps<typeof Sidebar>> = (props) => {
-  const path = usePathname();
   const { data, isPending, isRefetching } = authClient.useListOrganizations();
+  const path = usePathname();
 
   return (
     <Sidebar collapsible="icon" variant="inset" {...props}>
@@ -45,7 +45,8 @@ export const AppSidebar: Component<React.ComponentProps<typeof Sidebar>> = (prop
 
         {/* <NavProjects projects={data.projects} /> */}
         
-        {(!data || data.length === 0 || isPending || isRefetching) ? (
+        {
+          (!data || data.length === 0 || isPending || isRefetching) && !path.startsWith("/account") ? (
           <AppSidebarPlaceholder />
         ) : (
           <></>
