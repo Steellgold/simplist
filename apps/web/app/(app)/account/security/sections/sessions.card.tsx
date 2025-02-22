@@ -128,7 +128,7 @@ export const SectionSessionsCard = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          disabled={isTerminating === session.token}
+                          disabled={isTerminating !== ""}
                           onClick={async () => {
                             await authClient.revokeSession({
                               token: session.token,
