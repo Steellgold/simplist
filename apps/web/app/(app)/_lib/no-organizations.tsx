@@ -1,10 +1,12 @@
 "use client";
 
+import { authClient } from "@/lib/auth-client";
 import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
 import { RadioPlanSelector } from "@workspace/ui/components/radio-plan-selector";
 import { BreadcrumbSetter } from "@workspace/ui/components/setter-breadcrumb";
 import { Component } from "@workspace/ui/components/utils/component";
+import { toast } from "@workspace/ui/hooks/use-toast";
 import { Building, Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation";
 import { PropsWithChildren, useState } from "react";
@@ -30,8 +32,73 @@ export const NoOrganizations: Component<PropsWithChildren> = ({ children }) => {
             </p>
           </div>
 
-          <form className="space-y-6" onSubmit={() => {
-            console.log("submit");
+          <form className="space-y-6" onSubmit={async (event) => {
+            if (isPending) return;
+
+            const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+            const randomChars = (): string => Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+            event.preventDefault();
+
+            const organizationName = event.currentTarget["organization-name"].value;
+
+            await authClient.organization.create({
+              name: organizationName,
+              slug: organizationName.toLowerCase().replace(/\s/g, "-") + "-" + randomChars(),
+              metadata: {
+                plan
+              },
+              fetchOptions: {
+                onError: (error) => {
+                  setPending(false);
+                  toast({
+                    title: "Error creating organization",
+                    description: error.error.message || "An error occurred while creating the organization.",
+                    variant: "destructive"
+                  })
+                },
+                onRequest: () => {
+                  setPending(true);
+                  toast({
+                    title: "Creating organization",
+                    description: "Please wait while we create your organization."
+                  })
+                },
+                onSuccess: async () => {
+                  toast({
+                    title: "Organization created",
+                    description: "Your organization has been created successfully.",
+                  })
+
+                  if (plan === "hobby") {
+                    await authClient.organization.setActive({
+                      organizationSlug: organizationName.toLowerCase().replace(/\s/g, "-"),
+                      fetchOptions: {
+                        onError: (error) => {
+                          setPending(false);
+                          toast({
+                            title: "Error setting active organization",
+                            description: error.error.message || "An error occurred while setting the active organization.",
+                            variant: "destructive"
+                          })
+                        },
+                        onRequest: () => {
+                          setPending(true);
+                          toast({
+                            title: "Setting active organization",
+                            description: "Please wait while we set your organization as active."
+                          })
+                        },
+                        onSuccess: () => {
+                          router.refresh();
+                        }
+                      }
+                    })
+                  } else {
+                    // createOrganization(formData);
+                  }
+                }
+              }
+            })
           }}>
             <div className="space-y-2">
               <div className="relative">
@@ -43,6 +110,7 @@ export const NoOrganizations: Component<PropsWithChildren> = ({ children }) => {
                   type="text"
                   aria-label="Organization Name"
                   required
+                  disabled={isPending}
                 />
                 <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
                   <Building size={16} strokeWidth={2} aria-hidden="true" />
@@ -55,7 +123,7 @@ export const NoOrganizations: Component<PropsWithChildren> = ({ children }) => {
                 value === "1" ? "hobby" :
                 value === "2" ? "pro" :
                 "business"
-              )} 
+              )}
             />
 
             <Button
