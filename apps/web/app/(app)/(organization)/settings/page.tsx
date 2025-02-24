@@ -1,16 +1,17 @@
+"use client";
+
 import { ReactElement } from "react";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
 import { BreadcrumbSetter } from "@workspace/ui/components/setter-breadcrumb";
 import { OrganizationSettingsNameForm } from "./_components/organization.name";
+import { OrganizationSettingsSlugForm } from "./_components/organization.slug";
+import { authClient } from "@/lib/auth-client";
+import NotFound from "@/app/not-found";
 
-const OrganizationSettings = async(): Promise<ReactElement> => {
-  const activeOrganization = await auth.api.getFullOrganization({
-    headers: await headers()
-  });
+const OrganizationSettings = (): ReactElement => {
+  const { data: activeOrganization } = authClient.useActiveOrganization();
 
   if (!activeOrganization) {
-    return <div>Organization not found</div>;
+    return <NotFound />;
   }
 
   return (
@@ -22,8 +23,9 @@ const OrganizationSettings = async(): Promise<ReactElement> => {
         ]
       } />
 
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+      <div className="flex flex-col space-y-6">
         <OrganizationSettingsNameForm initialName={activeOrganization.name} organizationId={activeOrganization.id} />
+        <OrganizationSettingsSlugForm initialSlug={activeOrganization.slug} organizationId={activeOrganization.id} />
       </div>
     </>
   );
