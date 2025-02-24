@@ -4,7 +4,7 @@ type SkeletonProps = React.HTMLAttributes<HTMLDivElement> & {
   animated?: boolean
 }
 
-export const Skeleton: React.FC<SkeletonProps> = ({ className, animated, ...props }) => {
+export const Skeleton: React.FC<SkeletonProps> = ({ className, animated = true, ...props }) => {
   return (
     <div
       className={cn(
