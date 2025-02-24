@@ -10,7 +10,6 @@ import { toast } from "@workspace/ui/hooks/use-toast";
 import { Building, ChevronsUpDown, Plus } from "lucide-react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { ReactElement } from "react";
 import { NewOrganization } from "../new-organization";
 import Link from "next/link";
 import { Component } from "@workspace/ui/components/utils/component";
