@@ -38,6 +38,7 @@ export const OrganizationSettingsSlugForm: Component<OrganizationSettingsSlugFor
           refetch();
         },
         onError: (error: any) => {
+          console.error(error);
           setPending(false);
           toast({
             title: "Error updating organization slug",

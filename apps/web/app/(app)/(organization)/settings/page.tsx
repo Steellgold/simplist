@@ -6,6 +6,7 @@ import { OrganizationSettingsNameForm } from "./_components/organization.name";
 import { OrganizationSettingsSlugForm } from "./_components/organization.slug";
 import { authClient } from "@/lib/auth-client";
 import NotFound from "@/app/not-found";
+import { OrganizationSettingsLogoForm } from "./_components/organization.logo";
 
 const OrganizationSettings = (): ReactElement => {
   const { data: activeOrganization } = authClient.useActiveOrganization();
@@ -27,6 +28,8 @@ const OrganizationSettings = (): ReactElement => {
         <OrganizationSettingsNameForm initialName={activeOrganization.name} organizationId={activeOrganization.id} />
         <OrganizationSettingsSlugForm initialSlug={activeOrganization.slug} organizationId={activeOrganization.id} />
       </div>
+
+      <OrganizationSettingsLogoForm initialLogo={activeOrganization.logo ?? ""} organizationId={activeOrganization.id} />
     </>
   );
 
