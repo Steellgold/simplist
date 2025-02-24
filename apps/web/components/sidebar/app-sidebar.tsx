@@ -51,6 +51,7 @@ export const AppSidebar: Component<React.ComponentProps<typeof Sidebar>> = (prop
               activeOrganization &&
               !isActiveOrganizationPending &&
               !isActiveOrganizationRefetching &&
+              !isRefetching &&
               path.startsWith("/") ? (
               <>
                 <AppSidebarLinks
