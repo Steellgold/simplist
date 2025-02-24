@@ -1,6 +1,6 @@
 "use client";
 
-import { ImageUpload } from "@/components/comp-126";
+import { ImageUpload } from "@/components/image-uploader";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@workspace/ui/components/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@workspace/ui/components/card";
