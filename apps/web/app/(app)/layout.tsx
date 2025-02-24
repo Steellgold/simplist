@@ -18,7 +18,7 @@ const Layout: Component<PropsWithChildren> = ({ children }) => {
           </div>
         </header>
 
-        <div className="p-4 p-0 sm:p-0">
+        <div className="p-4 md:p-3 lg:p-0">
           <div className="space-y-6 max-w-4xl mx-auto">
             {children}
           </div>
