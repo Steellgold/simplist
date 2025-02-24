@@ -5,6 +5,9 @@ import { BreadcrumbContext } from "@workspace/ui/contexts/breadcrumb-context";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@workspace/ui/components/breadcrumb";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 
+// @ts-expect-error - Required for NextJS to work
+import Link from "next/link";
+
 interface BreadcrumbProps {
   className?: string;
 }
@@ -39,8 +42,10 @@ export const AutoBreadcrumb: React.FC<BreadcrumbProps> = ({ className }) => {
                   <BreadcrumbPage>{item.label}</BreadcrumbPage>
                 ) : (
                   item.href ? (
-                    <BreadcrumbLink href={item.href}>
-                      {item.label}
+                    <BreadcrumbLink asChild>
+                      <Link href={item.href}>
+                        {item.label}
+                      </Link>
                     </BreadcrumbLink>
                   ) : (
                     <BreadcrumbLink>{item.label}</BreadcrumbLink>
