@@ -12,7 +12,7 @@ import { ReactElement } from "react"
 
 export const AppSidebarPlaceholder = (): ReactElement => {
   return (
-    <Rendered>
+    <Rendered loadingComponent={<></>}>
       <SidebarGroup>
         <SidebarGroupLabel>
           <Skeleton animated={false} className="h-4 w-1/2 rounded-md" />
@@ -31,7 +31,7 @@ export const AppSidebarPlaceholder = (): ReactElement => {
       
       <SidebarGroup>
         <SidebarGroupLabel>
-          <Skeleton animated={false} className="h-4 w-1/3 rounded-md" />
+          <Skeleton animated={false} className="h-4 w-1/3 rounded-md" id="AZAZ" />
         </SidebarGroupLabel>
         
         <SidebarGroupContent>
