@@ -1,10 +1,20 @@
+import { BreadcrumbSetter } from "@workspace/ui/components/setter-breadcrumb";
 import { ReactElement } from "react";
 
 const OrganizationAnalytics = (): ReactElement => {
   return (
-    <div>
-      <h1>Organization Analytics</h1>
-    </div>
+    <>
+      <BreadcrumbSetter items={
+        [
+          { label: "Organization", href: "/" },
+          { label: "Analytics" }
+        ]
+      } />
+      
+      <div>
+        <h1>Organization Analytics</h1>
+      </div>
+    </>
   );
 }
 
