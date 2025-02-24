@@ -1,7 +1,7 @@
 import { buttonVariants } from "@workspace/ui/components/button";
 import Link from "next/link";
 
-const NotFound = async () => {
+const NotFound = () => {
   return (
     <div className={"absolute inset-0 flex flex-col items-center justify-center backdrop-blur-sm"}>
       <h2 className="text-lg sm:text-xl md:text-3xl font-bold">
