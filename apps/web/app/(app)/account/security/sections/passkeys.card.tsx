@@ -6,14 +6,13 @@ import { Button } from "@workspace/ui/components/button";
 import { toast } from "@workspace/ui/hooks/use-toast";
 import { Fingerprint, Loader2, Pen, Trash, X } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
-import { dayJS } from "@/lib/dayjs";
 import { useState } from "react";
-import { Separator } from "@workspace/ui/components/separator";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@workspace/ui/components/dialog";
 import { Label } from "@workspace/ui/components/label";
 import { Input } from "@workspace/ui/components/input";
 import { z } from "zod";
 import { useIsPasskeyAvailable } from "@/hooks/use-passkey-avaible";
+import { Passkey } from "better-auth/plugins/passkey";
 
 export const SectionPasskeysCard = () => {
   const { data: passkeys, refetch, isPending, isRefetching } = authClient.useListPasskeys();
@@ -101,7 +100,7 @@ export const SectionPasskeysCard = () => {
                         description: "Please wait while we add the passkey to your account."
                       });
                     },
-                    onError: (error) => {
+                    onError: (error: any) => {
                       setLoading(false);
                       toast({
                         title: "Error while adding passkey",
@@ -141,7 +140,7 @@ export const SectionPasskeysCard = () => {
           <>
             {passkeys && passkeys.length > 0 ? (
               <div className="space-y-2">
-                {passkeys.map((passkey) => (
+                {passkeys.map((passkey: Passkey) => (
                   <div key={passkey.id} className="flex flex-row items-center justify-between p-2 space-x-4 bg-bg-secondary rounded-lg border border-border">
                     <p className="ml-2 text-base font-medium line-clamp-1">{passkey.name ?? "Unnamed Passkey"}</p>
 
@@ -192,7 +191,7 @@ export const SectionPasskeysCard = () => {
                                     description: "Please wait while we update the passkey."
                                   });
                                 },
-                                onError: (error) => {
+                                onError: (error: any) => {
                                   setLoading(false);
                                   toast({
                                     title: "Error while updating passkey",
@@ -245,7 +244,7 @@ export const SectionPasskeysCard = () => {
                                   description: "Please wait while we delete the passkey from your account."
                                 });
                               },
-                              onError: (error) => {
+                              onError: (error: any) => {
                                 setLoading(false);
                                 toast({
                                   title: "Error while deleting passkey",

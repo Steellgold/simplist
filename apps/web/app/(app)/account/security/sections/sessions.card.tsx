@@ -59,7 +59,7 @@ export const SectionSessionsCard = () => {
                   });
                   setLoading(true);
                 },
-                onError: (error) => {
+                onError: (error: any) => {
                   toast({
                     title: "Error while revoking sessions",
                     description: error.error.message || "An error occurred while revoking all active sessions.",
@@ -160,7 +160,7 @@ export const SectionSessionsCard = () => {
                                     description: "Please wait while we revoke the active session."
                                   });
                                 },
-                                onError: (error) => {
+                                onError: (error: any) => {
                                   setTerminating("");
                                   toast({
                                     title: "Error while revoking session",
