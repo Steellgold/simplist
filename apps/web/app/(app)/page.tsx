@@ -2,10 +2,10 @@
 
 import { authClient } from "@/lib/auth-client";
 import { ReactElement } from "react";
-import { NoOrganizations } from "./_lib/no-organizations";
+import { NoOrganizations } from "./_components/no-organizations";
 import { BreadcrumbSetter } from "@workspace/ui/components/setter-breadcrumb";
 import { Loader2 } from "lucide-react";
-import { SelectOrganization } from "./_lib/select-organizations";
+import { SelectOrganization } from "./_components/select-organizations";
 
 const Home = (): ReactElement => {
   const { data: activeOrganization, isPending: isActiveOrganizationPending } = authClient.useActiveOrganization();
