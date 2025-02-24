@@ -63,11 +63,16 @@ CardContent.displayName = "CardContent"
 
 const CardFooter = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
+  React.HTMLAttributes<HTMLDivElement> & {
+    vercelStyle?: boolean
+  }
+>(({ className, vercelStyle = false, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex items-center p-6 pt-0", className)}
+    className={cn("flex items-center", className, {
+      "p-6 pt-0": !vercelStyle,
+      "flex items-center justify-between border-t p-3.5": vercelStyle,
+    })}
     {...props}
   />
 ))
