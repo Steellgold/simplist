@@ -1,11 +1,21 @@
+import { BreadcrumbSetter } from "@workspace/ui/components/setter-breadcrumb";
 import { ReactElement } from "react";
 
-const OrganizationSecurity = (): ReactElement => {
+const OrganizationSettings = (): ReactElement => {
   return (
-    <div>
-      <h1>Organization Security</h1>
-    </div>
+    <>
+      <BreadcrumbSetter items={
+        [
+          { label: "Organization", href: "/" },
+          { label: "Settings", href: "/settings" }
+        ]
+      } />
+
+      <div>
+        <h1>Organization Settings</h1>
+      </div>
+    </>
   );
 }
 
-export default OrganizationSecurity;
+export default OrganizationSettings;
