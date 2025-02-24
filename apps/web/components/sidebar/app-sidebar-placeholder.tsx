@@ -31,7 +31,7 @@ export const AppSidebarPlaceholder = (): ReactElement => {
       
       <SidebarGroup>
         <SidebarGroupLabel>
-          <Skeleton animated={false} className="h-4 w-1/3 rounded-md" id="AZAZ" />
+          <Skeleton animated={false} className="h-4 w-1/3 rounded-md" />
         </SidebarGroupLabel>
         
         <SidebarGroupContent>
