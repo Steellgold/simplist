@@ -13,6 +13,7 @@ import {
   DialogTrigger,
 } from "@workspace/ui/components/dialog";
 import { PasswordInput } from "@workspace/ui/components/input-password";
+import { Input } from "@workspace/ui/components/input";
 import { Component } from "@workspace/ui/components/utils/component";
 import { toast } from "@workspace/ui/hooks/use-toast";
 import { CircleAlert, Loader2 } from "lucide-react";
@@ -20,18 +21,32 @@ import { PropsWithChildren, useState } from "react";
 
 type PasswordConfirmationDialogProps = PropsWithChildren & {
   action: (password: string) => void | Promise<void>;
-
   actionType?: "delete" | "update";
+  additionalRewrite?: string;
 }
 
-export const PasswordConfirmationDialog: Component<PasswordConfirmationDialogProps> = ({ children, action, actionType }) => {
+export const PasswordConfirmationDialog: Component<PasswordConfirmationDialogProps> = ({ 
+  children, 
+  action, 
+  actionType,
+  additionalRewrite 
+}) => {
   const [isPending, setPending] = useState(false);
   const [isOpen, setOpen] = useState(false);
+  const [rewriteValue, setRewriteValue] = useState("");
+  const [rewriteError, setRewriteError] = useState(false);
+
+  const handleRewriteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setRewriteValue(e.target.value);
+    setRewriteError(false);
+  };
 
   return (
     <Dialog onOpenChange={() => {
       setOpen(!isOpen);
       setPending(false);
+      setRewriteValue("");
+      setRewriteError(false);
     }} open={isOpen}>
       <DialogTrigger asChild>
         {children}
@@ -51,6 +66,7 @@ export const PasswordConfirmationDialog: Component<PasswordConfirmationDialogPro
                   ? "This action cannot be undone. To confirm, please enter your password."
                   : "To confirm your changes, please enter your password."
               }
+              {additionalRewrite && " Additionally, please type the confirmation phrase exactly as shown."}
             </DialogDescription>
           </DialogHeader>
         </div>
@@ -60,6 +76,16 @@ export const PasswordConfirmationDialog: Component<PasswordConfirmationDialogPro
           onSubmit={async(e) => {
             e.preventDefault();
             const formData = new FormData(e.currentTarget);
+            
+            if (additionalRewrite && rewriteValue !== additionalRewrite) {
+              setRewriteError(true);
+              toast({
+                title: "Confirmation failed",
+                description: "The confirmation phrase doesn't match. Please try again.",
+                variant: "destructive"
+              });
+              return;
+            }
 
             await authClient.changePassword({
               currentPassword: e.currentTarget.password.value,
@@ -94,6 +120,29 @@ export const PasswordConfirmationDialog: Component<PasswordConfirmationDialogPro
           }}
         >
           <PasswordInput label="Type your password to confirm the action" showForgotPassword={false} />
+          
+          {additionalRewrite && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium">
+                Type
+                &quot;
+                <span className="select-none font-semibold">{additionalRewrite}</span>
+                &quot;
+                to confirm
+              </label>
+              <Input
+                value={rewriteValue}
+                onChange={handleRewriteChange}
+                className={rewriteError ? "border-red-500" : ""}
+                placeholder={`Type ${additionalRewrite}`}
+              />
+              {rewriteError && (
+                <p className="text-sm text-red-500">
+                  Please type the exact phrase: {additionalRewrite}
+                </p>
+              )}
+            </div>
+          )}
           
           <DialogFooter>
             <DialogClose asChild>
