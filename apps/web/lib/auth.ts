@@ -9,6 +9,13 @@ export const auth = betterAuth({
     autoSignIn: true,
     minPasswordLength: 8
   },
+  appName: "Simplist",
+  socialProviders: {
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+    }
+  },
   plugins: [
     organization(),
     multiSession({
