@@ -4,6 +4,7 @@ import React, { useContext } from "react";
 import { BreadcrumbContext } from "@workspace/ui/contexts/breadcrumb-context";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@workspace/ui/components/breadcrumb";
 import { Skeleton } from "@workspace/ui/components/skeleton";
+// @ts-ignore
 import Link from "next/link";
 
 interface BreadcrumbProps {
