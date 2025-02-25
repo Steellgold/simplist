@@ -13,6 +13,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { NewOrganization } from "../new-organization";
 import Link from "next/link";
 import { Component } from "@workspace/ui/components/utils/component";
+import { cn } from "@workspace/ui/lib/utils";
 
 type AppSidebarOrganizationProps = {
   side?: "bottom" | "right" | "top" | "left" | undefined;
@@ -83,10 +84,15 @@ export const AppSidebarOrganization: Component<AppSidebarOrganizationProps> = ({
               <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
                 {activeOrganization ? (
                   <>
-                    <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                    <div className={cn(
+                      "flex aspect-square size-8 items-center justify-center rounded-lg", {
+                        "bg-sidebar-primary text-sidebar-primary-foreground": !activeOrganization.logo,
+                        "bg-muted text-muted-foreground": activeOrganization.logo
+                      }
+                    )}>
                       {
                         activeOrganization.logo ?
-                          <Image src={activeOrganization.logo} alt={activeOrganization.name} className="size-6" /> :
+                          <Image src={activeOrganization.logo} alt={activeOrganization.name} className="size-6" width={48} height={48} /> :
                           <Building className="size-5" />
                       }
                     </div>
@@ -197,7 +203,7 @@ export const AppSidebarOrganization: Component<AppSidebarOrganizationProps> = ({
                   <div className="flex size-6 items-center justify-center rounded-sm border">
                     {
                       org.logo ?
-                        <Image src={org.logo} alt={org.name} className="size-4" /> :
+                        <Image src={org.logo} alt={org.name} className="size-4" width={32} height={32} /> :
                         <Building className="size-4" />
                     }
                   </div>
