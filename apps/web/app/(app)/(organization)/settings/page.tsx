@@ -7,6 +7,8 @@ import { OrganizationSettingsSlugForm } from "./_components/organization.slug";
 import { authClient } from "@/lib/auth-client";
 import NotFound from "@/app/not-found";
 import { OrganizationSettingsLogoForm } from "./_components/organization.logo";
+import { OrganizationSettingsDeleteForm } from "./_components/organization.danger";
+import { OrganizationSettingsLeaveForm } from "./_components/organization.leave";
 
 const OrganizationSettings = (): ReactElement => {
   const { data: activeOrganization } = authClient.useActiveOrganization();
@@ -30,6 +32,11 @@ const OrganizationSettings = (): ReactElement => {
       </div>
 
       <OrganizationSettingsLogoForm initialLogo={activeOrganization.logo ?? ""} organizationId={activeOrganization.id} />
+      
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <OrganizationSettingsLeaveForm />
+        <OrganizationSettingsDeleteForm />
+      </div>
     </>
   );
 
