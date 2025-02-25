@@ -4,8 +4,6 @@ import React, { useContext } from "react";
 import { BreadcrumbContext } from "@workspace/ui/contexts/breadcrumb-context";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@workspace/ui/components/breadcrumb";
 import { Skeleton } from "@workspace/ui/components/skeleton";
-
-// @ts-expect-error - Required for NextJS to work
 import Link from "next/link";
 
 interface BreadcrumbProps {
