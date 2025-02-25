@@ -61,9 +61,11 @@ export const OrganizationSettingsLogoForm: Component<OrganizationSettingsLogoFor
     try {
       const formData = new FormData()
       formData.append("file", file)
+      formData.append("fileType", "organization-logo")
       formData.append("organizationId", organizationId)
 
-      const response = await fetch("/api/organizations/logo", {
+      // Utilisation de la nouvelle API d'upload de fichiers
+      const response = await fetch("/api/files/upload", {
         method: "POST",
         body: formData,
       })

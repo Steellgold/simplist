@@ -2,7 +2,6 @@
 import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
-// Configuration for Cloudflare R2
 const CLOUDFLARE_ACCOUNT_ID = process.env.CLOUDFLARE_ACCOUNT_ID || "";
 const R2_ACCESS_KEY_ID = process.env.CLOUDFLARE_ACCESS_KEY_ID || "";
 const R2_SECRET_ACCESS_KEY = process.env.CLOUDFLARE_SECRET_ACCESS_KEY || "";
@@ -22,17 +21,62 @@ const s3Client = new S3Client({
   },
 });
 
+export type FileType = 
+  | "organization-logo" 
+  | "post-image" 
+  | "user-avatar"
+  | "custom";
+
+const generateFilePath = (
+  fileType: FileType, 
+  organizationId?: string, 
+  userId?: string, 
+  postId?: string, 
+  customPath?: string
+): string => {
+  const timestamp = Date.now();
+  
+  switch (fileType) {
+    case "organization-logo":
+      if (!organizationId) throw new Error("organizationId is required for organization-logo");
+      return `organizations/${organizationId}/logo-${timestamp}`;
+    
+    case "post-image":
+      if (!organizationId) throw new Error("organizationId is required for post-image");
+      if (!postId) throw new Error("postId is required for post-image");
+      return `organizations/${organizationId}/posts/${postId}/image-${timestamp}`;
+    
+    case "user-avatar":
+      if (!userId) throw new Error("userId is required for user-avatar");
+      return `users/${userId}/avatar-${timestamp}`;
+    
+    case "custom":
+      if (!customPath) throw new Error("customPath is required for custom file type");
+      return customPath;
+    
+    default:
+      throw new Error(`Unsupported file type: ${fileType}`);
+  }
+};
+
 /**
- * Uploads a file to R2
+ * Uploads a file to R2 with specific path based on type
  * @param file The file to upload
- * @param key The unique name of the file in the bucket
- * @param contentType The MIME type of the file
+ * @param fileType The type of file which determines the storage path
+ * @param options Additional options including IDs and file information
  * @returns The URL of the uploaded file with custom domain
  */
 const uploadFile = async (
   file: Buffer | Blob,
-  key: string,
-  contentType: string = "image/png"
+  fileType: FileType,
+  options: {
+    organizationId?: string;
+    userId?: string;
+    postId?: string;
+    customPath?: string;
+    contentType?: string;
+    extension?: string;
+  } = {}
 ): Promise<string> => {
   try {
     let fileBuffer: Buffer;
@@ -41,6 +85,11 @@ const uploadFile = async (
     } else {
       fileBuffer = file;
     }
+
+    const { organizationId, userId, postId, customPath, contentType = "image/png", extension = "png" } = options;
+    
+    const basePath = generateFilePath(fileType, organizationId, userId, postId, customPath);
+    const key = `${basePath}.${extension}`;
 
     const putCommand = new PutObjectCommand({
       Bucket: R2_BUCKET_NAME,
