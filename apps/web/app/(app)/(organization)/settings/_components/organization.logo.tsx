@@ -64,7 +64,6 @@ export const OrganizationSettingsLogoForm: Component<OrganizationSettingsLogoFor
       formData.append("fileType", "organization-logo")
       formData.append("organizationId", organizationId)
 
-      // Utilisation de la nouvelle API d'upload de fichiers
       const response = await fetch("/api/files/upload", {
         method: "POST",
         body: formData,
@@ -96,6 +95,7 @@ export const OrganizationSettingsLogoForm: Component<OrganizationSettingsLogoFor
           },
           onSuccess: () => {
             setPending(false)
+            setLogoPreview(null)
             toast({
               title: "Logo updated",
               description: "Your organization logo has been successfully updated.",
