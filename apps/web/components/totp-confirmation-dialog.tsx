@@ -1,13 +1,10 @@
 "use client";
 
 import { authClient } from "@/lib/auth-client";
-import { Button } from "@workspace/ui/components/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
