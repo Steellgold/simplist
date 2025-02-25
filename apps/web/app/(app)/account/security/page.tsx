@@ -10,6 +10,7 @@ import { SectionPasskeysCard } from "./sections/passkeys.card";
 import { useSessions } from "@/hooks/use-sessions";
 import { SectionSessionsCard } from "./sections/sessions.card";
 import { SectionA2FCard } from "./sections/twofactor.card";
+import { SectionPasswordCard } from "./sections/password.card";
 
 const AccountSecurityPage = () => {
   const { data: session, isPending: isSessionPending } = authClient.useSession();
@@ -83,7 +84,8 @@ const AccountSecurityPage = () => {
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <SectionPasskeysCard />
-          <SectionA2FCard />
+          {/* <SectionA2FCard /> */}
+          <SectionPasswordCard />
         </div>
 
         <SectionSessionsCard />
