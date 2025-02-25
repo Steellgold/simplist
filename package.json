@@ -6,7 +6,10 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+
+    "declaration-off-git": "git update-index --skip-worktree packages/typescript-config/base.json",
+    "declaration-on-git": "git update-index --no-skip-worktree packages/typescript-config/base.json"
   },
   "devDependencies": {
     "@workspace/eslint-config": "workspace:*",
