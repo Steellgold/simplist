@@ -67,7 +67,6 @@ export const AppSidebar: Component<React.ComponentProps<typeof Sidebar>> = (prop
                         { title: "Overview", url: "/" },
                         { title: "Posts", url: "/posts" },
                         { title: "Analytics", url: "/analytics" },
-                        { title: "API", url: "/api" },
                         { title: "Members", url: "/members" },
                       ]
                     }
@@ -84,7 +83,7 @@ export const AppSidebar: Component<React.ComponentProps<typeof Sidebar>> = (prop
                       icon: Settings,
                       items: [
                         { title: "General", url: "/settings" },
-                        { title: "Security", url: "/settings/security" },
+                        { title: "API", url: "/settings/api" },
                         { title: "Billing", url: "/settings/billing" }
                       ]
                     }
