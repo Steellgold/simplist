@@ -16,6 +16,12 @@ export const auth = betterAuth({
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
     }
   },
+  account: {
+    accountLinking: {
+      enabled: true,
+      trustedProviders: ["google", "github"]
+    }
+  },
   plugins: [
     organization(),
     multiSession({
