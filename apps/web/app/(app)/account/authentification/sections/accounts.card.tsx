@@ -39,10 +39,7 @@ export const SocialAccountsCard = (): ReactElement => {
         ))}
 
         {!isPending && accounts.map((account) => (
-          <div
-            key={account.id}
-            className="flex items-center justify-between rounded-lg border p-4"
-          >
+          <div key={account.id} className="flex items-center justify-between rounded-lg border p-4">
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-full border bg-background">
                 {account.provider === "github" ? (
@@ -54,7 +51,7 @@ export const SocialAccountsCard = (): ReactElement => {
                 )}
               </div>
 
-              <div>
+              <div className="flex flex-col">
                 <p className="font-medium capitalize">{account.provider}</p>
 
                 <p className="text-sm text-muted-foreground">
@@ -87,6 +84,7 @@ export const SocialAccountsCard = (): ReactElement => {
                           title: "Account disconnected",
                           description: "You have successfully disconnected your account"
                         })
+                        window.location.reload();
                       }
                     }
                   })
@@ -141,6 +139,7 @@ export const SocialAccountsCard = (): ReactElement => {
                   
                   await authClient.linkSocial({
                     provider: provider as "github" | "apple" | "discord" | "facebook" | "microsoft" | "google" | "spotify" | "twitch" | "twitter" | "dropbox" | "linkedin" | "gitlab" | "reddit",
+                    callbackURL: new URL("/account/authentification", window.location.origin).toString(),
                     fetchOptions: {
                       onError: () => {
                         setConnecting(null);
