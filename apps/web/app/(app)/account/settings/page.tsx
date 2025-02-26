@@ -12,6 +12,7 @@ import { toast } from "@workspace/ui/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
+import { AccountSettingsAvatarForm } from "./_sections/account-logo.card";
 
 const userSchema = z.object({
   first_name: z.string()
@@ -165,7 +166,7 @@ const AccountSettingsPage = () => {
           </CardFooter>
         </Card>
 
-        {/* TODO: Avatar settings */}
+        <AccountSettingsAvatarForm initialAvatar={user.image ?? ""} />
     </>
   );
 };
