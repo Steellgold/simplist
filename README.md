@@ -1,7 +1,31 @@
-![opengraph-image](https://github.com/Steellgold/simplist/assets/51505384/39caa4ac-da4b-4b42-80a9-f69c257d210e)
+# shadcn/ui monorepo template
 
-A project for the Supabase OSS Hackaton 2024
+This template is for creating a monorepo with shadcn/ui.
 
-Simplist is a simple, fast posting API. Post your content in the simplest way possible, and just get your content back with an API
+## Usage
 
-[Demo vidéo](https://youtu.be/DssHBnrg4jk?si=0eatVLv1ZMfu2uGH)
+```bash
+pnpm dlx shadcn@latest init
+```
+
+## Adding components
+
+To add components to your app, run the following command at the root of your `web` app:
+
+```bash
+pnpm dlx shadcn@latest add button -c apps/web
+```
+
+This will place the ui components in the `packages/ui/src/components` directory.
+
+## Tailwind
+
+Your `tailwind.config.ts` and `globals.css` are already set up to use the components from the `ui` package.
+
+## Using components
+
+To use the components in your app, import them from the `ui` package.
+
+```tsx
+import { Button } from "@workspace/ui/components/ui/button"
+```
