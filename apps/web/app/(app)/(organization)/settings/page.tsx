@@ -3,7 +3,6 @@
 import { ReactElement } from "react";
 import { BreadcrumbSetter } from "@workspace/ui/components/setter-breadcrumb";
 import { OrganizationSettingsNameForm } from "./_components/organization.name";
-import { OrganizationSettingsSlugForm } from "./_components/organization.slug";
 import { authClient } from "@/lib/auth-client";
 import NotFound from "@/app/not-found";
 import { OrganizationSettingsLogoForm } from "./_components/organization.logo";
@@ -28,7 +27,7 @@ const OrganizationSettings = (): ReactElement => {
 
       <div className="flex flex-col space-y-6">
         <OrganizationSettingsNameForm initialName={activeOrganization.name} organizationId={activeOrganization.id} />
-        <OrganizationSettingsSlugForm initialSlug={activeOrganization.slug} organizationId={activeOrganization.id} />
+        {/* <OrganizationSettingsSlugForm initialSlug={activeOrganization.slug} organizationId={activeOrganization.id} /> */}
       </div>
 
       <OrganizationSettingsLogoForm initialLogo={activeOrganization.logo ?? ""} organizationId={activeOrganization.id} />
