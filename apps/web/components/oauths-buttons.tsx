@@ -44,9 +44,23 @@ export const OAuthsButtons = () => {
         )}
       </Button>
 
-      <Button variant="outline" className="w-full" onClick={(e) => {
-        e.preventDefault()
-        console.log("Sign up with Google");
+      <Button variant="outline" className="w-full" onClick={async(e) => {
+        e.preventDefault();
+        await authClient.signIn.social({
+          provider: "google",
+          fetchOptions: {
+            onRequest: () => setLoading("google"),
+            onSuccess: () => setLoading(null),
+            onError: (error) => {
+              setLoading(null);
+              toast({
+                title: "Error signing in with Google",
+                description: error.error.message || "An error occurred while signing in with Google",
+                variant: "destructive"
+              })
+            }
+          }
+        })
       }} disabled={loading !== null}>
         {loading !== null && loading === "google" ? (
           <>
