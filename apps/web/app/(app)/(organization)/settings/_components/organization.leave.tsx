@@ -1,4 +1,5 @@
 "use client";
+// TODO: Implement leave organization feature when Members feature is implemented
 
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
