@@ -6,10 +6,10 @@ import { Rendered } from "@workspace/ui/components/rendered";
 import { BreadcrumbSetter } from "@workspace/ui/components/setter-breadcrumb";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { Check, Minus, X } from "lucide-react";
-import { SectionPasskeysCard } from "./sections/passkeys.card";
+import { SectionPasskeysCard } from "./_sections/passkeys.card";
 import { useSessions } from "@/hooks/use-sessions";
-import { SectionSessionsCard } from "./sections/sessions.card";
-import { SectionA2FCard } from "./sections/twofactor.card";
+import { SectionSessionsCard } from "./_sections/sessions.card";
+import { SectionA2FCard } from "./_sections/twofactor.card";
 
 const AccountSecurityPage = () => {
   const { data: session, isPending: isSessionPending } = authClient.useSession();

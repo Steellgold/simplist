@@ -3,7 +3,7 @@
 import { authClient } from "@/lib/auth-client";
 import { BreadcrumbSetter } from "@workspace/ui/components/setter-breadcrumb";
 import { Skeleton } from "@workspace/ui/components/skeleton";
-import { SocialAccountsCard } from "./sections/accounts.card";
+import { SocialAccountsCard } from "./_sections/accounts.card";
 
 const AccountSettingsPage = () => {
   const { data: session, isPending: isSessionPending } = authClient.useSession();
