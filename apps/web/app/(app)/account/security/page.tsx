@@ -9,7 +9,6 @@ import { Check, Minus, X } from "lucide-react";
 import { SectionPasskeysCard } from "./sections/passkeys.card";
 import { useSessions } from "@/hooks/use-sessions";
 import { SectionSessionsCard } from "./sections/sessions.card";
-import { SectionPasswordCard } from "./sections/password.card";
 import { SectionA2FCard } from "./sections/twofactor.card";
 
 const AccountSecurityPage = () => {
@@ -91,7 +90,6 @@ const AccountSecurityPage = () => {
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <SectionPasskeysCard />
           <SectionA2FCard />
-          {/* <SectionPasswordCard /> */}
         </div>
 
         <SectionSessionsCard />
