@@ -4,7 +4,7 @@
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
 import { ReactElement } from "react";
-import { Trash2 } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 
@@ -43,7 +43,7 @@ export const OrganizationSettingsLeaveForm = (): ReactElement => {
             size="sm"
             disabled={data?.members.length === 1}
           >
-            <Trash2 className="h-4 w-4" />
+            <LogOut className="h-4 w-4" />
             Leave Organization
           </Button>
         </CardFooter>
