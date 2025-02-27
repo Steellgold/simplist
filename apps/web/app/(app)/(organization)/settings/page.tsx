@@ -8,6 +8,7 @@ import NotFound from "@/app/not-found";
 import { OrganizationSettingsLogoForm } from "./_components/organization.logo";
 import { OrganizationSettingsDeleteForm } from "./_components/organization.danger";
 import { OrganizationSettingsLeaveForm } from "./_components/organization.leave";
+import { Guard } from "@/components/guard";
 
 const OrganizationSettings = (): ReactElement => {
   const { data: activeOrganization } = authClient.useActiveOrganization();
@@ -34,25 +35,13 @@ const OrganizationSettings = (): ReactElement => {
       
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <OrganizationSettingsLeaveForm />
-        <OrganizationSettingsDeleteForm />
+
+        <Guard need={{ settings: ["delete"] }} elseElement={"Only organization owner can delete the organization."}>
+          <OrganizationSettingsDeleteForm />
+        </Guard>
       </div>
     </>
   );
-
-  // return (
-  //   <>
-  //     <BreadcrumbSetter items={
-  //       [
-  //         { label: "Organization", href: "/" },
-  //         { label: "Settings", href: "/settings" }
-  //       ]
-  //     } />
-
-  //     <>
-  //       <OrganizationSettingsNameForm />
-  //     </>
-  //   </>
-  // );
 }
 
 export default OrganizationSettings;
