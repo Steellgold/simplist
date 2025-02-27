@@ -1,19 +1,40 @@
 import { Permissions } from "@/lib/permissions";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { Component } from "@workspace/ui/components/utils/component";
-import { PropsWithChildren, useEffect, useState } from "react";
+import { X } from "lucide-react";
+import { PropsWithChildren, ReactElement, useEffect, useState } from "react";
 
-type SidebarLink = PropsWithChildren & {
+type GuardProps = PropsWithChildren & {
   need?: Permissions;
+  elseElement?: ReactElement | string;
 };
 
-export const Guard: Component<SidebarLink> = ({ children, need }) => {
+const permissionCache: { [key: string]: { hasPermission: boolean; timestamp: number } } = {};
+const CACHE_DURATION = 5 * 60 * 1000;
+
+export const Guard: Component<GuardProps> = ({ children, need, elseElement }) => {
   const [has, setHas] = useState<boolean | null>(null);
   const [pending, setPending] = useState(true);
 
   useEffect(() => {
+    if (need == undefined) {
+      setHas(true);
+      setPending(false);
+      return;
+    }
+
+    const permissionKey = JSON.stringify(need);
+    const now = Date.now();
+
+    if (permissionCache[permissionKey] && (now - permissionCache[permissionKey].timestamp < CACHE_DURATION)) {
+      setHas(permissionCache[permissionKey].hasPermission);
+      setPending(false);
+      return;
+    }
+
     const check = async () => {
       setPending(true);
+
       const res = await fetch("/api/auth/organization/has-permission", {
         method: "POST",
         headers: {
@@ -21,25 +42,50 @@ export const Guard: Component<SidebarLink> = ({ children, need }) => {
         },
         body: JSON.stringify({
           permission: need,
-        })
+        }),
       });
 
+      let hasPermission = false;
       if (res.ok) {
         const data = await res.json();
-        setHas(data.success);
-      } else {
-        setHas(false);
+        hasPermission = data.success;
       }
 
+      permissionCache[permissionKey] = { hasPermission, timestamp: now };
+
+      setHas(hasPermission);
       setPending(false);
-    }
+    };
 
     check();
   }, [need]);
 
   if (need == undefined) return <>{children}</>;
-  if (pending) return <Skeleton className="h-6 w-full" />;
-  if (has === false) return <></>;
+  if (pending) return <Skeleton className="min-h-6 h-full w-full" />;
+  if (has === false) return (
+    <>
+      {typeof elseElement === "string" ? <NotPermitted message={elseElement} /> : typeof elseElement !== "string" ? elseElement : undefined}
+    </>
+  )
+
   if (has === null) return <></>;
   return <>{children}</>;
 };
+
+type NotPermittedProps = {
+  message?: string;
+};
+
+export const NotPermitted: Component<NotPermittedProps> = ({ message }) => {
+  return (
+    <div className="flex flex-col items-center justify-center p-4 space-y-2 border border-dashed rounded-lg">
+      <div className="flex size-11 shrink-0 items-center justify-center rounded-full border border-dashed" aria-hidden="true">
+        <X className="h-5 w-5 text-destructive" />
+      </div>
+
+      <p className="text-sm text-center text-muted-foreground">
+        {message || "You do not have permission to view this page."}
+      </p>
+    </div>
+  )
+}
