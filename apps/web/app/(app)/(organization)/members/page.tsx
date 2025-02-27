@@ -3,6 +3,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton";
 import { MembersTable } from "./_sections/members.table.card";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { unauthorized } from "next/navigation";
 
 const OrganizationMembers = async() => {
   const [session, organization] =
@@ -16,7 +17,21 @@ const OrganizationMembers = async() => {
     ]);
 
   if (!organization) {
-    return <LoadingState />;
+    unauthorized();
+  }
+
+  const hasPermission = await auth.api.hasPermission({
+    body: {
+      permission: {
+        members: ["view"]
+      },
+      organizationId: organization.id
+    },
+    headers: await headers()
+  });
+
+  if (hasPermission.error) {
+    unauthorized();
   }
 
   return (
