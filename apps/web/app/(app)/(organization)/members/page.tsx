@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { unauthorized } from "next/navigation";
 import checkPermission from "@/lib/check-permission";
+import { Member } from "@/lib/auth-client";
 
 const OrganizationMembers = async() => {
   const [session, organization] =
@@ -43,7 +44,7 @@ const OrganizationMembers = async() => {
           }
         /> */}
         
-        <MembersTable members={organization.members} session={session} />
+        <MembersTable members={organization.members as Member[]} session={session} />
 
         {/* <InviteDialog 
           open={inviteDialogOpen} 
