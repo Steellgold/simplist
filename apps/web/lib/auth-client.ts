@@ -1,6 +1,7 @@
 import { ac,  admin, editor, member, owner, Permissions } from "./permissions";
 import { organizationClient, multiSessionClient, passkeyClient, twoFactorClient } from "better-auth/client/plugins"
 import { createAuthClient } from "better-auth/react"
+import { unauthorized } from "next/navigation";
 
 export const authClient = createAuthClient({
   plugins: [
@@ -16,17 +17,7 @@ export const authClient = createAuthClient({
 });
 
 export const can = async (permission: Permissions): Promise<boolean> => {
-  const response = await authClient.organization.hasPermission({
-    permission,
-    fetchOptions: {
-      onError: (ctx: any) => {
-        console.error("Permission check failed:", ctx);
-      },
-      onSuccess: (ctx: any) => {
-        console.log("Permission check succeeded:", ctx);
-      }
-    },
-  });
+  const response = await authClient.organization.hasPermission({ permission });
 
   if (response.error) return false;
   if (response.data.success) return true;
