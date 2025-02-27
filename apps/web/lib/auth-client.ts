@@ -15,18 +15,6 @@ export const authClient = createAuthClient({
   baseURL: process.env.PUBLIC_BETTER_AUTH_URL!,
 });
 
-// export const canSeeMembers: ReturnType<typeof authClient.organization.hasPermission> = await authClient.organization.hasPermission({
-//   permission: { members: ["view"] },
-//   fetchOptions: {
-//     onError: (ctx) => {
-//       console.log("onError", ctx)
-//     },
-//     onSuccess: (ctx) => {
-//       console.log("onSuccess", ctx)
-//     }
-//   }
-// });
-
 export const can = async (permission: Permissions): Promise<boolean> => {
   const response = await authClient.organization.hasPermission({
     permission,
@@ -44,10 +32,6 @@ export const can = async (permission: Permissions): Promise<boolean> => {
   if (response.data.success) return true;
   return false;
 }
-
-// export const canDoSomething = async (permissions: Permissions) => {
-//   return await authClient.organization.hasPermission({ permission: permissions });
-// };
 
 export type Session = typeof authClient.$Infer.Session
 export type Organization = typeof authClient.$Infer.Organization
