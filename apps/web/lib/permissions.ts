@@ -31,18 +31,11 @@ const statement = {
 const ac = createAccessControl(statement);
 
 const member = ac.newRole({
-  settings: [],
-  apikeys: [],
   members: ["view"],
   posts: ["create"],
-  tags: [],
-  categories: [],
-  analytics: []
 });
 
 const editor = ac.newRole({
-  settings: [],
-  apikeys: [],
   members: ["view"],
   posts: ["create", "update"],
   tags: ["create", "update"],
@@ -51,7 +44,7 @@ const editor = ac.newRole({
 });
 
 const admin = ac.newRole({
-  settings: ["update-name", "update-logo"],
+  settings: ["update-name", "update-logo", "view"],
   apikeys: ["create", "delete"],
   members: ["view", "invite", "remove"],
   posts: ["create", "update", "delete"],
@@ -62,7 +55,7 @@ const admin = ac.newRole({
 
 const owner = ac.newRole({
   ...admin.statements,
-  settings: ["delete", "update-logo", "update-name"]
+  settings: ["delete", "update-logo", "update-name", "view"]
 });
 
 export { ac, member, editor, admin, owner };
