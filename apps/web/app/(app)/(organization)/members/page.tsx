@@ -9,12 +9,8 @@ import checkPermission from "@/lib/check-permission";
 const OrganizationMembers = async() => {
   const [session, organization] =
     await Promise.all([
-      auth.api.getSession({
-        headers: await headers(),
-      }),
-      auth.api.getFullOrganization({
-				headers: await headers(),
-			})
+      auth.api.getSession({ headers: await headers() }),
+      auth.api.getFullOrganization({ headers: await headers() })
     ]);
 
   if (!organization) {
