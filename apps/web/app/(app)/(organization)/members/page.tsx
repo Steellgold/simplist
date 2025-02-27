@@ -1,21 +1,81 @@
 import { BreadcrumbSetter } from "@workspace/ui/components/setter-breadcrumb";
-import { ReactElement } from "react";
+import { Skeleton } from "@workspace/ui/components/skeleton";
+import { MembersTable } from "./_sections/members.table.card";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
-const OrganizationMembers = (): ReactElement => {
+const OrganizationMembers = async() => {
+  const [session, organization] =
+    await Promise.all([
+      auth.api.getSession({
+        headers: await headers(),
+      }),
+      auth.api.getFullOrganization({
+				headers: await headers(),
+			})
+    ]);
+
+  if (!organization) {
+    return <LoadingState />;
+  }
+
   return (
     <>
-      <BreadcrumbSetter items={
-        [ 
-          { label: "Organization", href: "/" }, 
-          { label: "Members" } 
-        ]
-      } />
+      <BreadcrumbSetter
+        items={[
+          { label: "Organization", href: "/" },
+          { label: "Members" }
+        ]} 
+      />
       
-      <div>
-        <h1>Organization Members</h1>
+      <div className="space-y-6">
+        {/* <PageHeader
+          title=""
+          description=""
+          action={
+            <Button onClick={() => console.log("Invite member clicked")} size={"sm"}>
+              <Plus className="mr-2 h-4 w-4" />
+              Invite Member
+            </Button>
+          }
+        /> */}
+        
+        <MembersTable members={organization.members} session={session} />
+
+        {/* <InviteDialog 
+          open={inviteDialogOpen} 
+          onOpenChange={setInviteDialogOpen}
+          onSubmit={handleInviteSubmit}
+        />
+
+        
+        <InvitationTable 
+          invitations={invitations}
+          visible={pendingInvitationsVisible}
+          onToggleVisibility={() => setPendingInvitationsVisible(!pendingInvitationsVisible)}
+          onCancelInvitation={handleCancelInvitation}
+          onResendInvitation={handleResendInvitation}
+          onCopyInviteLink={copyInviteLink}
+        /> */}
       </div>
     </>
   );
-}
+};
+
+const LoadingState = () => (
+  <>
+    <BreadcrumbSetter 
+      items={[
+        { label: "Organization", href: "/" },
+        { label: "Members" }
+      ]} 
+    />
+    <div className="space-y-6">
+      <Skeleton className="h-64" />
+      <Skeleton className="h-48" />
+    </div>
+  </>
+);
+
 
 export default OrganizationMembers;
