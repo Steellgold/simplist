@@ -31,12 +31,10 @@ const statement = {
 const ac = createAccessControl(statement);
 
 const member = ac.newRole({
-  members: ["view"],
   posts: ["create"],
 });
 
 const editor = ac.newRole({
-  members: ["view"],
   posts: ["create", "update"],
   tags: ["create", "update"],
   categories: ["create", "update"],
