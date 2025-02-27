@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { auth } from "./auth";
 import { Permissions } from "./permissions";
-import { unauthorized } from "next/navigation";
+import { forbidden } from "next/navigation";
 
 interface CheckPermissionParams {
   permission: Permissions;
@@ -18,7 +18,7 @@ const checkPermission = async ({ permission, organizationId }: CheckPermissionPa
   });
 
   if (hasPermission.error) {
-    unauthorized();
+    forbidden();
   }
 };
 

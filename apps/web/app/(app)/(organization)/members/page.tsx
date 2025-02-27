@@ -13,7 +13,7 @@ const OrganizationMembers = async() => {
       auth.api.getFullOrganization({ headers: await headers() })
     ]);
 
-  if (!organization) {
+  if (!organization || !session) {
     unauthorized();
   }
 

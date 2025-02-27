@@ -3,17 +3,15 @@ import { Button } from "@workspace/ui/components/button";
 import Link from "next/link";
 import { ReactElement } from "react";
 
-const Unauthorized = async (): Promise<ReactElement> => {
+const Forbidden = async (): Promise<ReactElement> => {
   return (
     <>
       <div className={"absolute inset-0 flex flex-col items-center justify-center backdrop-blur-sm"}>
         <h2 className="text-3xl font-bold">
-          Unauthorized
+          Forbidden
         </h2>
 
-        <p className="mb-4">
-          You are not authorized to access this page.
-        </p>
+        <p className="mb-4">You are not allowed to access this page, sorry.</p>
 
         <Button variant="outline" asChild>
           <Link href="/">
@@ -29,4 +27,4 @@ const Unauthorized = async (): Promise<ReactElement> => {
   )
 }
 
-export default Unauthorized;
+export default Forbidden;
