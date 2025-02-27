@@ -4,7 +4,7 @@ import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, Sideba
 import { Component } from "@workspace/ui/components/utils/component"
 import { ChevronRight, LucideIcon } from "lucide-react"
 import Link from "next/link"
-import { AppSidebarLink } from "./app-sidebar-link"
+import { Guard } from "@/components/guard"
 
 type SidebarLink = {
   title: string;
@@ -25,7 +25,7 @@ export const AppSidebarLinks: Component<{
 }> = ({ name, links }) => {
   return (
     <SidebarGroup>
-      <AppSidebarLink need={(links[0] && links[0].permissionsNeeded) || undefined}>
+      <Guard need={(links[0] && links[0].permissionsNeeded) || undefined}>
         <SidebarGroupLabel>{name}</SidebarGroupLabel>
         <SidebarMenu>
           {links.map((item) => (
@@ -46,7 +46,7 @@ export const AppSidebarLinks: Component<{
                 <CollapsibleContent>
                   <SidebarMenuSub>
                     {item.items?.map((subItem) => (
-                      <AppSidebarLink key={subItem.title} need={subItem.permissionsNeeded}>
+                      <Guard key={subItem.title} need={subItem.permissionsNeeded}>
                         <SidebarMenuSubItem>
                           <SidebarMenuSubButton asChild>
                             <Link href={subItem.url}>
@@ -54,7 +54,7 @@ export const AppSidebarLinks: Component<{
                             </Link>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
-                      </AppSidebarLink>
+                      </Guard>
                     ))}
                   </SidebarMenuSub>
                 </CollapsibleContent>
@@ -62,7 +62,7 @@ export const AppSidebarLinks: Component<{
             </Collapsible>
           ))}
         </SidebarMenu>
-      </AppSidebarLink>
+      </Guard>
     </SidebarGroup>
   )
 }

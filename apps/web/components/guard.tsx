@@ -7,7 +7,7 @@ type SidebarLink = PropsWithChildren & {
   need?: Permissions;
 };
 
-export const AppSidebarLink: Component<SidebarLink> = ({ children, need }) => {
+export const Guard: Component<SidebarLink> = ({ children, need }) => {
   const [has, setHas] = useState<boolean | null>(null);
   const [pending, setPending] = useState(true);
 
