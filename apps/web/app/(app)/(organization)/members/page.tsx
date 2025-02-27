@@ -4,6 +4,7 @@ import { MembersTable } from "./_sections/members.table.card";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { unauthorized } from "next/navigation";
+import checkPermission from "@/lib/check-permission";
 
 const OrganizationMembers = async() => {
   const [session, organization] =
@@ -20,19 +21,10 @@ const OrganizationMembers = async() => {
     unauthorized();
   }
 
-  const hasPermission = await auth.api.hasPermission({
-    body: {
-      permission: {
-        members: ["view"]
-      },
-      organizationId: organization.id
-    },
-    headers: await headers()
-  });
-
-  if (hasPermission.error) {
-    unauthorized();
-  }
+  await checkPermission({
+    organizationId: organization.id,
+    permission: { members: ["view"], },
+  })
 
   return (
     <>
