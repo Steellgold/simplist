@@ -65,9 +65,21 @@ export const AppSidebar: Component<React.ComponentProps<typeof Sidebar>> = (prop
                       icon: LayoutDashboard,
                       items: [
                         { title: "Overview", url: "/" },
-                        { title: "Posts", url: "/posts" },
-                        { title: "Analytics", url: "/analytics" },
-                        { title: "Members", url: "/members" },
+                        //
+                        {
+                          title: "Posts", url: "/posts",
+                          permissionsNeeded: { posts: ["create"] },
+                        },
+                        //
+                        {
+                          title: "Analytics", url: "/analytics",
+                          permissionsNeeded: { analytics: ["view"] },
+                        },
+                        //
+                        {
+                          title: "Members", url: "/members",
+                          permissionsNeeded: { members: ["view"] }
+                        },
                       ]
                     }
                   ]}
@@ -81,10 +93,22 @@ export const AppSidebar: Component<React.ComponentProps<typeof Sidebar>> = (prop
                       url: "/settings",
                       isActive: path.startsWith("/settings"),
                       icon: Settings,
+                      permissionsNeeded: { settings: ["view"] },
                       items: [
-                        { title: "General", url: "/settings" },
-                        { title: "API", url: "/settings/api" },
-                        { title: "Billing", url: "/settings/billing" }
+                        {
+                          title: "General", url: "/settings",
+                          permissionsNeeded: { settings: ["view"] }
+                        },
+                        //
+                        {
+                          title: "API", url: "/settings/api",
+                          permissionsNeeded: { apikeys: ["create"] }
+                        },
+                        //
+                        {
+                          title: "Billing", url: "/settings/billing",
+                          permissionsNeeded: { settings: ["delete"] }
+                        }
                       ]
                     }
                   ]}
@@ -98,14 +122,13 @@ export const AppSidebar: Component<React.ComponentProps<typeof Sidebar>> = (prop
           </>
         )}
 
-        {/* <NavProjects projects={data.projects} /> */}
-        
         {
           (!data || data.length === 0 || isPending || isRefetching) && !path.startsWith("/account") ? (
-          <AppSidebarPlaceholder />
-        ) : (
-          <></>
-        )}
+            <AppSidebarPlaceholder />
+          ) : (
+            <></>
+          )
+        }
       </SidebarContent>
       <SidebarFooter>
         <AppSidebarTheme />
