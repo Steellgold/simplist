@@ -25,7 +25,7 @@ export const AppSidebarLinks: Component<{
 }> = ({ name, links }) => {
   return (
     <SidebarGroup>
-      <Guard need={(links[0] && links[0].permissionsNeeded) || undefined}>
+      <Guard need={links[0] ? (links[0].permissionsNeeded || undefined) : undefined}>
         <SidebarGroupLabel>{name}</SidebarGroupLabel>
         <SidebarMenu>
           {links.map((item) => (
