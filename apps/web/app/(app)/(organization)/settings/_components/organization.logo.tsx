@@ -10,6 +10,7 @@ import { Label } from "@workspace/ui/components/label"
 import { toast } from "@workspace/ui/hooks/use-toast"
 import { authClient } from "@/lib/auth-client"
 import Image from "next/image"
+import { Guard } from "@/components/guard"
 
 type OrganizationSettingsLogoFormProps = {
   organizationId: string
@@ -159,25 +160,27 @@ export const OrganizationSettingsLogoForm: Component<OrganizationSettingsLogoFor
               )}
             </div>
 
-            <div className="space-y-1.5">
-              <Input
-                type="file"
-                accept="image/jpeg, image/png"
-                onChange={handleLogoUpload}
-                className="hidden"
-                id="logo-upload"
-              />
+            <Guard need={{ settings: ["update-logo"] }}>
+              <div className="space-y-1.5">
+                <Input
+                  type="file"
+                  accept="image/jpeg, image/png"
+                  onChange={handleLogoUpload}
+                  className="hidden"
+                  id="logo-upload"
+                />
 
-              <Label htmlFor="logo-upload">
-                <Button variant="outline" size={"sm"} className="cursor-pointer" asChild>
-                  <span>Upload New Logo</span>
-                </Button>
-              </Label>
+                <Label htmlFor="logo-upload">
+                  <Button variant="outline" size={"sm"} className="cursor-pointer" asChild>
+                    <span>Upload New Logo</span>
+                  </Button>
+                </Label>
 
-              <p className="text-sm text-muted-foreground">
-                Max file size: <strong>2MB</strong>. Recommended dimensions: <strong>200x200</strong> pixels.
-              </p>
-            </div>
+                <p className="text-sm text-muted-foreground">
+                  Max file size: <strong>2MB</strong>. Recommended dimensions: <strong>200x200</strong> pixels.
+                </p>
+              </div>
+            </Guard>
           </div>
         </CardContent>
 
@@ -185,9 +188,12 @@ export const OrganizationSettingsLogoForm: Component<OrganizationSettingsLogoFor
           <p className="text-sm text-muted-foreground">
             An avatar is optional but strongly recommended to help if you have multiple organizations.
           </p>
-          <Button size={"sm"} type="submit" disabled={pending || !file}>
-            {pending ? <Loader2 className="w-5 h-5 animate-spin" /> : "Save changes"}
-          </Button>
+
+          <Guard need={{ settings: ["update-logo"] }}>
+            <Button size={"sm"} type="submit" disabled={pending || !file}>
+              {pending ? <Loader2 className="w-5 h-5 animate-spin" /> : "Save changes"}
+            </Button>
+          </Guard>
         </CardFooter>
       </Card>
     </form>

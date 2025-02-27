@@ -1,5 +1,6 @@
 "use client";
 
+import { Guard } from "@/components/guard";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@workspace/ui/components/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@workspace/ui/components/card";
@@ -57,20 +58,29 @@ export const OrganizationSettingsNameForm: Component<OrganizationSettingsNameFor
         </CardHeader>
 
         <CardContent>
-          <Input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Enter organization name"
-            className="w-72"
-            disabled={pending}
-          />
+          <Guard
+            need={{ settings: ["update-name"] }}
+            elseElement={
+              <Input value={name} placeholder="Enter organization name" className="w-72" disabled />
+            }
+          >
+            <Input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter organization name"
+              className="w-72"
+              disabled={pending}
+            />
+          </Guard>
         </CardContent>
 
         <CardFooter vercelStyle>
           <p className="text-sm text-muted-foreground">Please use 32 characters at maximum.</p>
-          <Button size={"sm"} type="submit" disabled={pending || name === initialName || name.length > 32 || name.length < 1}>
-            {pending ? <Loader2 className="w-5 h-5 animate-spin" /> : "Save changes"}
-          </Button>
+          <Guard need={{ settings: ["update-name"] }}>
+            <Button size={"sm"} type="submit" disabled={pending || name === initialName || name.length > 32 || name.length < 1}>
+              {pending ? <Loader2 className="w-5 h-5 animate-spin" /> : "Save changes"}
+            </Button>
+          </Guard>
         </CardFooter>
       </Card>
     </form>
