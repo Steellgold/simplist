@@ -1,3 +1,4 @@
+import { ac,  admin, editor, member, owner } from "./permissions";
 import { betterAuth } from "better-auth";
 import { multiSession, openAPI, organization, twoFactor } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
@@ -27,7 +28,10 @@ export const auth = betterAuth({
     }
   },
   plugins: [
-    organization(),
+    organization({
+      ac: ac,
+      roles: { member, editor, admin, owner }
+    }),
     multiSession({
       maximumSessions: 1 // testing purposes
     }),
